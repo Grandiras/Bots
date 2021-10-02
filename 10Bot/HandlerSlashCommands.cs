@@ -30,7 +30,7 @@ namespace _10Bot
             switch (command.Data.Name)
             {
                 case "list-roles":
-                    HandleListRoleCommand(command);
+                    await HandleListRoleCommand(command);
                     break;
                 default:
                     break;
