@@ -11,30 +11,40 @@ using Newtonsoft.Json;
 namespace _10Bot
 {
     internal class Program
-    {
+    { 
+        #region Fields
         private DiscordSocketClient Client;
         private SocketGuild Guild;
+        private HandleSlashCommands CommandHandler;
 
-        private List<string> WelcomeMessages = new List<string>();
+        private List<string> WelcomeMessages = new List<string>
+        {
+            "[] schaut mal vorbei!"
+        };
         private Random Randomizer = new Random();
 
-        private const ulong GUILD_ID = 834815553372946474;
-
-        private const ulong NEW_TALK_CHANNEL_ID = 847132103576387617;
-        private const ulong NEW_PRIVATE_TALK_CHANNEL_ID = 847132104617492510;
-
-        private const ulong GENERAL_TEXTVOICE_ID = 893778409795252265;
-
-        private const ulong VOICE_CATEGORY_ID = 847132102633062421;
-        private const ulong TEXTVOICE_CATEGORY_ID = 858056836199350313;
-
         private List<VoiceSettings> VoiceChannels = new List<VoiceSettings>();
+        #endregion
+        // -----
+        #region Consts
+        private const ulong GUILD_ID = 835862190640201728;
 
+        private const ulong NEW_TALK_CHANNEL_ID = 845321570834579497;
+        private const ulong NEW_PRIVATE_TALK_CHANNEL_ID = 845321649117331496;
+
+        private const ulong GENERAL_TEXTVOICE_ID = 855753678941585438;
+
+        private const ulong VOICE_CATEGORY_ID = 835862190640201731;
+        private const ulong TEXTVOICE_CATEGORY_ID = 855754084628168704;
+        #endregion
+        // -----
+        #region Main
         static void Main(string[] args) => new Program().MainAsync().GetAwaiter().GetResult();
 
         public async Task MainAsync()
         {
             Client = new DiscordSocketClient();
+            CommandHandler = new HandleSlashCommands(VoiceChannels);
 
             Client.Log += Log;
             Client.Ready += Ready;
@@ -50,7 +60,8 @@ namespace _10Bot
 
             await Task.Delay(-1);
         }
-
+        #endregion
+        // -----
         private async Task UserJoined(SocketGuildUser user)
         {
             await Guild.DefaultChannel.SendMessageAsync(WelcomeMessages[Randomizer.Next(0, WelcomeMessages.Count - 1)].Replace("[]", user.Username));
@@ -111,7 +122,7 @@ namespace _10Bot
                     await textChannel.AddPermissionOverwriteAsync(role, new OverwritePermissions(
                         viewChannel: PermValue.Allow));
 
-                    VoiceChannels.Add(new PrivateVoiceSettings(channel, textChannel, role, member));
+                    VoiceChannels.Add(new PrivateVoiceSettings(channel, textChannel, role, member as IGuildUser));
 
                     var guildMember = member as IGuildUser;
                     await guildMember.AddRoleAsync(role);
@@ -152,26 +163,76 @@ namespace _10Bot
         {
             if (arg is SocketSlashCommand command)
             {
-                await HandlerSlashCommands.FindCommand(command);
+                await CommandHandler.FindCommandAsync(command);
             }
         }
 
         private async Task Ready()
         {
-            /*var guildCommand = new SlashCommandBuilder()
-                                   .WithName("list-roles")
-                                   .WithDescription("Lists all roles of user.")
-                                   .AddOption("user", ApplicationCommandOptionType.User, "ther user whos roles you want to be listed", required: true);
+            var inviteCommand = new SlashCommandBuilder()
+                .WithName("invite")
+                .WithDescription("Lädt einen Nutzer in den Private Talk ein.")
+                .AddOption("user", ApplicationCommandOptionType.User, "Der Nutzer, der eingeladen werden soll", required: true);
+
+            var kickCommand = new SlashCommandBuilder()
+                .WithName("kick")
+                .WithDescription("Kickt einen Nutzer aus deinem Private Talk.")
+                .AddOption("user", ApplicationCommandOptionType.User, "Der Nutzer, der gekickt werden soll", required: true)
+                .AddOption("reason", ApplicationCommandOptionType.String, "Grund für den Kick", required: false);
+
+            var managerCommand = new SlashCommandBuilder()
+                .WithName("manager")
+                .WithDescription("Ein Command zur Mod-Verwaltung.")
+                .AddOption(new SlashCommandOptionBuilder()
+                    .WithName("add")
+                    .WithDescription("Fügt einen Nutzer als Mod hinzu.")
+                    .WithType(ApplicationCommandOptionType.SubCommand)
+                    .AddOption("user", ApplicationCommandOptionType.User, "Der Nutzer, der Mod werden soll", required: true))
+                .AddOption(new SlashCommandOptionBuilder()
+                    .WithName("remove")
+                    .WithDescription("Entfernt einen Nutzer als Mod.")
+                    .WithType(ApplicationCommandOptionType.SubCommand)
+                    .AddOption("user", ApplicationCommandOptionType.User, "Der nutzer, der kein Mod mehr sein soll", required: true))
+                .AddOption(new SlashCommandOptionBuilder()
+                    .WithName("get")
+                    .WithDescription("Gibt die Modliste deines Channels aus.")
+                    .WithType(ApplicationCommandOptionType.SubCommand));
+
+            var ownerCommand = new SlashCommandBuilder()
+                .WithName("owner")
+                .WithDescription("Ein Command zur Owner-Verwaltung.")
+                .AddOption(new SlashCommandOptionBuilder()
+                    .WithName("transfer")
+                    .WithDescription("Überträgt einem Nutzer das Ownership.")
+                    .WithType(ApplicationCommandOptionType.SubCommand)
+                    .AddOption("user", ApplicationCommandOptionType.User, "Der Nutzer, an den das Ownership übertragen werden soll", required: true))
+                .AddOption(new SlashCommandOptionBuilder()
+                    .WithName("get")
+                    .WithDescription("Gibt den aktuellen Owner zurück.")
+                    .WithType(ApplicationCommandOptionType.SubCommand));
+
+            var channelCommand = new SlashCommandBuilder()
+                .WithName("channel")
+                .WithDescription("Ein Command zur Channel-Verwaltung.")
+                .AddOption(new SlashCommandOptionBuilder()
+                    .WithName("rename")
+                    .WithDescription("Benennt deinen aktuellen Channel um.")
+                    .WithType(ApplicationCommandOptionType.SubCommand)
+                    .AddOption("name", ApplicationCommandOptionType.String, "Der neue Name des Channels", required: true));
 
             try
             {
-                await Client.Rest.CreateGuildCommand(guildCommand.Build(), GUILD_ID);
+                await Client.Rest.CreateGuildCommand(inviteCommand.Build(), GUILD_ID);
+                await Client.Rest.CreateGuildCommand(kickCommand.Build(), GUILD_ID);
+                await Client.Rest.CreateGuildCommand(managerCommand.Build(), GUILD_ID);
+                await Client.Rest.CreateGuildCommand(ownerCommand.Build(), GUILD_ID);
+                await Client.Rest.CreateGuildCommand(channelCommand.Build(), GUILD_ID);
             }
             catch (ApplicationCommandException ex)
             {
                 var json = JsonConvert.SerializeObject(ex.Error, Formatting.Indented);
                 Console.WriteLine(json);
-            }*/
+            }
 
             Guild = Client.GetGuild(GUILD_ID);
         }

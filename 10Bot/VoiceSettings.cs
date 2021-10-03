@@ -1,4 +1,5 @@
-﻿using Discord.Rest;
+﻿using Discord;
+using Discord.Rest;
 using Discord.WebSocket;
 using System;
 using System.Collections.Generic;
@@ -6,12 +7,11 @@ using System.Text;
 
 namespace _10Bot
 {
-    internal class VoiceSettings
+    public class VoiceSettings
     {
         public RestVoiceChannel Channel { get; set; }
         public RestTextChannel TextChannel { get; set; }
         public RestRole Role { get; set; }
-        public List<SocketUser> Users { get; set; }
         public int TimesRenamed { get; set; }
 
         public VoiceSettings(RestVoiceChannel channel, RestTextChannel textChannel, RestRole role)
@@ -19,18 +19,19 @@ namespace _10Bot
             Channel = channel;
             TextChannel = textChannel;
             Role = role;
-            Users = new List<SocketUser>();
             TimesRenamed = 0;
         }
     }
 
-    internal class PrivateVoiceSettings : VoiceSettings
+    public class PrivateVoiceSettings : VoiceSettings
     {
-        public SocketUser Owner { get; set; }
+        public IGuildUser Owner { get; set; }
+        public List<IGuildUser> Mods { get; set; }
 
-        public PrivateVoiceSettings(RestVoiceChannel channel, RestTextChannel textChannel, RestRole role, SocketUser owner) : base(channel, textChannel, role)
+        public PrivateVoiceSettings(RestVoiceChannel channel, RestTextChannel textChannel, RestRole role, IGuildUser owner) : base(channel, textChannel, role)
         {
             Owner = owner;
+            Mods = new List<IGuildUser>();
         }
     }
 }
