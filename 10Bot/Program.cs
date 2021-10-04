@@ -18,13 +18,14 @@ namespace _10Bot
         private SocketGuild Guild;
         private HandleSlashCommands CommandHandler;
 
-        private List<string> WelcomeMessages = new List<string>
-        {
-            "[] schaut mal vorbei!"
-        };
+        private List<string> WelcomeMessages; 
         private Random Randomizer = new Random();
 
+        internal List<CustomCommand> CustomCommands;
+
         private List<VoiceSettings> VoiceChannels = new List<VoiceSettings>();
+
+        internal static Program Instance { get; private set; }
         #endregion
         // -----
         #region Consts
@@ -38,6 +39,8 @@ namespace _10Bot
         private const ulong VOICE_CATEGORY_ID = 835862190640201731;
         private const ulong TEXTVOICE_CATEGORY_ID = 855754084628168704;
 
+        internal const ulong MODERATOR_ROLE_ID = 845313134344274001;
+
         private const string TOKEN = "ODkzNTExMTA1MDEwMzY0NDI2.YVchEA.vyv1d5Hc8U_WngD8XyhRfTtIRfE";
         #endregion
         // -----
@@ -46,8 +49,16 @@ namespace _10Bot
 
         public async Task MainAsync()
         {
+            Instance = this;
+
             Client = new DiscordSocketClient();
             CommandHandler = new HandleSlashCommands(VoiceChannels);
+
+            string json = File.ReadAllText(Directory.GetCurrentDirectory() + "/Data/welcome_messages.json");
+            WelcomeMessages = JsonConvert.DeserializeObject<List<string>>(json);
+
+            string json2 = File.ReadAllText(Directory.GetCurrentDirectory() + "/Data/custom_commands.json");
+            CustomCommands = JsonConvert.DeserializeObject<List<CustomCommand>>(json2);
 
             Client.Log += Log;
             Client.Ready += Ready;
@@ -83,6 +94,12 @@ namespace _10Bot
                 TextWriter writer = new StreamWriter(file);
                 Console.SetOut(writer);
                 writer.Close();
+            }
+
+            using (StreamWriter file = File.CreateText(Directory.GetCurrentDirectory() + "/Data/custom_commands.json"))
+            {
+                JsonSerializer serializer = new JsonSerializer();
+                serializer.Serialize(file, CustomCommands);
             }
         }
 
@@ -234,6 +251,27 @@ namespace _10Bot
                     .WithType(ApplicationCommandOptionType.SubCommand)
                     .AddOption("name", ApplicationCommandOptionType.String, "Der neue Name des Channels", required: true));
 
+            var commandCommand = new SlashCommandBuilder()
+                .WithName("command")
+                .WithDescription("Ein Command zur Custom Command Verwaltung.")
+                .AddOption(new SlashCommandOptionBuilder()
+                    .WithName("create")
+                    .WithDescription("Erstellt einen neuen Command")
+                    .WithType(ApplicationCommandOptionType.SubCommand)
+                    .AddOption("name", ApplicationCommandOptionType.String, "Der Name des Commands", required: true)
+                    .AddOption("text", ApplicationCommandOptionType.String, "Der Text, den der Command ausgeben soll", required: true))
+                .AddOption(new SlashCommandOptionBuilder()
+                    .WithName("delete")
+                    .WithDescription("Entfernt einen Custom Command.")
+                    .WithType(ApplicationCommandOptionType.SubCommand)
+                    .AddOption("name", ApplicationCommandOptionType.String, "Der Name des zu löschenden Commands", required: true))
+                .AddOption(new SlashCommandOptionBuilder()
+                    .WithName("modify")
+                    .WithDescription("Verändert den Text eines Custom Commands.")
+                    .WithType(ApplicationCommandOptionType.SubCommand)
+                    .AddOption("name", ApplicationCommandOptionType.String, "Der zu modifizierende Command", required: true)
+                    .AddOption("text", ApplicationCommandOptionType.String, "Der neue Text", required: true));
+
             try
             {
                 await Client.Rest.CreateGuildCommand(inviteCommand.Build(), GUILD_ID);
@@ -241,6 +279,9 @@ namespace _10Bot
                 await Client.Rest.CreateGuildCommand(managerCommand.Build(), GUILD_ID);
                 await Client.Rest.CreateGuildCommand(ownerCommand.Build(), GUILD_ID);
                 await Client.Rest.CreateGuildCommand(channelCommand.Build(), GUILD_ID);
+                await Client.Rest.CreateGuildCommand(commandCommand.Build(), GUILD_ID);
+
+                await CreateCustomCommands();
             }
             catch (ApplicationCommandException ex)
             {
@@ -255,6 +296,23 @@ namespace _10Bot
         {
             Console.WriteLine(msg.ToString());
             await Task.Delay(1);
+        }
+
+        public async Task CreateCustomCommands()
+        {
+            var executeCommand = new SlashCommandBuilder()
+                    .WithName("execute")
+                    .WithDescription("Ein Command zum Ausführen von Custom Commands :)");
+
+            foreach (var item in CustomCommands)
+            {
+                executeCommand.AddOption(new SlashCommandOptionBuilder()
+                    .WithName(item.Name)
+                    .WithDescription(item.Description)
+                    .WithType(ApplicationCommandOptionType.SubCommand));
+            }
+
+            await Client.Rest.CreateGuildCommand(executeCommand.Build(), GUILD_ID);
         }
     }
 }

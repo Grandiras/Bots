@@ -184,6 +184,83 @@ namespace _10Bot
                     break;
             }
         }
+        
+        public async Task command_CommandHandler(SocketSlashCommand command)
+        {
+            IGuildUser user = command.User as IGuildUser;
+            if (user == null)
+            {
+                await command.RespondAsync("Dein User Account wurde nicht gefunden... Bitte melden!", ephemeral: true);
+                return;
+            }
+
+            if (!user.RoleIds.Contains(Program.MODERATOR_ROLE_ID))
+            {
+                await command.RespondAsync("Du musst dafür Mod sein!", ephemeral: true);
+                return;
+            }
+
+            var subCommand = command.Data.Options.First();
+
+            switch (subCommand.Name)
+            {
+                case "create":
+                    if (Program.Instance.CustomCommands.Where(x => x.Name == (string)subCommand.Options.First().Value).FirstOrDefault() != null)
+                    {
+                        await command.RespondAsync("So ein Command existiert bereits! Vielleicht /command modify?", ephemeral: true);
+                        break;
+                    }
+                    Program.Instance.CustomCommands.Add(new CustomCommand((string)subCommand.Options.First().Value, (string)subCommand.Options.ElementAt(1).Value));
+                    await Program.Instance.CreateCustomCommands();
+                    await command.RespondAsync($"Command '{(string)subCommand.Options.First().Value}' erfolgreich erstellt!", ephemeral: true);
+                    break;
+                case "delete":
+                    if (Program.Instance.CustomCommands.Where(x => x.Name == (string)subCommand.Options.First().Value).FirstOrDefault() == null)
+                    {
+                        await command.RespondAsync("So ein Command existiert nicht!", ephemeral: true);
+                        break;
+                    }
+                    Program.Instance.CustomCommands.Remove(Program.Instance.CustomCommands.Where(x => x.Name == (string)subCommand.Options.First().Value).First());
+                    await Program.Instance.CreateCustomCommands();
+                    await command.RespondAsync($"Command '{(string)subCommand.Options.First().Value}' erfolgreich gelöscht!");
+                    break;
+                case "modify":
+                    if (Program.Instance.CustomCommands.Where(x => x.Name == (string)subCommand.Options.First().Value).FirstOrDefault() == null)
+                    {
+                        await command.RespondAsync("So ein Command existiert nicht! Vielleicht /command create?", ephemeral: true);
+                        break;
+                    }
+                    Program.Instance.CustomCommands.Where(x => x.Name == (string)subCommand.Options.First().Value).First().Description = (string)subCommand.Options.ElementAt(1).Value;
+                    await Program.Instance.CreateCustomCommands();
+                    await command.RespondAsync($"Text von Command '{(string)subCommand.Options.First().Value}' erfolgreich geändert!");
+                    break;
+                default:
+                    Console.WriteLine($"[{DateTime.Now.TimeOfDay}] Command 'channel' (von {command.User.Username}) hatte einen Fehler!");
+                    await command.RespondAsync("Ups, da lief was schief... Bitte melden!", ephemeral: true);
+                    break;
+            }
+        }
+
+        public async Task execute_CommandHandler(SocketSlashCommand command)
+        {
+            IGuildUser user = command.User as IGuildUser;
+            if (user == null)
+            {
+                await command.RespondAsync("Dein User Account wurde nicht gefunden... Bitte melden!", ephemeral: true);
+                return;
+            }
+
+            var subCommand = command.Data.Options.First();
+
+            foreach (var item in Program.Instance.CustomCommands)
+            {
+                if (subCommand.Name == item.Name)
+                {
+                    await command.RespondAsync(item.Description, ephemeral: true);
+                    return;
+                }
+            }
+        }
         #endregion
         // -----
         #region Pattern Methods
