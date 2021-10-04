@@ -56,7 +56,9 @@ namespace _10Bot
             var target = command.Data.Options.ElementAt(0).Value as IGuildUser;
             await target.RemoveRoleAsync(settings.Role);
             await target.ModifyAsync(x => x.Channel = null);
-            await command.RespondAsync($"User {target.Username} erfolgreich vom Channel gekickt.\nGrund: {((command.Data.Options.ElementAt(1).Value == null) ? "kein Grund" : (command.Data.Options.ElementAt(1).Value as string))} ", ephemeral: true);
+            await command.RespondAsync($"User {target.Username} erfolgreich vom Channel gekickt.\nGrund: {((command.Data.Options.ElementAt(1).Value == null) ? "[unkwnow]" : (command.Data.Options.ElementAt(1).Value as string))} ", ephemeral: true);
+            var dm = await target.CreateDMChannelAsync();
+            await dm.SendMessageAsync($"Du wurdest mit folgendem Grund gekickt: {((command.Data.Options.ElementAt(1).Value == null) ? "[unkwnow]" : (command.Data.Options.ElementAt(1).Value as string))}");
         }
 
         public async Task manager_CommandHandler(SocketSlashCommand command)
@@ -122,9 +124,10 @@ namespace _10Bot
                     await command.RespondAsync(modList.ToString());
                     break;
                 default:
+                    Console.WriteLine($"[{DateTime.Now.TimeOfDay}] Command 'manager' (von {command.User.Username}) hatte einen Fehler!");
+                    await command.RespondAsync("Ups, da lief was schief... Bitte melden!", ephemeral: true);
                     break;
             }
-            await command.RespondAsync("Irgendwas läuft hier schief... Bitte melden!", ephemeral: true);
         }
 
         public async Task owner_CommandHandler(SocketSlashCommand command)
@@ -153,6 +156,8 @@ namespace _10Bot
                     await command.RespondAsync($"Der aktuelle Owner hier ist {settings.Owner.Username}.", ephemeral: true);
                     break;
                 default:
+                    Console.WriteLine($"[{DateTime.Now.TimeOfDay}] Command 'owner' (von {command.User.Username}) hatte einen Fehler!");
+                    await command.RespondAsync("Ups, da lief was schief... Bitte melden!", ephemeral: true);
                     break;
             }
         }
@@ -174,6 +179,8 @@ namespace _10Bot
                     await command.RespondAsync($"Der Name deines aktuellen Channels wurde erfolgreich auf {subCommand.Options.First().Value} gesetzt.");
                     break;
                 default:
+                    Console.WriteLine($"[{DateTime.Now.TimeOfDay}] Command 'channel' (von {command.User.Username}) hatte einen Fehler!");
+                    await command.RespondAsync("Ups, da lief was schief... Bitte melden!", ephemeral: true);
                     break;
             }
         }

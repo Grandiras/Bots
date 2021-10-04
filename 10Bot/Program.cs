@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Discord;
@@ -36,6 +37,8 @@ namespace _10Bot
 
         private const ulong VOICE_CATEGORY_ID = 835862190640201731;
         private const ulong TEXTVOICE_CATEGORY_ID = 855754084628168704;
+
+        private const string TOKEN = "ODkzNTExMTA1MDEwMzY0NDI2.YVchEA.vyv1d5Hc8U_WngD8XyhRfTtIRfE";
         #endregion
         // -----
         #region Main
@@ -53,9 +56,7 @@ namespace _10Bot
             Client.UserVoiceStateUpdated += UserVoiceStateUpdated;
             Client.UserJoined += UserJoined;
 
-            var token = "ODkzNTExMTA1MDEwMzY0NDI2.YVchEA.vyv1d5Hc8U_WngD8XyhRfTtIRfE";
-
-            await Client.LoginAsync(TokenType.Bot, token);
+            await Client.LoginAsync(TokenType.Bot, TOKEN);
             await Client.StartAsync();
 
             await Task.Delay(-1);
@@ -67,9 +68,22 @@ namespace _10Bot
             await Guild.DefaultChannel.SendMessageAsync(WelcomeMessages[Randomizer.Next(0, WelcomeMessages.Count - 1)].Replace("[]", user.Username));
         }
 
-        private async Task Disconnected(Exception arg)
+        private async Task Disconnected(Exception ex)
         {
+            var json = JsonConvert.SerializeObject(ex.Message, Formatting.Indented);
+            Console.WriteLine(json);
+
+            await Client.StopAsync();
+
+            await Client.LoginAsync(TokenType.Bot, TOKEN);
             await Client.StartAsync();
+
+            using (var file = File.Create(Directory.GetCurrentDirectory() + $"/Logs/{DateTime.Now}.txt"))
+            {
+                TextWriter writer = new StreamWriter(file);
+                Console.SetOut(writer);
+                writer.Close();
+            }
         }
 
         private async Task UserVoiceStateUpdated(SocketUser member, SocketVoiceState before, SocketVoiceState after)
