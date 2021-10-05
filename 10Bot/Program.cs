@@ -75,7 +75,21 @@ namespace _10Bot
             await Client.LoginAsync(TokenType.Bot, TOKEN);
             await Client.StartAsync();
 
-            await Task.Delay(-1);
+            while (true)
+            {
+                if (Client.ConnectionState == ConnectionState.Disconnected)
+                {
+                    using (var file = File.Create(Directory.GetCurrentDirectory() + $"/Logs/{DateTime.Now}.txt"))
+                    {
+                        TextWriter writer = new StreamWriter(file);
+                        Console.SetOut(writer);
+                        writer.Close();
+                    }
+
+                    Main(new string[0]);
+                    return;
+                }
+            }
         }
         #endregion
         // -----
