@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Net;
@@ -75,11 +76,17 @@ namespace _10Bot
             await Client.LoginAsync(TokenType.Bot, TOKEN);
             await Client.StartAsync();
 
+            var isConnecting = false;
+
             while (true)
             {
-                if (Client.ConnectionState == ConnectionState.Disconnected)
+                Thread.Sleep(1000);
+
+                if(Client.ConnectionState == ConnectionState.Disconnecting) isConnecting = false;
+
+                if (isConnecting == false && Client.ConnectionState == ConnectionState.Disconnected)
                 {
-                    using (var file = File.Create(Directory.GetCurrentDirectory() + $"/Logs/{DateTime.Now}.txt"))
+                    using (var file = File.Create(Directory.GetCurrentDirectory() + $"/Logs/{DateTime.Now.ToString().Replace(" ", "_").Replace(".", "-").Replace(":", "-")}.txt"))
                     {
                         TextWriter writer = new StreamWriter(file);
                         Console.SetOut(writer);
@@ -87,6 +94,8 @@ namespace _10Bot
                     }
 
                     Main(new string[0]);
+                    isConnecting = true;
+
                     return;
                 }
             }
