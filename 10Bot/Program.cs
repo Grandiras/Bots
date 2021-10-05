@@ -59,6 +59,11 @@ namespace _10Bot
 
             string json2 = File.ReadAllText(Directory.GetCurrentDirectory() + "/Data/custom_commands.json");
             CustomCommands = JsonConvert.DeserializeObject<List<CustomCommand>>(json2);
+            
+            if (CustomCommands == null)
+            {
+                CustomCommands = new List<CustomCommand>();   
+            }
 
             Client.Log += Log;
             Client.Ready += Ready;
