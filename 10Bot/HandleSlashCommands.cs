@@ -222,7 +222,7 @@ namespace _10Bot
                     }
                     Program.Instance.CustomCommands.Remove(Program.Instance.CustomCommands.Where(x => x.Name == (string)subCommand.Options.First().Value).First());
                     await Program.Instance.CreateCustomCommands();
-                    await command.RespondAsync($"Command '{(string)subCommand.Options.First().Value}' erfolgreich gelöscht!");
+                    await command.RespondAsync($"Command '{(string)subCommand.Options.First().Value}' erfolgreich gelöscht!", ephemeral: true);
                     break;
                 case "modify":
                     if (Program.Instance.CustomCommands.Where(x => x.Name == (string)subCommand.Options.First().Value).FirstOrDefault() == null)
@@ -232,15 +232,13 @@ namespace _10Bot
                     }
                     Program.Instance.CustomCommands.Where(x => x.Name == (string)subCommand.Options.First().Value).First().Description = (string)subCommand.Options.ElementAt(1).Value;
                     await Program.Instance.CreateCustomCommands();
-                    await command.RespondAsync($"Text von Command '{(string)subCommand.Options.First().Value}' erfolgreich geändert!");
+                    await command.RespondAsync($"Text von Command '{(string)subCommand.Options.First().Value}' erfolgreich geändert!", ephemeral: true);
                     break;
                 default:
                     Console.WriteLine($"[{DateTime.Now.TimeOfDay}] Command 'channel' (von {command.User.Username}) hatte einen Fehler!");
                     await command.RespondAsync("Ups, da lief was schief... Bitte melden!", ephemeral: true);
                     break;
             }
-
-            await command.RespondAsync("Ok, da läuft was schief...", ephemeral: true);
         }
 
         public async Task execute_CommandHandler(SocketSlashCommand command)
@@ -252,7 +250,12 @@ namespace _10Bot
                 return;
             }
 
-            var subCommand = command.Data.Options.First();
+            var subCommand = command.Data.Options.FirstOrDefault();
+
+            if (subCommand == null)
+            {
+                await command.RespondAsync("So funktionier das nicht!", ephemeral: true);
+            }
 
             foreach (var item in Program.Instance.CustomCommands)
             {
@@ -262,6 +265,8 @@ namespace _10Bot
                     return;
                 }
             }
+
+            await command.RespondAsync("Ähm, hier läuft wohl was schief...", ephemeral: true);
         }
         #endregion
         // -----

@@ -319,9 +319,8 @@ namespace _10Bot
 
             try
             {
+                Console.WriteLine("ok");
                 await Client.Rest.CreateGuildCommand(executeCommand.Build(), GUILD_ID);
-
-                await CreateCustomCommands();
             }
             catch (ApplicationCommandException ex)
             {
