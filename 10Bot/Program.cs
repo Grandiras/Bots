@@ -312,7 +312,17 @@ namespace _10Bot
                     .WithType(ApplicationCommandOptionType.SubCommand));
             }
 
-            await Client.Rest.CreateGuildCommand(executeCommand.Build(), GUILD_ID);
+            try
+            {
+                await Client.Rest.CreateGuildCommand(executeCommand.Build(), GUILD_ID);
+
+                await CreateCustomCommands();
+            }
+            catch (ApplicationCommandException ex)
+            {
+                var json = JsonConvert.SerializeObject(ex.Error, Formatting.Indented);
+                Console.WriteLine(json);
+            }
         }
     }
 }

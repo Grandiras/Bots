@@ -239,6 +239,8 @@ namespace _10Bot
                     await command.RespondAsync("Ups, da lief was schief... Bitte melden!", ephemeral: true);
                     break;
             }
+
+            await command.RespondAsync("Ok, da läuft was schief...", ephemeral: true);
         }
 
         public async Task execute_CommandHandler(SocketSlashCommand command)
