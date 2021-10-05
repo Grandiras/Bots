@@ -101,7 +101,7 @@ namespace _10Bot
                 writer.Close();
             }
 
-            using (StreamWriter file = File.CreateText(Directory.GetCurrentDirectory() + "/Data/custom_commands.json"))
+            using (TextWriter file = File.CreateText(Directory.GetCurrentDirectory() + "/Data/custom_commands.json"))
             {
                 JsonSerializer serializer = new JsonSerializer();
                 serializer.Serialize(file, CustomCommands);
@@ -319,13 +319,18 @@ namespace _10Bot
 
             try
             {
-                Console.WriteLine("ok");
                 await Client.Rest.CreateGuildCommand(executeCommand.Build(), GUILD_ID);
             }
             catch (ApplicationCommandException ex)
             {
                 var json = JsonConvert.SerializeObject(ex.Error, Formatting.Indented);
                 Console.WriteLine(json);
+            }
+
+            using (TextWriter file = File.CreateText(Directory.GetCurrentDirectory() + "/Data/custom_commands.json"))
+            {
+                JsonSerializer serializer = new JsonSerializer();
+                serializer.Serialize(file, CustomCommands);
             }
         }
     }

@@ -261,7 +261,7 @@ namespace _10Bot
             {
                 if (subCommand.Name == item.Name)
                 {
-                    await command.RespondAsync(item.Description, ephemeral: true);
+                    await command.RespondAsync(item.Description);
                     return;
                 }
             }
