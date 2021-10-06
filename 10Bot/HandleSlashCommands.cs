@@ -254,7 +254,7 @@ namespace _10Bot
 
             if (subCommand == null)
             {
-                await command.RespondAsync("So funktionier das nicht!", ephemeral: true);
+                await command.RespondAsync("So funktioniert das nicht!", ephemeral: true);
             }
 
             foreach (var item in Program.Instance.CustomCommands)
@@ -267,6 +267,47 @@ namespace _10Bot
             }
 
             await command.RespondAsync("Ähm, hier läuft wohl was schief...", ephemeral: true);
+        }
+
+        public async Task accept_CommandHandler(SocketSlashCommand command)
+        {
+            IGuildUser user = command.User as IGuildUser;
+            if (user == null)
+            {
+                await command.RespondAsync("Dein User Account wurde nicht gefunden... Bitte melden!", ephemeral: true);
+                return;
+            }
+
+            if (user.RoleIds.Contains(Program.MEMBER_ROLE_ID))
+            {
+                await command.RespondAsync("Dein Ernst? Du hast die Rolle schon -_-", ephemeral: true);
+                return;
+            }
+
+            await user.AddRoleAsync(Program.MEMBER_ROLE_ID);
+            await command.RespondAsync("Supi, viel Spaß!", ephemeral: true);
+        }
+
+        public async Task help_CommandHandler(SocketSlashCommand command)
+        {
+            IGuildUser user = command.User as IGuildUser;
+            if (user == null)
+            {
+                await command.RespondAsync("Dein User Account wurde nicht gefunden... Bitte melden!", ephemeral: true);
+                return;
+            }
+
+            StringBuilder builder = new StringBuilder();
+
+            builder.Append("Der Bot kann folgende Commands: \n");
+
+            foreach (var item in Program.Instance.Guild.GetApplicationCommandsAsync().Result)
+            {
+                builder.Append($"- {item.Name}: {item.Description} \n");
+            }
+
+            await command.RespondAsync(builder.ToString(), ephemeral: true);
+            return;
         }
         #endregion
         // -----

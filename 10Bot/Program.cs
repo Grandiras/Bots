@@ -16,7 +16,7 @@ namespace _10Bot
     { 
         #region Fields
         private DiscordSocketClient Client;
-        private SocketGuild Guild;
+        internal SocketGuild Guild;
         private HandleSlashCommands CommandHandler;
 
         private List<string> WelcomeMessages; 
@@ -41,6 +41,7 @@ namespace _10Bot
         private const ulong TEXTVOICE_CATEGORY_ID = 855754084628168704;
 
         internal const ulong MODERATOR_ROLE_ID = 845313134344274001;
+        internal const ulong MEMBER_ROLE_ID = 846469969625088010;
 
         private const string TOKEN = "ODkzNTExMTA1MDEwMzY0NDI2.YVchEA.vyv1d5Hc8U_WngD8XyhRfTtIRfE";
         #endregion
@@ -76,11 +77,11 @@ namespace _10Bot
             await Client.LoginAsync(TokenType.Bot, TOKEN);
             await Client.StartAsync();
 
-            var isConnecting = false;
+            var isConnecting = true;
 
             while (true)
             {
-                Thread.Sleep(1000);
+                Thread.Sleep(1000 * 1/60);
 
                 if(Client.ConnectionState == ConnectionState.Disconnecting) isConnecting = false;
 
@@ -284,7 +285,7 @@ namespace _10Bot
                 .WithDescription("Ein Command zur Custom Command Verwaltung.")
                 .AddOption(new SlashCommandOptionBuilder()
                     .WithName("create")
-                    .WithDescription("Erstellt einen neuen Command")
+                    .WithDescription("Erstellt einen neuen Command.")
                     .WithType(ApplicationCommandOptionType.SubCommand)
                     .AddOption("name", ApplicationCommandOptionType.String, "Der Name des Commands", required: true)
                     .AddOption("text", ApplicationCommandOptionType.String, "Der Text, den der Command ausgeben soll", required: true))
@@ -300,6 +301,14 @@ namespace _10Bot
                     .AddOption("name", ApplicationCommandOptionType.String, "Der zu modifizierende Command", required: true)
                     .AddOption("text", ApplicationCommandOptionType.String, "Der neue Text", required: true));
 
+            var acceptCommand = new SlashCommandBuilder()
+                .WithName("accept")
+                .WithDescription("Damit kannst du die Regeln akzeptieren.");
+
+            var helpCommand = new SlashCommandBuilder()
+                .WithName("help")
+                .WithDescription("Zeigt alle verfügbaren Commands an.");
+
             try
             {
                 await Client.Rest.CreateGuildCommand(inviteCommand.Build(), GUILD_ID);
@@ -308,6 +317,8 @@ namespace _10Bot
                 await Client.Rest.CreateGuildCommand(ownerCommand.Build(), GUILD_ID);
                 await Client.Rest.CreateGuildCommand(channelCommand.Build(), GUILD_ID);
                 await Client.Rest.CreateGuildCommand(commandCommand.Build(), GUILD_ID);
+                await Client.Rest.CreateGuildCommand(acceptCommand.Build(), GUILD_ID);
+                await Client.Rest.CreateGuildCommand(helpCommand.Build(), GUILD_ID);
 
                 await CreateCustomCommands();
             }
