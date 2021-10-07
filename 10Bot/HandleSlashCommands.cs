@@ -176,7 +176,7 @@ namespace _10Bot
                 case "rename":
                     await settings.Channel.ModifyAsync(x => x.Name = (string)subCommand.Options.First().Value);
                     await settings.TextChannel.ModifyAsync(x => x.Name = ((string)subCommand.Options.First().Value).ToLower().Replace(" ", "-"));
-                    await command.RespondAsync($"Der Name deines aktuellen Channels wurde erfolgreich auf {subCommand.Options.First().Value} gesetzt.");
+                    await command.RespondAsync($"Der Name deines aktuellen Channels wurde erfolgreich auf {subCommand.Options.First().Value} gesetzt.", ephemeral: true);
                     break;
                 default:
                     Console.WriteLine($"[{DateTime.Now.TimeOfDay}] Command 'channel' (von {command.User.Username}) hatte einen Fehler!");
