@@ -13,50 +13,114 @@ using Newtonsoft.Json;
 
 namespace _10Bot
 {
+    /// <summary>
+    /// Main Class of Bot and Console Application
+    /// </summary>
     internal class Program
-    { 
-        #region Fields
-        private DiscordSocketClient Client;
-        internal SocketGuild Guild;
-        private HandleSlashCommands CommandHandler;
+    {
+        #region Properties
+        /// <summary>
+        /// Used Discord Client
+        /// </summary>
+        private DiscordSocketClient Client { get; set; }
+        /// <summary>
+        /// Current Used Guild
+        /// </summary>
+        internal SocketGuild Guild { get; set; }
+        /// <summary>
+        /// Class for Handling Commands (see HandleSlashCommands.cs)
+        /// </summary>
+        private HandleSlashCommands CommandHandler { get; set; }
 
-        private List<string> WelcomeMessages; 
-        private Random Randomizer = new Random();
+        /// <summary>
+        /// List of custom Welcome Messages which are read from 'welcome_messages.json' in MainAsync()
+        /// </summary>
+        private List<string> WelcomeMessages { get; set; }
+        /// <summary>
+        /// Randomizer to choose custom Welcome Message
+        /// </summary>
+        private Random Randomizer { get; set; } = new Random();
 
-        internal List<CustomCommand> CustomCommands;
+        /// <summary>
+        /// List of custom Commands (see CustomCommand.cs)
+        /// </summary>
+        internal List<CustomCommand> CustomCommands { get; set; }
 
-        private List<VoiceSettings> VoiceChannels = new List<VoiceSettings>();
+        /// <summary>
+        /// List of Voice Channels created and managed (see VoiceSetting.cs)
+        /// </summary>
+        private List<VoiceSettings> VoiceChannels { get; set; } = new List<VoiceSettings>();
 
+        /// <summary>
+        /// Static Property of Instace to access from outside
+        /// </summary>
         internal static Program Instance { get; private set; }
         #endregion
         // -----
         #region Consts
+        /// <summary>
+        /// ID of current used Guild (read from 'config.json' in MainAsync())
+        /// </summary>
         public ulong GuildID { get; private set; }
 
+        /// <summary>
+        /// ID of set NewTalkChannel (read from 'config.json' in MainAsync())
+        /// </summary>
         public ulong NewTalkChannelID { get; private set; }
+        /// <summary>
+        /// ID of set NewPrivateTalkChannel (read from 'config.json' in MainAsync())
+        /// </summary>
         public ulong NewPrivateTalkChannelID { get; private set; }
 
+        /// <summary>
+        /// ID of set GeneralTextVoice (read from 'config.json' in MainAsync())
+        /// </summary>
         public ulong GeneralTextVoiceID { get; private set; }
 
+        /// <summary>
+        /// ID of set VoiceCategory (read from 'config.json' in MainAsync())
+        /// </summary>
         public ulong VoiceCategoryID { get; private set; }
+        /// <summary>
+        /// ID of set TextVoiceCategory (read from 'config.json' in MainAsync())
+        /// </summary>
         public ulong TextVoiceCategoryID { get; private set; }
 
+        /// <summary>
+        /// ID of set ModeratorRole (read from 'config.json' in MainAsync())
+        /// </summary>
         public ulong ModeratorRoleID { get; private set; }
+        /// <summary>
+        /// ID of set MemberRole (read from 'config.json' in MainAsync())
+        /// </summary>
         public ulong MemberRoleID { get; private set; }
 
+        /// <summary>
+        /// Token for the Bot (read from 'config.json' in MainAsync())
+        /// </summary>
         public string Token { get; private set; } = "";
         #endregion
         // -----
         #region Main
+        /// <summary>
+        /// Main Function of Console Application, executes async One
+        /// </summary>
+        /// <param name="args">string params given in console</param>
         static void Main(string[] args) => new Program().MainAsync().GetAwaiter().GetResult();
 
+        /// <summary>
+        /// real Main Function of Program
+        /// </summary>
         public async Task MainAsync()
         {
+            // set Instance Property
             Instance = this;
 
+            // set Client and CommandHandler Instances
             Client = new DiscordSocketClient();
             CommandHandler = new HandleSlashCommands(VoiceChannels);
 
+            // get config data from file and write into properties
             #region GetConfigData
             string configJson = File.ReadAllText(Directory.GetCurrentDirectory() + "/Data/config.json");
             var config = JsonConvert.DeserializeObject<Dictionary<string, object>>(configJson);
@@ -69,17 +133,21 @@ namespace _10Bot
             }
             #endregion
 
+            // get welcome messages from file and write into list
             string json = File.ReadAllText(Directory.GetCurrentDirectory() + "/Data/welcome_messages.json");
             WelcomeMessages = JsonConvert.DeserializeObject<List<string>>(json);
 
+            // get current custom commands from file and write into lst
             string json2 = File.ReadAllText(Directory.GetCurrentDirectory() + "/Data/custom_commands.json");
             CustomCommands = JsonConvert.DeserializeObject<List<CustomCommand>>(json2);
             
+            // set CustomCommands if currently null
             if (CustomCommands == null)
             {
                 CustomCommands = new List<CustomCommand>();   
             }
 
+            // set Handlers for Events
             #region Events + Handlers
             Client.Log += Log;
             Client.Ready += Ready;
@@ -89,11 +157,14 @@ namespace _10Bot
             Client.UserJoined += UserJoined;
             #endregion
 
+            // start Bot
             await Client.LoginAsync(TokenType.Bot, Token);
             await Client.StartAsync();
 
+            // if the Bot is currently connecting
             var isConnecting = true;
 
+            // Auto Restart Routine
             while (true)
             {
                 Thread.Sleep(1000 * 1/60);
@@ -118,10 +189,12 @@ namespace _10Bot
         }
         #endregion
         // -----
+        #region UserJoined
         private async Task UserJoined(SocketGuildUser user)
         {
             await Guild.DefaultChannel.SendMessageAsync(WelcomeMessages[Randomizer.Next(0, WelcomeMessages.Count - 1)].Replace("[]", user.Username));
         }
+        #endregion
         // -----
         #region Disconnected
         private async Task Disconnected(Exception ex)
