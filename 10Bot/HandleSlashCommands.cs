@@ -194,7 +194,7 @@ namespace _10Bot
                 return;
             }
 
-            if (!user.RoleIds.Contains(Program.MODERATOR_ROLE_ID))
+            if (!user.RoleIds.Contains(Program.Instance.ModeratorRoleID))
             {
                 await command.RespondAsync("Du musst dafür Mod sein!", ephemeral: true);
                 return;
@@ -278,13 +278,13 @@ namespace _10Bot
                 return;
             }
 
-            if (user.RoleIds.Contains(Program.MEMBER_ROLE_ID))
+            if (user.RoleIds.Contains(Program.Instance.MemberRoleID))
             {
                 await command.RespondAsync("Dein Ernst? Du hast die Rolle schon -_-", ephemeral: true);
                 return;
             }
 
-            await user.AddRoleAsync(Program.MEMBER_ROLE_ID);
+            await user.AddRoleAsync(Program.Instance.MemberRoleID);
             await command.RespondAsync("Supi, viel Spaß!", ephemeral: true);
         }
 
