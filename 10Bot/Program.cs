@@ -31,18 +31,18 @@ namespace _10Bot
         #endregion
         // -----
         #region Consts
-        public ulong GuildID { get; private set; } = 0;
+        public ulong GuildID { get; private set; }
 
-        public ulong NewTalkChannelID { get; private set; } = 0;
-        public ulong NewPrivateTalkChannelID { get; private set; } = 0;
+        public ulong NewTalkChannelID { get; private set; }
+        public ulong NewPrivateTalkChannelID { get; private set; }
 
-        public ulong GeneralTextVoiceID { get; private set; } = 0;
+        public ulong GeneralTextVoiceID { get; private set; }
 
-        public ulong VoiceCategoryID { get; private set; } = 0;
-        public ulong TextVoiceCategoryID { get; private set; } = 0;
+        public ulong VoiceCategoryID { get; private set; }
+        public ulong TextVoiceCategoryID { get; private set; }
 
-        public ulong ModeratorRoleID { get; private set; } = 0;
-        public ulong MemberRoleID { get; private set; } = 0;
+        public ulong ModeratorRoleID { get; private set; }
+        public ulong MemberRoleID { get; private set; }
 
         public string Token { get; private set; } = "";
         #endregion
@@ -62,7 +62,6 @@ namespace _10Bot
             var config = JsonConvert.DeserializeObject<Dictionary<string, object>>(configJson);
             foreach (var item in config)
             {
-                Console.WriteLine($"{item.Key}: {item.Value}");
                 Type type = GetType();
                 PropertyInfo propInfo = type.GetProperty(item.Key);
                 var propTypeValue = Convert.ChangeType(item.Value, propInfo.PropertyType); 
