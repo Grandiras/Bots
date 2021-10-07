@@ -229,6 +229,7 @@ namespace _10Bot
 
         private async Task Ready()
         {
+            #region System Commands
             var inviteCommand = new SlashCommandBuilder()
                 .WithName("invite")
                 .WithDescription("Lädt einen Nutzer in den Private Talk ein.")
@@ -308,6 +309,7 @@ namespace _10Bot
             var helpCommand = new SlashCommandBuilder()
                 .WithName("help")
                 .WithDescription("Zeigt alle verfügbaren Commands an.");
+            #endregion
 
             try
             {
