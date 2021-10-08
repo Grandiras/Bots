@@ -123,8 +123,8 @@ namespace _10Bot
             // get config data from file and write into properties
             #region GetConfigData
             string configJson = File.ReadAllText(Directory.GetCurrentDirectory() + "/Data/config.json");
-            var config = JsonConvert.DeserializeObject<Dictionary<string, object>>(configJson);
-            foreach (var item in config)
+            var config = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, object>>>(configJson);
+            foreach (var item in config["TestGuild"])
             {
                 Type type = GetType();
                 PropertyInfo propInfo = type.GetProperty(item.Key);
