@@ -124,7 +124,7 @@ namespace _10Bot
             #region GetConfigData
             string configJson = File.ReadAllText(Directory.GetCurrentDirectory() + "/Data/config.json");
             var config = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, object>>>(configJson);
-            foreach (var item in config["TestGuild"])
+            foreach (var item in config["Selbsthilfegruppe_reloaded"])
             {
                 Type type = GetType();
                 PropertyInfo propInfo = type.GetProperty(item.Key);
