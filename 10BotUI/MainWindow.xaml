@@ -5,12 +5,54 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:_10BotUI"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    
-    <Grid>
+        Title="10BotUI" Icon="/Assets/icon.png"
+        Height="450" Width="800"
+        AllowsTransparency="True"
+        WindowStyle="None" 
+        Background="Transparent"
+        WindowStartupLocation="CenterScreen"
+        MinHeight="450" MinWidth="800">
 
+    <Window.Style>
+
+        <Style TargetType="{x:Type Window}">
+
+            <Setter Property="WindowChrome.WindowChrome">
+
+                <Setter.Value>
+
+                    <WindowChrome CornerRadius="10" CaptionHeight="3" />
+
+                </Setter.Value>
+
+            </Setter>
+
+            <Setter Property="Template">
+
+                <Setter.Value>
+
+                    <ControlTemplate TargetType="{x:Type Window}">
+
+                        <Border Background="#151515" BorderThickness="0" CornerRadius="10">
+
+                            <ContentPresenter Content="{TemplateBinding Content}" />
+
+                        </Border>
+
+                    </ControlTemplate>
+
+                </Setter.Value>
+
+            </Setter>
+
+        </Style>
+
+    </Window.Style>
+
+    <DockPanel Name="dkp_Main" Background="Transparent">
         
         
-    </Grid>
+        
+    </DockPanel>
     
 </Window>
