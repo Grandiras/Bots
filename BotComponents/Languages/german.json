@@ -1,0 +1,36 @@
+{
+  "failed": "Ups, da lief was schief... Bitte meldern!",
+  "userNotFound": "Dein Accouunt wurde nicht gefunden... Bitte melden!",
+
+  "invite_success": "{} wurde erfolgreich zum Channel hinzugefügt.",
+
+  "kick_success": "{} wurde erfolgreich vom Channel gekickt.\nGrund: []",
+  "kick_reason": "Du wurdest mit folgendem Grund gekickt: {}",
+
+  "manager_isOwner": "Ääääh, du bist hier Owner, ist dir schon klar, oder?",
+  "manager_add_already": "{} ist scon Moderator...",
+  "manager_add_notInChannel": "{} ist nicht in diesem Channel!",
+  "manager_add_success": "{} erfolgreich zu einem Moderatoren dieses Channels gemacht.",
+  "manager_remove_isNoMod": "{} ist kein Moderator...",
+  "manager_remove_success": "{} ist hier jetzt kein Moderator mehr.",
+  "manager_get_noMods": "Hier gibt es gar keine Mods... Ist wohl 'ne Diktatur.",
+  "manager_get_heading": "Hier gibt es folgende Moderatoren: \n",
+
+  "owner_transfer_success": "{} ist nun Owner hier.",
+  "owner_get_success": "Der aktuelle Owner hier ist {}",
+
+  "channel_rename_success": "Der Name deines aktuellen Channels wurde erfolgreich auf {} gesetzt.",
+
+  "command_noMod": "Du musst dafür Mod sein!",
+  "command_create_already": "So ein Command existiert bereits! Suchst du vielleicht '/command modify'?",
+  "command_create_success": "Command '{}' erfolgreich erstellt!",
+  "command_delete_notExisting": "So ein Command existiert nicht!",
+  "command_delete_success": "Command '{}' erfolgreich gelöscht!",
+  "command_modify_notExisting": "So ein Command existiert nicht! Suchst du vielleicht '/command create'?",
+  "command_modify_success": "Text von Command '{}' erfolgreich geändert!",
+
+  "accept_already": "Dein Ernst? Du hast die Rolle schon -_-",
+  "accept_success": "Supi, viel Spaß!",
+
+  "help_heading": "Der Bot kann folgende Commands: \n"
+}

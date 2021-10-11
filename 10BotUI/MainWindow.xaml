@@ -11,7 +11,18 @@
         WindowStyle="None" 
         Background="Transparent"
         WindowStartupLocation="CenterScreen"
-        MinHeight="450" MinWidth="800">
+        MinHeight="450" MinWidth="800"
+        Name="window">
+
+    <Window.Resources>
+
+        <Style TargetType="DockPanel">
+
+            <Setter Property="Background" Value="Transparent" />
+
+        </Style>
+        
+    </Window.Resources>
 
     <Window.Style>
 
@@ -49,10 +60,28 @@
 
     </Window.Style>
 
-    <DockPanel Name="dkp_Main" Background="Transparent">
+    <Grid>
+
+        <DockPanel Name="dkp_Main" Visibility="Collapsed">
+
+
+
+        </DockPanel>
+
+        <DockPanel x:Name="dkp_StartUp">
+
+            <DockPanel DockPanel.Dock="Right" Width="348" Name="dkp_StartUpLogging">
+
+                <ListBox Background="Transparent" Name="lstb_Logger" BorderThickness="0" Foreground="White" />
+
+            </DockPanel>
+
+            <Rectangle DockPanel.Dock="Right" Fill="Aqua" Width="2" />
+
+            <Image Margin="10" Source="/Assets/icon.png" />
+
+        </DockPanel>
         
-        
-        
-    </DockPanel>
+    </Grid>
     
 </Window>

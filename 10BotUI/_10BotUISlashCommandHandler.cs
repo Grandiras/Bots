@@ -1,4 +1,5 @@
-﻿using Discord;
+﻿using BotComponents;
+using Discord;
 using Discord.WebSocket;
 using System;
 using System.Collections.Generic;
@@ -9,11 +10,11 @@ using System.Threading.Tasks;
 
 namespace _10BotUI
 {
-    public class HandleSlashCommands
+    public class _10BotUISlashCommandHandler : SlashCommandHandler
     {
         List<VoiceSettings> VoiceChannels;
 
-        public HandleSlashCommands(List<VoiceSettings> voiceChannels)
+        public _10BotUISlashCommandHandler(List<VoiceSettings> voiceChannels)
         {
             VoiceChannels = voiceChannels;
         }

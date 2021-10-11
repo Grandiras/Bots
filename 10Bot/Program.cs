@@ -10,6 +10,7 @@ using Discord.Net;
 using Discord.Rest;
 using Discord.WebSocket;
 using Newtonsoft.Json;
+using BotComponents;
 
 namespace _10Bot
 {
@@ -30,7 +31,7 @@ namespace _10Bot
         /// <summary>
         /// Class for Handling Commands (see HandleSlashCommands.cs)
         /// </summary>
-        private HandleSlashCommands CommandHandler { get; set; }
+        private _10BotSlashCommandHandler CommandHandler { get; set; }
 
         /// <summary>
         /// List of custom Welcome Messages which are read from 'welcome_messages.json' in MainAsync()
@@ -118,7 +119,7 @@ namespace _10Bot
 
             // set Client and CommandHandler Instances
             Client = new DiscordSocketClient();
-            CommandHandler = new HandleSlashCommands(VoiceChannels);
+            CommandHandler = new _10BotSlashCommandHandler(VoiceChannels);
 
             // get config data from file and write into properties
             #region GetConfigData
