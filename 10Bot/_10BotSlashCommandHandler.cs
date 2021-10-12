@@ -101,7 +101,7 @@ namespace _10Bot
                     await command.RespondAsync(modList.ToString());
                     break;
                 default:
-                    Console.WriteLine($"[{DateTime.Now.TimeOfDay}] Command 'manager' (von {command.User.Username}) hatte einen Fehler!");
+                    Console.WriteLine($"[{DateTime.Now.TimeOfDay}] Command 'manager' (by {command.User.Username}) went wrong!");
                     await command.RespondAsync(LanguageTokens["failed"], ephemeral: true);
                     break;
             }
@@ -131,7 +131,7 @@ namespace _10Bot
                     await command.RespondAsync(LanguageTokens["owner_get_success"].Replace("{}", result.Settings.Owner.Username), ephemeral: true);
                     break;
                 default:
-                    Console.WriteLine($"[{DateTime.Now.TimeOfDay}] Command 'owner' (von {command.User.Username}) hatte einen Fehler!");
+                    Console.WriteLine($"[{DateTime.Now.TimeOfDay}] Command 'owner' (by {command.User.Username}) went wrong!");
                     await command.RespondAsync(LanguageTokens["failed"], ephemeral: true);
                     break;
             }
@@ -152,7 +152,7 @@ namespace _10Bot
                     await command.RespondAsync(LanguageTokens["channel_rename_success"].Replace("{}", result.Settings.Channel.Name), ephemeral: true);
                     break;
                 default:
-                    Console.WriteLine($"[{DateTime.Now.TimeOfDay}] Command 'channel' (von {command.User.Username}) hatte einen Fehler!");
+                    Console.WriteLine($"[{DateTime.Now.TimeOfDay}] Command 'channel' (by {command.User.Username}) went wrong!");
                     await command.RespondAsync(LanguageTokens["failed"], ephemeral: true);
                     break;
             }
@@ -208,7 +208,7 @@ namespace _10Bot
                     await command.RespondAsync(LanguageTokens["command_modify_success"].Replace("{}", (string)subCommand.Options.First().Value), ephemeral: true);
                     break;
                 default:
-                    Console.WriteLine($"[{DateTime.Now.TimeOfDay}] Command 'channel' (von {command.User.Username}) hatte einen Fehler!");
+                    Console.WriteLine($"[{DateTime.Now.TimeOfDay}] Command 'channel' (by {command.User.Username}) went wrong!");
                     await command.RespondAsync(LanguageTokens["failed"], ephemeral: true);
                     break;
             }

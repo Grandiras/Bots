@@ -314,88 +314,90 @@ namespace _10Bot
         #region Ready
         private async Task Ready()
         {
+            var languageTokens = CommandHandler.LanguageTokens;
+
             List<SlashCommandBuilder> commands = new List<SlashCommandBuilder>
             {
                 #region System Commands
                  new SlashCommandBuilder()
                     .WithName("invite")
-                    .WithDescription("Lädt einen Nutzer in den Private Talk ein.")
-                    .AddOption("user", ApplicationCommandOptionType.User, "Der Nutzer, der eingeladen werden soll", required: true),
+                    .WithDescription(languageTokens["invite_description"])
+                    .AddOption("user", ApplicationCommandOptionType.User, languageTokens["invite_user"], required: true),
 
                 new SlashCommandBuilder()
                     .WithName("kick")
-                    .WithDescription("Kickt einen Nutzer aus deinem Private Talk.")
-                    .AddOption("user", ApplicationCommandOptionType.User, "Der Nutzer, der gekickt werden soll", required: true)
-                    .AddOption("reason", ApplicationCommandOptionType.String, "Grund für den Kick", required: false),
+                    .WithDescription(languageTokens["kick_description"])
+                    .AddOption("user", ApplicationCommandOptionType.User, languageTokens["kick_user"], required: true)
+                    .AddOption("reason", ApplicationCommandOptionType.String, languageTokens["kick_reason_optional"], required: false),
 
                 new SlashCommandBuilder()
                     .WithName("manager")
-                    .WithDescription("Ein Command zur Mod-Verwaltung.")
+                    .WithDescription(languageTokens["manager_description"])
                     .AddOption(new SlashCommandOptionBuilder()
                         .WithName("add")
-                        .WithDescription("Fügt einen Nutzer als Mod hinzu.")
+                        .WithDescription(languageTokens["manager_add_description"])
                         .WithType(ApplicationCommandOptionType.SubCommand)
-                        .AddOption("user", ApplicationCommandOptionType.User, "Der Nutzer, der Mod werden soll", required: true))
+                        .AddOption("user", ApplicationCommandOptionType.User, languageTokens["manager_add_user"], required: true))
                     .AddOption(new SlashCommandOptionBuilder()
                         .WithName("remove")
-                        .WithDescription("Entfernt einen Nutzer als Mod.")
+                        .WithDescription(languageTokens["manager_remove_description"])
                         .WithType(ApplicationCommandOptionType.SubCommand)
-                        .AddOption("user", ApplicationCommandOptionType.User, "Der nutzer, der kein Mod mehr sein soll", required: true))
+                        .AddOption("user", ApplicationCommandOptionType.User, languageTokens["manager_remove_user"], required: true))
                     .AddOption(new SlashCommandOptionBuilder()
                         .WithName("get")
-                        .WithDescription("Gibt die Modliste deines Channels aus.")
+                        .WithDescription(languageTokens["manager_get_description"])
                         .WithType(ApplicationCommandOptionType.SubCommand)),
 
                 new SlashCommandBuilder()
                     .WithName("owner")
-                    .WithDescription("Ein Command zur Owner-Verwaltung.")
+                    .WithDescription(languageTokens["owner_description"])
                     .AddOption(new SlashCommandOptionBuilder()
                         .WithName("transfer")
-                        .WithDescription("Überträgt einem Nutzer das Ownership.")
+                        .WithDescription(languageTokens["owner_transfer_description"])
                         .WithType(ApplicationCommandOptionType.SubCommand)
-                        .AddOption("user", ApplicationCommandOptionType.User, "Der Nutzer, an den das Ownership übertragen werden soll", required: true))
+                        .AddOption("user", ApplicationCommandOptionType.User, languageTokens["owner_transfer_user"], required: true))
                     .AddOption(new SlashCommandOptionBuilder()
                         .WithName("get")
-                        .WithDescription("Gibt den aktuellen Owner zurück.")
+                        .WithDescription(languageTokens["owner_get_description"])
                         .WithType(ApplicationCommandOptionType.SubCommand)),
 
                 new SlashCommandBuilder()
                     .WithName("channel")
-                    .WithDescription("Ein Command zur Channel-Verwaltung.")
+                    .WithDescription(languageTokens["channel_description"])
                     .AddOption(new SlashCommandOptionBuilder()
                         .WithName("rename")
-                        .WithDescription("Benennt deinen aktuellen Channel um.")
+                        .WithDescription(languageTokens["channel_rename_description"])
                         .WithType(ApplicationCommandOptionType.SubCommand)
-                        .AddOption("name", ApplicationCommandOptionType.String, "Der neue Name des Channels", required: true)),
+                        .AddOption("name", ApplicationCommandOptionType.String, languageTokens["channel_rename_newName"], required: true)),
 
                 new SlashCommandBuilder()
                     .WithName("command")
-                    .WithDescription("Ein Command zur Custom Command Verwaltung.")
+                    .WithDescription(languageTokens["comamnd_description"])
                     .AddOption(new SlashCommandOptionBuilder()
                         .WithName("create")
-                        .WithDescription("Erstellt einen neuen Command.")
+                        .WithDescription(languageTokens["comamnd_create_description"])
                         .WithType(ApplicationCommandOptionType.SubCommand)
-                        .AddOption("name", ApplicationCommandOptionType.String, "Der Name des Commands", required: true)
-                        .AddOption("text", ApplicationCommandOptionType.String, "Der Text, den der Command ausgeben soll", required: true))
+                        .AddOption("name", ApplicationCommandOptionType.String, languageTokens["command_create_name"], required: true)
+                        .AddOption("text", ApplicationCommandOptionType.String, languageTokens["command_create_text"], required: true))
                     .AddOption(new SlashCommandOptionBuilder()
                         .WithName("delete")
-                        .WithDescription("Entfernt einen Custom Command.")
+                        .WithDescription(languageTokens["command_delete_description"])
                         .WithType(ApplicationCommandOptionType.SubCommand)
-                        .AddOption("name", ApplicationCommandOptionType.String, "Der Name des zu löschenden Commands", required: true))
+                        .AddOption("name", ApplicationCommandOptionType.String, languageTokens["command_delete_name"], required: true))
                     .AddOption(new SlashCommandOptionBuilder()
                         .WithName("modify")
-                        .WithDescription("Verändert den Text eines Custom Commands.")
+                        .WithDescription(languageTokens["command_modify_description"])
                         .WithType(ApplicationCommandOptionType.SubCommand)
-                        .AddOption("name", ApplicationCommandOptionType.String, "Der zu modifizierende Command", required: true)
-                        .AddOption("text", ApplicationCommandOptionType.String, "Der neue Text", required: true)),
+                        .AddOption("name", ApplicationCommandOptionType.String, languageTokens["command_modify_name"], required: true)
+                        .AddOption("text", ApplicationCommandOptionType.String, languageTokens["command_modify_newText"], required: true)),
 
                 new SlashCommandBuilder()
                     .WithName("accept")
-                    .WithDescription("Damit kannst du die Regeln akzeptieren."),
+                    .WithDescription(languageTokens["accept_description"]),
 
                 new SlashCommandBuilder()
                     .WithName("help")
-                    .WithDescription("Zeigt alle verfügbaren Commands an.")
+                    .WithDescription(languageTokens["help_description"])
                 #endregion  
             };
 
@@ -431,7 +433,7 @@ namespace _10Bot
         {
             var executeCommand = new SlashCommandBuilder()
                     .WithName("execute")
-                    .WithDescription("Ein Command zum Ausführen von Custom Commands :)");
+                    .WithDescription(CommandHandler.LanguageTokens["execute_description"]);
 
             foreach (var item in CustomCommands)
             {

@@ -11,7 +11,7 @@ namespace BotComponents
     public class SlashCommandHandler
     {
         protected List<VoiceSettings> VoiceChannels;
-        protected Dictionary<string, string> LanguageTokens;
+        public Dictionary<string, string> LanguageTokens { get; protected set; }
 
         public SlashCommandHandler(List<VoiceSettings> voiceChannels)
         {
@@ -26,7 +26,7 @@ namespace BotComponents
             Console.WriteLine($"User {command.User.Username} uses command '{command.CommandName}' (Method: {handler.Name})");
             if (handler == null)
             {
-                await command.RespondAsync("Der Command funktioniert wohl nicht... Bitte melden!", ephemeral: true);
+                await command.RespondAsync(LanguageTokens["failed"], ephemeral: true);
                 return;
             }
             Task task = new Task(() => { handler.Invoke(this, new object[] { command }); });
@@ -149,7 +149,7 @@ namespace BotComponents
             if (settings == null)
             {
                 Console.WriteLine($"[{DateTime.Now.TimeOfDay}] Voicechannel of user {user.Username} not found!");
-                await command.RespondAsync("Sorry, dein aktueller Voicechannel wurde nicht gefunden... Bist du überhaupt in einem?", ephemeral: true);
+                await command.RespondAsync(LanguageTokens["userVoiceNotFound"], ephemeral: true);
                 return false;
             }
             return true;
@@ -161,7 +161,7 @@ namespace BotComponents
 
             if (voiceSettings == null)
             {
-                await command.RespondAsync("Sorry, aber das geht nur, wenn du in einem Private Talk bist...", ephemeral: true);
+                await command.RespondAsync(LanguageTokens["userNotInPrivateTalk"], ephemeral: true);
                 return (false, voiceSettings);
             }
             return (true, voiceSettings);
@@ -171,7 +171,7 @@ namespace BotComponents
         {
             if (ValidateUserIsOwner(settings, command, user, false).Result && settings.Mods.Where(x => x.Id == user.Id).FirstOrDefault() == null)
             {
-                await command.RespondAsync("Du hast dafür keine Rechte! Du musst Owner dieses Channels sein oder zumindestens Mod, um diesen Command ausführen zu können.", ephemeral: true);
+                await command.RespondAsync(LanguageTokens["userNotModOrOwner"], ephemeral: true);
                 return false;
             }
             return true;
@@ -181,7 +181,7 @@ namespace BotComponents
         {
             if (user.Id != settings.Owner.Id)
             {
-                if (answer) await command.RespondAsync("Du hast dafür keine Rechte! Du musst Owner dieses Channels sein, um diesen Command ausführen zu können.", ephemeral: true);
+                if (answer) await command.RespondAsync(LanguageTokens["userNotOwner"], ephemeral: true);
                 return false;
             }
             return true;
