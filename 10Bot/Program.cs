@@ -372,10 +372,10 @@ namespace _10Bot
 
                 new SlashCommandBuilder()
                     .WithName("command")
-                    .WithDescription(languageTokens["comamnd_description"])
+                    .WithDescription(languageTokens["command_description"])
                     .AddOption(new SlashCommandOptionBuilder()
                         .WithName("create")
-                        .WithDescription(languageTokens["comamnd_create_description"])
+                        .WithDescription(languageTokens["command_create_description"])
                         .WithType(ApplicationCommandOptionType.SubCommand)
                         .AddOption("name", ApplicationCommandOptionType.String, languageTokens["command_create_name"], required: true)
                         .AddOption("text", ApplicationCommandOptionType.String, languageTokens["command_create_text"], required: true))

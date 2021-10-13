@@ -25,7 +25,7 @@
   "owner_transfer_success": "{} ist nun Owner hier.",
   "owner_get_success": "Der aktuelle Owner hier ist {}",
 
-  "channel_rename_success": "Der Name deines aktuellen Channels wurde erfolgreich auf {} gesetzt.",
+  "channel_rename_success": "Der Name deines aktuellen Channels wurde erfolgreich auf '{}' gesetzt.",
 
   "command_noMod": "Du musst dafür Mod sein!",
   "command_create_already": "So ein Command existiert bereits! Suchst du vielleicht '/command modify'?",
