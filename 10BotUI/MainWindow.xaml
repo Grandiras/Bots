@@ -1,0 +1,87 @@
+﻿<Window x:Class="_10BotUI.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:_10BotUI"
+        mc:Ignorable="d"
+        Title="10BotUI" Icon="/Assets/icon.png"
+        Height="450" Width="800"
+        AllowsTransparency="True"
+        WindowStyle="None" 
+        Background="Transparent"
+        WindowStartupLocation="CenterScreen"
+        MinHeight="450" MinWidth="800"
+        Name="window">
+
+    <Window.Resources>
+
+        <Style TargetType="DockPanel">
+
+            <Setter Property="Background" Value="Transparent" />
+
+        </Style>
+        
+    </Window.Resources>
+
+    <Window.Style>
+
+        <Style TargetType="{x:Type Window}">
+
+            <Setter Property="WindowChrome.WindowChrome">
+
+                <Setter.Value>
+
+                    <WindowChrome CornerRadius="10" CaptionHeight="3" />
+
+                </Setter.Value>
+
+            </Setter>
+
+            <Setter Property="Template">
+
+                <Setter.Value>
+
+                    <ControlTemplate TargetType="{x:Type Window}">
+
+                        <Border Background="#151515" BorderThickness="0" CornerRadius="10">
+
+                            <ContentPresenter Content="{TemplateBinding Content}" />
+
+                        </Border>
+
+                    </ControlTemplate>
+
+                </Setter.Value>
+
+            </Setter>
+
+        </Style>
+
+    </Window.Style>
+
+    <Grid>
+
+        <DockPanel Name="dkp_Main" Visibility="Collapsed">
+
+
+
+        </DockPanel>
+
+        <DockPanel x:Name="dkp_StartUp">
+
+            <DockPanel DockPanel.Dock="Right" Width="348" Name="dkp_StartUpLogging">
+
+                <ListBox Background="Transparent" Name="lstb_Logger" BorderThickness="0" Foreground="White" />
+
+            </DockPanel>
+
+            <Rectangle DockPanel.Dock="Right" Fill="Aqua" Width="2" />
+
+            <Image Margin="10" Source="/Assets/icon.png" />
+
+        </DockPanel>
+        
+    </Grid>
+    
+</Window>

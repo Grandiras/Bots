@@ -1,4 +1,5 @@
-﻿using Discord;
+﻿using BotComponents;
+using Discord;
 using Discord.WebSocket;
 using System;
 using System.Collections.Generic;
@@ -7,13 +8,13 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace _10Bot
+namespace _10BotUI
 {
-    public class HandleSlashCommands
+    public class _10BotUISlashCommandHandler : SlashCommandHandler
     {
         List<VoiceSettings> VoiceChannels;
 
-        public HandleSlashCommands(List<VoiceSettings> voiceChannels)
+        public _10BotUISlashCommandHandler(List<VoiceSettings> voiceChannels)
         {
             VoiceChannels = voiceChannels;
         }
@@ -194,7 +195,7 @@ namespace _10Bot
                 return;
             }
 
-            if (!user.RoleIds.Contains(Program.Instance.ModeratorRoleID))
+            if (!user.RoleIds.Contains(MainWindow.Instance.ModeratorRoleID))
             {
                 await command.RespondAsync("Du musst dafür Mod sein!", ephemeral: true);
                 return;
@@ -205,33 +206,33 @@ namespace _10Bot
             switch (subCommand.Name)
             {
                 case "create":
-                    if (Program.Instance.CustomCommands.Where(x => x.Name == (string)subCommand.Options.First().Value).FirstOrDefault() != null)
+                    if (MainWindow.Instance.CustomCommands.Where(x => x.Name == (string)subCommand.Options.First().Value).FirstOrDefault() != null)
                     {
                         await command.RespondAsync("So ein Command existiert bereits! Vielleicht /command modify?", ephemeral: true);
                         break;
                     }
-                    Program.Instance.CustomCommands.Add(new CustomCommand((string)subCommand.Options.First().Value, (string)subCommand.Options.ElementAt(1).Value));
-                    await Program.Instance.CreateCustomCommands();
+                    MainWindow.Instance.CustomCommands.Add(new CustomCommand((string)subCommand.Options.First().Value, (string)subCommand.Options.ElementAt(1).Value));
+                    await MainWindow.Instance.CreateCustomCommands();
                     await command.RespondAsync($"Command '{(string)subCommand.Options.First().Value}' erfolgreich erstellt!", ephemeral: true);
                     break;
                 case "delete":
-                    if (Program.Instance.CustomCommands.Where(x => x.Name == (string)subCommand.Options.First().Value).FirstOrDefault() == null)
+                    if (MainWindow.Instance.CustomCommands.Where(x => x.Name == (string)subCommand.Options.First().Value).FirstOrDefault() == null)
                     {
                         await command.RespondAsync("So ein Command existiert nicht!", ephemeral: true);
                         break;
                     }
-                    Program.Instance.CustomCommands.Remove(Program.Instance.CustomCommands.Where(x => x.Name == (string)subCommand.Options.First().Value).First());
-                    await Program.Instance.CreateCustomCommands();
+                    MainWindow.Instance.CustomCommands.Remove(MainWindow.Instance.CustomCommands.Where(x => x.Name == (string)subCommand.Options.First().Value).First());
+                    await MainWindow.Instance.CreateCustomCommands();
                     await command.RespondAsync($"Command '{(string)subCommand.Options.First().Value}' erfolgreich gelöscht!", ephemeral: true);
                     break;
                 case "modify":
-                    if (Program.Instance.CustomCommands.Where(x => x.Name == (string)subCommand.Options.First().Value).FirstOrDefault() == null)
+                    if (MainWindow.Instance.CustomCommands.Where(x => x.Name == (string)subCommand.Options.First().Value).FirstOrDefault() == null)
                     {
                         await command.RespondAsync("So ein Command existiert nicht! Vielleicht /command create?", ephemeral: true);
                         break;
                     }
-                    Program.Instance.CustomCommands.Where(x => x.Name == (string)subCommand.Options.First().Value).First().Description = (string)subCommand.Options.ElementAt(1).Value;
-                    await Program.Instance.CreateCustomCommands();
+                    MainWindow.Instance.CustomCommands.Where(x => x.Name == (string)subCommand.Options.First().Value).First().Description = (string)subCommand.Options.ElementAt(1).Value;
+                    await MainWindow.Instance.CreateCustomCommands();
                     await command.RespondAsync($"Text von Command '{(string)subCommand.Options.First().Value}' erfolgreich geändert!", ephemeral: true);
                     break;
                 default:
@@ -257,7 +258,7 @@ namespace _10Bot
                 await command.RespondAsync("So funktioniert das nicht!", ephemeral: true);
             }
 
-            foreach (var item in Program.Instance.CustomCommands)
+            foreach (var item in MainWindow.Instance.CustomCommands)
             {
                 if (subCommand.Name == item.Name)
                 {
@@ -278,13 +279,13 @@ namespace _10Bot
                 return;
             }
 
-            if (user.RoleIds.Contains(Program.Instance.MemberRoleID))
+            if (user.RoleIds.Contains(MainWindow.Instance.MemberRoleID))
             {
                 await command.RespondAsync("Dein Ernst? Du hast die Rolle schon -_-", ephemeral: true);
                 return;
             }
 
-            await user.AddRoleAsync(Program.Instance.MemberRoleID);
+            await user.AddRoleAsync(MainWindow.Instance.MemberRoleID);
             await command.RespondAsync("Supi, viel Spaß!", ephemeral: true);
         }
 
@@ -301,7 +302,7 @@ namespace _10Bot
 
             builder.Append("Der Bot kann folgende Commands: \n");
 
-            foreach (var item in Program.Instance.Guild.GetApplicationCommandsAsync().Result)
+            foreach (var item in MainWindow.Instance.Guild.GetApplicationCommandsAsync().Result)
             {
                 builder.Append($"- {item.Name}: {item.Description} \n");
             }

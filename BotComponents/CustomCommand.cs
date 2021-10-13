@@ -1,4 +1,4 @@
-﻿namespace _10Bot
+﻿namespace BotComponents
 {
     public class CustomCommand
     {

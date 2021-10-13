@@ -1,125 +1,72 @@
-﻿using System;
+﻿using Discord;
+using Discord.Net;
+using Discord.WebSocket;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Discord;
-using Discord.Net;
-using Discord.Rest;
-using Discord.WebSocket;
-using Newtonsoft.Json;
-using BotComponents;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
 
-namespace _10Bot
+namespace _10BotUI
 {
-    /// <summary>
-    /// Main Class of Bot and Console Application
-    /// </summary>
-    internal class Program
+    public partial class MainWindow : Window
     {
         #region Properties
-        /// <summary>
-        /// Used Discord Client
-        /// </summary>
         private DiscordSocketClient Client { get; set; }
-        /// <summary>
-        /// Current Used Guild
-        /// </summary>
         internal SocketGuild Guild { get; set; }
-        /// <summary>
-        /// Class for Handling Commands (see HandleSlashCommands.cs)
-        /// </summary>
-        private _10BotSlashCommandHandler CommandHandler { get; set; }
+        private _10BotUISlashCommandHandler CommandHandler { get; set; }
 
-        /// <summary>
-        /// List of custom Welcome Messages which are read from 'welcome_messages.json' in MainAsync()
-        /// </summary>
         private List<string> WelcomeMessages { get; set; }
-        /// <summary>
-        /// Randomizer to choose custom Welcome Message
-        /// </summary>
         private Random Randomizer { get; set; } = new Random();
 
-        /// <summary>
-        /// List of custom Commands (see CustomCommand.cs)
-        /// </summary>
         internal List<CustomCommand> CustomCommands { get; set; }
 
-        /// <summary>
-        /// List of Voice Channels created and managed (see VoiceSetting.cs)
-        /// </summary>
         private List<VoiceSettings> VoiceChannels { get; set; } = new List<VoiceSettings>();
 
-        /// <summary>
-        /// Static Property of Instace to access from outside
-        /// </summary>
-        internal static Program Instance { get; private set; }
+        internal static MainWindow Instance { get; private set; }
         #endregion
         // -----
         #region Consts
-        /// <summary>
-        /// ID of current used Guild (read from 'config.json' in MainAsync())
-        /// </summary>
         public ulong GuildID { get; private set; }
 
-        /// <summary>
-        /// ID of set NewTalkChannel (read from 'config.json' in MainAsync())
-        /// </summary>
         public ulong NewTalkChannelID { get; private set; }
-        /// <summary>
-        /// ID of set NewPrivateTalkChannel (read from 'config.json' in MainAsync())
-        /// </summary>
         public ulong NewPrivateTalkChannelID { get; private set; }
 
-        /// <summary>
-        /// ID of set GeneralTextVoice (read from 'config.json' in MainAsync())
-        /// </summary>
         public ulong GeneralTextVoiceID { get; private set; }
 
-        /// <summary>
-        /// ID of set VoiceCategory (read from 'config.json' in MainAsync())
-        /// </summary>
         public ulong VoiceCategoryID { get; private set; }
-        /// <summary>
-        /// ID of set TextVoiceCategory (read from 'config.json' in MainAsync())
-        /// </summary>
         public ulong TextVoiceCategoryID { get; private set; }
 
-        /// <summary>
-        /// ID of set ModeratorRole (read from 'config.json' in MainAsync())
-        /// </summary>
         public ulong ModeratorRoleID { get; private set; }
-        /// <summary>
-        /// ID of set MemberRole (read from 'config.json' in MainAsync())
-        /// </summary>
         public ulong MemberRoleID { get; private set; }
 
-        /// <summary>
-        /// Token for the Bot (read from 'config.json' in MainAsync())
-        /// </summary>
         public string Token { get; private set; } = "";
         #endregion
         // -----
-        #region Main
-        /// <summary>
-        /// Main Function of Console Application, executes async One
-        /// </summary>
-        /// <param name="args">string params given in console</param>
-        static void Main(string[] args) => new Program().MainAsync().GetAwaiter().GetResult();
-
-        /// <summary>
-        /// real Main Function of Program
-        /// </summary>
-        public async Task MainAsync()
+        #region Constructor & Main
+        public MainWindow()
         {
             // set Instance Property
             Instance = this;
 
             // set Client and CommandHandler Instances
             Client = new DiscordSocketClient();
-            CommandHandler = new _10BotSlashCommandHandler(VoiceChannels);
+            CommandHandler = new _10BotUISlashCommandHandler(VoiceChannels);
+
+            Guild = Client.GetGuild(GuildID);
 
             // get config data from file and write into properties
             #region GetConfigData
@@ -129,7 +76,7 @@ namespace _10Bot
             {
                 Type type = GetType();
                 PropertyInfo propInfo = type.GetProperty(item.Key);
-                var propTypeValue = Convert.ChangeType(item.Value, propInfo.PropertyType); 
+                var propTypeValue = Convert.ChangeType(item.Value, propInfo.PropertyType);
                 propInfo.SetValue(this, propTypeValue);
             }
             #endregion
@@ -141,11 +88,11 @@ namespace _10Bot
             // get current custom commands from file and write into lst
             string json2 = File.ReadAllText(Directory.GetCurrentDirectory() + "/Data/custom_commands.json");
             CustomCommands = JsonConvert.DeserializeObject<List<CustomCommand>>(json2);
-            
+
             // set CustomCommands if currently null
             if (CustomCommands == null)
             {
-                CustomCommands = new List<CustomCommand>();   
+                CustomCommands = new List<CustomCommand>();
             }
 
             // set Handlers for Events
@@ -158,37 +105,14 @@ namespace _10Bot
             Client.UserJoined += UserJoined;
             #endregion
 
+            InitializeComponent();
+
             // start Bot
-            await Client.LoginAsync(TokenType.Bot, Token);
-            await Client.StartAsync();
-
-            // if the Bot is currently connecting
-            var isConnecting = true;
-
-            // Auto Restart Routine
-            while (true)
-            {
-                Thread.Sleep(1000 * 1/60);
-
-                if(Client.ConnectionState == ConnectionState.Disconnecting) isConnecting = false;
-
-                if (isConnecting == false && Client.ConnectionState == ConnectionState.Disconnected)
-                {
-                    using (var file = File.Create(Directory.GetCurrentDirectory() + $"/Logs/{DateTime.Now.ToString().Replace(" ", "_").Replace(".", "-").Replace(":", "-")}.txt"))
-                    {
-                        TextWriter writer = new StreamWriter(file);
-                        Console.SetOut(writer);
-                        writer.Close();
-                    }
-
-                    Main(new string[0]);
-                    isConnecting = true;
-
-                    return;
-                }
-            }
+            Client.LoginAsync(TokenType.Bot, Token);
+            Client.StartAsync();
         }
         #endregion
+
         // -----
         #region UserJoined
         private async Task UserJoined(SocketGuildUser user)
@@ -314,90 +238,88 @@ namespace _10Bot
         #region Ready
         private async Task Ready()
         {
-            var languageTokens = CommandHandler.LanguageTokens;
-
             List<SlashCommandBuilder> commands = new List<SlashCommandBuilder>
             {
                 #region System Commands
                  new SlashCommandBuilder()
                     .WithName("invite")
-                    .WithDescription(languageTokens["invite_description"])
-                    .AddOption("user", ApplicationCommandOptionType.User, languageTokens["invite_user"], required: true),
+                    .WithDescription("Lädt einen Nutzer in den Private Talk ein.")
+                    .AddOption("user", ApplicationCommandOptionType.User, "Der Nutzer, der eingeladen werden soll", required: true),
 
                 new SlashCommandBuilder()
                     .WithName("kick")
-                    .WithDescription(languageTokens["kick_description"])
-                    .AddOption("user", ApplicationCommandOptionType.User, languageTokens["kick_user"], required: true)
-                    .AddOption("reason", ApplicationCommandOptionType.String, languageTokens["kick_reason_optional"], required: false),
+                    .WithDescription("Kickt einen Nutzer aus deinem Private Talk.")
+                    .AddOption("user", ApplicationCommandOptionType.User, "Der Nutzer, der gekickt werden soll", required: true)
+                    .AddOption("reason", ApplicationCommandOptionType.String, "Grund für den Kick", required: false),
 
                 new SlashCommandBuilder()
                     .WithName("manager")
-                    .WithDescription(languageTokens["manager_description"])
+                    .WithDescription("Ein Command zur Mod-Verwaltung.")
                     .AddOption(new SlashCommandOptionBuilder()
                         .WithName("add")
-                        .WithDescription(languageTokens["manager_add_description"])
+                        .WithDescription("Fügt einen Nutzer als Mod hinzu.")
                         .WithType(ApplicationCommandOptionType.SubCommand)
-                        .AddOption("user", ApplicationCommandOptionType.User, languageTokens["manager_add_user"], required: true))
+                        .AddOption("user", ApplicationCommandOptionType.User, "Der Nutzer, der Mod werden soll", required: true))
                     .AddOption(new SlashCommandOptionBuilder()
                         .WithName("remove")
-                        .WithDescription(languageTokens["manager_remove_description"])
+                        .WithDescription("Entfernt einen Nutzer als Mod.")
                         .WithType(ApplicationCommandOptionType.SubCommand)
-                        .AddOption("user", ApplicationCommandOptionType.User, languageTokens["manager_remove_user"], required: true))
+                        .AddOption("user", ApplicationCommandOptionType.User, "Der nutzer, der kein Mod mehr sein soll", required: true))
                     .AddOption(new SlashCommandOptionBuilder()
                         .WithName("get")
-                        .WithDescription(languageTokens["manager_get_description"])
+                        .WithDescription("Gibt die Modliste deines Channels aus.")
                         .WithType(ApplicationCommandOptionType.SubCommand)),
 
                 new SlashCommandBuilder()
                     .WithName("owner")
-                    .WithDescription(languageTokens["owner_description"])
+                    .WithDescription("Ein Command zur Owner-Verwaltung.")
                     .AddOption(new SlashCommandOptionBuilder()
                         .WithName("transfer")
-                        .WithDescription(languageTokens["owner_transfer_description"])
+                        .WithDescription("Überträgt einem Nutzer das Ownership.")
                         .WithType(ApplicationCommandOptionType.SubCommand)
-                        .AddOption("user", ApplicationCommandOptionType.User, languageTokens["owner_transfer_user"], required: true))
+                        .AddOption("user", ApplicationCommandOptionType.User, "Der Nutzer, an den das Ownership übertragen werden soll", required: true))
                     .AddOption(new SlashCommandOptionBuilder()
                         .WithName("get")
-                        .WithDescription(languageTokens["owner_get_description"])
+                        .WithDescription("Gibt den aktuellen Owner zurück.")
                         .WithType(ApplicationCommandOptionType.SubCommand)),
 
                 new SlashCommandBuilder()
                     .WithName("channel")
-                    .WithDescription(languageTokens["channel_description"])
+                    .WithDescription("Ein Command zur Channel-Verwaltung.")
                     .AddOption(new SlashCommandOptionBuilder()
                         .WithName("rename")
-                        .WithDescription(languageTokens["channel_rename_description"])
+                        .WithDescription("Benennt deinen aktuellen Channel um.")
                         .WithType(ApplicationCommandOptionType.SubCommand)
-                        .AddOption("name", ApplicationCommandOptionType.String, languageTokens["channel_rename_newName"], required: true)),
+                        .AddOption("name", ApplicationCommandOptionType.String, "Der neue Name des Channels", required: true)),
 
                 new SlashCommandBuilder()
                     .WithName("command")
-                    .WithDescription(languageTokens["command_description"])
+                    .WithDescription("Ein Command zur Custom Command Verwaltung.")
                     .AddOption(new SlashCommandOptionBuilder()
                         .WithName("create")
-                        .WithDescription(languageTokens["command_create_description"])
+                        .WithDescription("Erstellt einen neuen Command.")
                         .WithType(ApplicationCommandOptionType.SubCommand)
-                        .AddOption("name", ApplicationCommandOptionType.String, languageTokens["command_create_name"], required: true)
-                        .AddOption("text", ApplicationCommandOptionType.String, languageTokens["command_create_text"], required: true))
+                        .AddOption("name", ApplicationCommandOptionType.String, "Der Name des Commands", required: true)
+                        .AddOption("text", ApplicationCommandOptionType.String, "Der Text, den der Command ausgeben soll", required: true))
                     .AddOption(new SlashCommandOptionBuilder()
                         .WithName("delete")
-                        .WithDescription(languageTokens["command_delete_description"])
+                        .WithDescription("Entfernt einen Custom Command.")
                         .WithType(ApplicationCommandOptionType.SubCommand)
-                        .AddOption("name", ApplicationCommandOptionType.String, languageTokens["command_delete_name"], required: true))
+                        .AddOption("name", ApplicationCommandOptionType.String, "Der Name des zu löschenden Commands", required: true))
                     .AddOption(new SlashCommandOptionBuilder()
                         .WithName("modify")
-                        .WithDescription(languageTokens["command_modify_description"])
+                        .WithDescription("Verändert den Text eines Custom Commands.")
                         .WithType(ApplicationCommandOptionType.SubCommand)
-                        .AddOption("name", ApplicationCommandOptionType.String, languageTokens["command_modify_name"], required: true)
-                        .AddOption("text", ApplicationCommandOptionType.String, languageTokens["command_modify_newText"], required: true)),
+                        .AddOption("name", ApplicationCommandOptionType.String, "Der zu modifizierende Command", required: true)
+                        .AddOption("text", ApplicationCommandOptionType.String, "Der neue Text", required: true)),
 
                 new SlashCommandBuilder()
                     .WithName("accept")
-                    .WithDescription(languageTokens["accept_description"]),
+                    .WithDescription("Damit kannst du die Regeln akzeptieren."),
 
                 new SlashCommandBuilder()
                     .WithName("help")
-                    .WithDescription(languageTokens["help_description"])
+                    .WithDescription("Zeigt alle verfügbaren Commands an.")
                 #endregion  
             };
 
@@ -421,10 +343,9 @@ namespace _10Bot
         #endregion
         // -----
         #region Log
-        private async Task Log(LogMessage msg)
+        async Task Log(LogMessage msg)
         {
-            Console.WriteLine(msg.ToString());
-            await Task.Delay(1);
+            lstb_Logger.Items.Add(msg.Message);
         }
         #endregion
         // -----
@@ -433,7 +354,7 @@ namespace _10Bot
         {
             var executeCommand = new SlashCommandBuilder()
                     .WithName("execute")
-                    .WithDescription(CommandHandler.LanguageTokens["execute_description"]);
+                    .WithDescription("Ein Command zum Ausführen von Custom Commands :)");
 
             foreach (var item in CustomCommands)
             {

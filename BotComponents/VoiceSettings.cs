@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace _10Bot
+namespace BotComponents
 {
     public class VoiceSettings
     {
