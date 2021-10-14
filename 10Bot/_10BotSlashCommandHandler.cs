@@ -277,6 +277,42 @@ namespace _10Bot
             await command.RespondAsync(builder.ToString(), ephemeral: true);
             return;
         }
+
+        public async Task settings_CommandHandler(SocketSlashCommand command)
+        {
+            IGuildUser user = command.User as IGuildUser;
+            if (user == null)
+            {
+                await command.RespondAsync(LanguageTokens["userNotFound"], ephemeral: true);
+                return;
+            }
+
+            if (!user.RoleIds.Contains(Program.Instance.ModeratorRoleID))
+            {
+                await command.RespondAsync(LanguageTokens["command_noMod"], ephemeral: true);
+                return;
+            }
+
+            var subCommand = command.Data.Options.First();
+
+            switch (subCommand.Name)
+            {
+                case "language":
+                    if (StaticData.Language == (string)subCommand.Options.First().Value)
+                    {
+                        await command.RespondAsync(LanguageTokens["settings_language_already"], ephemeral: true);
+                        return;
+                    }
+                    LanguageTokens = StaticData.GetLanguageTokens((string)subCommand.Options.First().Value);
+                    await Program.Instance.CreateSystemCommands();
+                    await command.RespondAsync(LanguageTokens["settings_language_success"].Replace("{}", StaticData.Language), ephemeral: true);
+                    break;
+                default:
+                    Console.WriteLine($"[{DateTime.Now.TimeOfDay}] Command 'channel' (by {command.User.Username}) went wrong!");
+                    await command.RespondAsync(LanguageTokens["failed"], ephemeral: true);
+                    break;
+            }
+        }
         #endregion
     }
 }

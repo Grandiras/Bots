@@ -314,6 +314,24 @@ namespace _10Bot
         #region Ready
         private async Task Ready()
         {
+            await CreateSystemCommands();
+            await CreateCustomCommands();
+
+            Guild = Client.GetGuild(GuildID);
+        }
+        #endregion
+        // -----
+        #region Log
+        private async Task Log(LogMessage msg)
+        {
+            Console.WriteLine(msg.ToString());
+            await Task.Delay(1);
+        }
+        #endregion
+        // -----
+        #region CreateCommands
+        internal async Task CreateSystemCommands()
+        {
             var languageTokens = CommandHandler.LanguageTokens;
 
             List<SlashCommandBuilder> commands = new List<SlashCommandBuilder>
@@ -397,7 +415,22 @@ namespace _10Bot
 
                 new SlashCommandBuilder()
                     .WithName("help")
-                    .WithDescription(languageTokens["help_description"])
+                    .WithDescription(languageTokens["help_description"]),
+
+                new SlashCommandBuilder()
+                    .WithName("settings")
+                    .WithDescription(languageTokens["settings_description"])
+                    .AddOption(new SlashCommandOptionBuilder()
+                        .WithName("language")
+                        .WithDescription(languageTokens["settings_language_description"])
+                        .WithType(ApplicationCommandOptionType.SubCommand)
+                        .AddOption(new SlashCommandOptionBuilder()
+                            .WithName("new_language")
+                            .WithDescription(languageTokens["settings_language_newLanguage"])
+                            .WithType(ApplicationCommandOptionType.String)
+                            .WithRequired(true)
+                            .AddChoice("German", "german")
+                            .AddChoice("English", "english")))
                 #endregion  
             };
 
@@ -407,28 +440,14 @@ namespace _10Bot
                 {
                     await Client.Rest.CreateGuildCommand(item.Build(), GuildID);
                 }
-
-                await CreateCustomCommands();
             }
             catch (ApplicationCommandException ex)
             {
                 var json = JsonConvert.SerializeObject(ex.Error, Formatting.Indented);
                 Console.WriteLine(json);
             }
+        }
 
-            Guild = Client.GetGuild(GuildID);
-        }
-        #endregion
-        // -----
-        #region Log
-        private async Task Log(LogMessage msg)
-        {
-            Console.WriteLine(msg.ToString());
-            await Task.Delay(1);
-        }
-        #endregion
-        // -----
-        #region CreateCustomCommands
         public async Task CreateCustomCommands()
         {
             var executeCommand = new SlashCommandBuilder()
