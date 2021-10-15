@@ -183,7 +183,7 @@ namespace _10Bot
 
                     Main(new string[0]);
                     isConnecting = true;
-
+                    
                     return;
                 }
             }
