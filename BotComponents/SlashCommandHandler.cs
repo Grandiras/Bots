@@ -19,6 +19,11 @@ namespace BotComponents
             LanguageTokens = StaticData.GetLanguageTokens("german");
         }
 
+        public void ChangeLanguage(string language)
+        {
+            LanguageTokens = StaticData.GetLanguageTokens(language);
+        }
+
         public async Task FindCommandAsync(SocketSlashCommand command)
         {
             Type thisType = GetType();

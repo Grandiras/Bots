@@ -305,6 +305,8 @@ namespace _10Bot
                     }
                     LanguageTokens = StaticData.GetLanguageTokens((string)subCommand.Options.First().Value);
                     Program.Instance.CreateSystemCommands();
+                    Program.Instance.Settings["language"] = (string)subCommand.Options.First().Value;
+                    await Program.Instance.UpdateSettings();
                     await command.RespondAsync(LanguageTokens["settings_language_success"].Replace("{}", StaticData.Language), ephemeral: true);
                     break;
                 default:

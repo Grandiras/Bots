@@ -47,6 +47,8 @@ namespace _10Bot
         /// </summary>
         internal List<CustomCommand> CustomCommands { get; set; }
 
+        internal Dictionary<string, string> Settings { get; set; }
+
         /// <summary>
         /// List of Voice Channels created and managed (see VoiceSetting.cs)
         /// </summary>
@@ -141,7 +143,12 @@ namespace _10Bot
             // get current custom commands from file and write into lst
             string json2 = File.ReadAllText(Directory.GetCurrentDirectory() + "/Data/custom_commands.json");
             CustomCommands = JsonConvert.DeserializeObject<List<CustomCommand>>(json2);
-            
+
+            string json3 = File.ReadAllText(Directory.GetCurrentDirectory() + "/Data/settings.json");
+            Settings = JsonConvert.DeserializeObject<Dictionary<string, string>>(json3);
+
+            CommandHandler.ChangeLanguage(Settings["language"]);
+
             // set CustomCommands if currently null
             if (CustomCommands == null)
             {
@@ -476,6 +483,17 @@ namespace _10Bot
             {
                 JsonSerializer serializer = new JsonSerializer();
                 serializer.Serialize(file, CustomCommands);
+            }
+        }
+        #endregion
+        // -----
+        #region Update Methods
+        internal async Task UpdateSettings()
+        {
+            using (TextWriter file = File.CreateText(Directory.GetCurrentDirectory() + "/Data/settings.json"))
+            {
+                JsonSerializer serializer = new JsonSerializer();
+                serializer.Serialize(file, Settings);
             }
         }
         #endregion
