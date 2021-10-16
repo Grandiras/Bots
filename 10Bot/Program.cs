@@ -47,6 +47,8 @@ namespace _10Bot
         /// </summary>
         internal List<CustomCommand> CustomCommands { get; set; }
 
+        internal Dictionary<string, string> Settings { get; set; }
+
         /// <summary>
         /// List of Voice Channels created and managed (see VoiceSetting.cs)
         /// </summary>
@@ -141,7 +143,12 @@ namespace _10Bot
             // get current custom commands from file and write into lst
             string json2 = File.ReadAllText(Directory.GetCurrentDirectory() + "/Data/custom_commands.json");
             CustomCommands = JsonConvert.DeserializeObject<List<CustomCommand>>(json2);
-            
+
+            string json3 = File.ReadAllText(Directory.GetCurrentDirectory() + "/Data/settings.json");
+            Settings = JsonConvert.DeserializeObject<Dictionary<string, string>>(json3);
+
+            CommandHandler.ChangeLanguage(Settings["language"]);
+
             // set CustomCommands if currently null
             if (CustomCommands == null)
             {
@@ -183,7 +190,7 @@ namespace _10Bot
 
                     Main(new string[0]);
                     isConnecting = true;
-
+                    
                     return;
                 }
             }
@@ -314,6 +321,24 @@ namespace _10Bot
         #region Ready
         private async Task Ready()
         {
+            await CreateSystemCommands();
+            await CreateCustomCommands();
+
+            Guild = Client.GetGuild(GuildID);
+        }
+        #endregion
+        // -----
+        #region Log
+        private async Task Log(LogMessage msg)
+        {
+            Console.WriteLine(msg.ToString());
+            await Task.Delay(1);
+        }
+        #endregion
+        // -----
+        #region CreateCommands
+        internal async Task CreateSystemCommands()
+        {
             var languageTokens = CommandHandler.LanguageTokens;
 
             List<SlashCommandBuilder> commands = new List<SlashCommandBuilder>
@@ -397,7 +422,22 @@ namespace _10Bot
 
                 new SlashCommandBuilder()
                     .WithName("help")
-                    .WithDescription(languageTokens["help_description"])
+                    .WithDescription(languageTokens["help_description"]),
+
+                new SlashCommandBuilder()
+                    .WithName("settings")
+                    .WithDescription(languageTokens["settings_description"])
+                    .AddOption(new SlashCommandOptionBuilder()
+                        .WithName("language")
+                        .WithDescription(languageTokens["settings_language_description"])
+                        .WithType(ApplicationCommandOptionType.SubCommand)
+                        .AddOption(new SlashCommandOptionBuilder()
+                            .WithName("new_language")
+                            .WithDescription(languageTokens["settings_language_newLanguage"])
+                            .WithType(ApplicationCommandOptionType.String)
+                            .WithRequired(true)
+                            .AddChoice("German", "german")
+                            .AddChoice("English", "english")))
                 #endregion  
             };
 
@@ -407,28 +447,14 @@ namespace _10Bot
                 {
                     await Client.Rest.CreateGuildCommand(item.Build(), GuildID);
                 }
-
-                await CreateCustomCommands();
             }
             catch (ApplicationCommandException ex)
             {
                 var json = JsonConvert.SerializeObject(ex.Error, Formatting.Indented);
                 Console.WriteLine(json);
             }
+        }
 
-            Guild = Client.GetGuild(GuildID);
-        }
-        #endregion
-        // -----
-        #region Log
-        private async Task Log(LogMessage msg)
-        {
-            Console.WriteLine(msg.ToString());
-            await Task.Delay(1);
-        }
-        #endregion
-        // -----
-        #region CreateCustomCommands
         public async Task CreateCustomCommands()
         {
             var executeCommand = new SlashCommandBuilder()
@@ -457,6 +483,17 @@ namespace _10Bot
             {
                 JsonSerializer serializer = new JsonSerializer();
                 serializer.Serialize(file, CustomCommands);
+            }
+        }
+        #endregion
+        // -----
+        #region Update Methods
+        internal async Task UpdateSettings()
+        {
+            using (TextWriter file = File.CreateText(Directory.GetCurrentDirectory() + "/Data/settings.json"))
+            {
+                JsonSerializer serializer = new JsonSerializer();
+                serializer.Serialize(file, Settings);
             }
         }
         #endregion
