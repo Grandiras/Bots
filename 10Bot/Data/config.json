@@ -1,0 +1,24 @@
+{
+  "TestGuild": {
+    "Token": "ODk1OTkwOTEyMDY3NDYxMTIx.YWAmkA.NAZpb6ozyhP_1tZA_qlArG4lRHE",
+    "GuildID": 834815553372946474,
+    "NewTalkChannelID": 847132103576387617,
+    "NewPrivateTalkChannelID": 847132104617492510,
+    "GeneralTextVoiceID": 893778409795252265,
+    "VoiceCategoryID": 847132102633062421,
+    "TextVoiceCategoryID": 858056836199350313,
+    "ModeratorRoleID": 836188322513682432,
+    "MemberRoleID": 847121920326631446
+  },
+  "Selbsthilfegruppe_reloaded": {
+    "Token": "ODkzNTExMTA1MDEwMzY0NDI2.YVchEA.VTsGSDFvSEjl5k77MnNWZqR6u7w",
+    "GuildID": 835862190640201728,
+    "NewTalkChannelID": 845321570834579497,
+    "NewPrivateTalkChannelID": 845321649117331496,
+    "GeneralTextVoiceID": 855753678941585438,
+    "VoiceCategoryID": 835862190640201731,
+    "TextVoiceCategoryID": 855754084628168704,
+    "ModeratorRoleID": 845313134344274001,
+    "MemberRoleID": 846469969625088010
+  }
+}

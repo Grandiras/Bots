@@ -1,0 +1,90 @@
+{
+  "failed": "Ups, da lief was schief... Bitte meldern!",
+  "userNotFound": "Dein Accouunt wurde nicht gefunden... Bitte melden!",
+  "userVoiceNotFound": "Sorry, dein aktueller Voicechannel wurde nicht gefunden... Bist du \u00FCberhaupt in einem?",
+  "userNotInPrivateTalk": "Sorry, aber das geht nur, wenn du in einem Private Talk bist...",
+  "userNotModOrOwner": "Du hast daf\u00FCr keine Rechte! Du musst Owner dieses Channels sein oder zumindestens Mod, um diesen Command ausf\u00FChren zu k\u00F6nnen.",
+  "userNotOwner": "Du hast daf\u00FCr keine Rechte! Du musst Owner dieses Channels sein, um diesen Command ausf\u00FChren zu k\u00F6nnen.",
+
+
+
+  "invite_success": "{} wurde erfolgreich zum Channel hinzugef\u00FCgt.",
+
+  "kick_success": "{} wurde erfolgreich vom Channel gekickt.\nGrund: []",
+  "kick_reason": "Du wurdest mit folgendem Grund gekickt: {}",
+
+  "manager_isOwner": "\u00C4\u00E4\u00E4\u00E4h, du bist hier Owner, ist dir schon klar, oder?",
+  "manager_add_already": "{} ist scon Moderator...",
+  "manager_add_notInChannel": "{} ist nicht in diesem Channel!",
+  "manager_add_success": "{} erfolgreich zu einem Moderatoren dieses Channels gemacht.",
+  "manager_remove_isNoMod": "{} ist kein Moderator...",
+  "manager_remove_success": "{} ist hier jetzt kein Moderator mehr.",
+  "manager_get_noMods": "Hier gibt es gar keine Mods... Ist wohl 'ne Diktatur.",
+  "manager_get_heading": "Hier gibt es folgende Moderatoren: \n",
+
+  "owner_transfer_success": "{} ist nun Owner hier.",
+  "owner_get_success": "Der aktuelle Owner hier ist {}",
+
+  "channel_rename_success": "Der Name deines aktuellen Channels wurde erfolgreich auf '{}' gesetzt.",
+
+  "command_noMod": "Du musst daf\u00FCr Mod sein!",
+  "command_create_already": "So ein Command existiert bereits! Suchst du vielleicht '/command modify'?",
+  "command_create_success": "Command '{}' erfolgreich erstellt!",
+  "command_delete_notExisting": "So ein Command existiert nicht!",
+  "command_delete_success": "Command '{}' erfolgreich gel\u00F6scht!",
+  "command_modify_notExisting": "So ein Command existiert nicht! Suchst du vielleicht '/command create'?",
+  "command_modify_success": "Text von Command '{}' erfolgreich ge\u00E4ndert!",
+
+  "accept_already": "Dein Ernst? Du hast die Rolle schon -_-",
+  "accept_success": "Supi, viel Spa\u00DF!",
+
+  "help_heading": "Der Bot kann folgende Commands: \n",
+
+  "settings_language_already": "Die Sprache ist aktuell schon aktiv!",
+  "settings_language_success": "Die aktuelle Sprache wurde erfolgreich auf '{}' festgelegt (k\u00F6nnte ca. eine Minute brauchen, bis alles aktualisiert ist).",
+
+
+
+  "invite_description": "L\u00E4dt einen Nutzer in den Private Talk ein.",
+  "invite_user": "Der Nutzer, der eingeladen werden soll",
+
+  "kick_description": "Kickt einen Nutzer aus deinem Private Talk.",
+  "kick_user": "Der Nutzer, der gekickt werden soll",
+  "kick_reason_optional": "Grund f\u00FCr den Kick (optional)",
+
+  "manager_description": "Ein Command zur Mod-Verwaltung.",
+  "manager_add_description": "F\u00FCgt einen Nutzer als Mod hinzu.",
+  "manager_add_user": "Der Nutzer, der Mod werden soll",
+  "manager_remove_description": "Entfernt einen Nutzer als Mod.",
+  "manager_remove_user": "Der Nutzer, der kein Mod mehr sein soll",
+  "manager_get_description": "Gibt die Modliste deines Channels aus.",
+
+  "owner_description": "Ein Command zur Owner-Verwaltung.",
+  "owner_transfer_description": "\u00FCbertr\u00E4gt einem Nutzer das Ownership.",
+  "owner_transfer_user": "Der Nutzer, an den das Ownership \u00FCbertragen werden soll",
+  "owner_get_description": "Gibt den aktuellen Owner zur\u00FCck.",
+
+  "channel_description": "Ein Command zur Channel-Verwaltung.",
+  "channel_rename_description": "Benennt deinen aktuellen Channel um.",
+  "channel_rename_newName": "Der neue Name des Channels",
+
+  "command_description": "Ein Command zur Custom Command Verwaltung.",
+  "command_create_description": "Erstellt einen neuen Command.",
+  "command_create_name": "Der Name des Commands",
+  "command_create_text": "Der Text, den der Command ausgeben soll",
+  "command_delete_description": "Entfernt einen Custom Command.",
+  "command_delete_name": "Der Name des zu l\u00F6schenden Commands",
+  "command_modify_description": "Ver\u00E4ndert den Text eines Custom Commands.",
+  "command_modify_name": "Der zu modifizierende Command",
+  "command_modify_newText": "Der neue Text",
+
+  "accept_description": "Damit kannst du die Regeln akzeptieren.",
+
+  "help_description": "Zeigt alle verf\u00FCgbaren Commands an.",
+
+  "execute_description": "Ein Command zum Ausf\u00FChren von Custom Commands :)",
+
+  "settings_description": "Ein Command zum Bearbeiten der Bot Settings.",
+  "settings_language_description": "Hiermit \u00E4nderst du die Bot Sprache.",
+  "settings_language_newLanguage": "Die neue Sprache, zu der du wechseln willst"
+}
