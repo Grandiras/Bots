@@ -1,37 +1,30 @@
 ﻿using Discord;
 using Discord.Rest;
-using Discord.WebSocket;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace BotComponents
+namespace BotComponents;
+
+public class VoiceSettings
 {
-    public class VoiceSettings
-    {
-        public RestVoiceChannel Channel { get; set; }
-        public RestTextChannel TextChannel { get; set; }
-        public RestRole Role { get; set; }
-        public int TimesRenamed { get; set; }
+    public RestVoiceChannel Channel { get; }
+    public int TimesRenamed { get; set; }
 
-        public VoiceSettings(RestVoiceChannel channel, RestTextChannel textChannel, RestRole role)
-        {
-            Channel = channel;
-            TextChannel = textChannel;
-            Role = role;
-            TimesRenamed = 0;
-        }
+    public VoiceSettings(RestVoiceChannel channel)
+    {
+        Channel = channel;
+        TimesRenamed = 0;
     }
+}
 
-    public class PrivateVoiceSettings : VoiceSettings
+public sealed class PrivateVoiceSettings : VoiceSettings
+{
+    public RestRole Role { get; }
+    public IGuildUser Owner { get; set; }
+    public List<IGuildUser> Mods { get; set; }
+
+    public PrivateVoiceSettings(RestVoiceChannel channel, RestRole role, IGuildUser owner) : base(channel)
     {
-        public IGuildUser Owner { get; set; }
-        public List<IGuildUser> Mods { get; set; }
-
-        public PrivateVoiceSettings(RestVoiceChannel channel, RestTextChannel textChannel, RestRole role, IGuildUser owner) : base(channel, textChannel, role)
-        {
-            Owner = owner;
-            Mods = new List<IGuildUser>();
-        }
+        Role = role;
+        Owner = owner;
+        Mods = new List<IGuildUser>();
     }
 }

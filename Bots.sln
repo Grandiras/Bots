@@ -3,11 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31717.71
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "10Bot", "10Bot\10Bot.csproj", "{7001B8BD-8797-4A08-9C1E-1E14808786E9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TenBot", "10Bot\TenBot.csproj", "{7001B8BD-8797-4A08-9C1E-1E14808786E9}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "10BotUI", "10BotUI\10BotUI.csproj", "{C690D2CD-9471-491B-BF6F-0BF955AAF798}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BotComponents", "BotComponents\BotComponents.csproj", "{8FF1D292-C1D6-4A9D-8870-E3619ED9604E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BotComponents", "BotComponents\BotComponents.csproj", "{8FF1D292-C1D6-4A9D-8870-E3619ED9604E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,10 +17,6 @@ Global
 		{7001B8BD-8797-4A08-9C1E-1E14808786E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7001B8BD-8797-4A08-9C1E-1E14808786E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7001B8BD-8797-4A08-9C1E-1E14808786E9}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C690D2CD-9471-491B-BF6F-0BF955AAF798}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C690D2CD-9471-491B-BF6F-0BF955AAF798}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C690D2CD-9471-491B-BF6F-0BF955AAF798}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C690D2CD-9471-491B-BF6F-0BF955AAF798}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8FF1D292-C1D6-4A9D-8870-E3619ED9604E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{8FF1D292-C1D6-4A9D-8870-E3619ED9604E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8FF1D292-C1D6-4A9D-8870-E3619ED9604E}.Release|Any CPU.ActiveCfg = Release|Any CPU

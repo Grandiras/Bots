@@ -1,19 +1,16 @@
 ﻿using Newtonsoft.Json;
-using System.Collections.Generic;
-using System.IO;
 
-namespace BotComponents
+namespace BotComponents;
+
+public sealed class StaticData
 {
-    public class StaticData
+    public static string? Language { get; set; }
+
+    public static Dictionary<string, string> GetLanguageTokens(string language)
     {
-        public static string Language { get; set; }
+        Language = language;
 
-        public static Dictionary<string, string> GetLanguageTokens(string language)
-        {
-            Language = language;
-
-            var json = File.ReadAllText(Directory.GetCurrentDirectory() + $"/Languages/{language}.json");
-            return JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
-        }
+        var json = File.ReadAllText(Directory.GetCurrentDirectory().Split(@"\bin")[0] + $"/Languages/{language}.json");
+        return JsonConvert.DeserializeObject<Dictionary<string, string>>(json)!;
     }
 }

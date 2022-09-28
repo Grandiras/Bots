@@ -40,10 +40,6 @@
 
   "help_heading": "There are the following commands: \n",
 
-  "settings_language_already": "Current language is equal to target language...",
-  "settings_language_success": "Language set to '{}' (may take a minute to complete).",
-
-
 
   "invite_description": "Invites a user into your channel.",
   "invite_user": "The user to invite",
