@@ -1,6 +1,8 @@
 ﻿using Discord;
 using Discord.Rest;
 using Discord.WebSocket;
+using System.Reflection.Metadata.Ecma335;
+using TenBot.Helpers;
 
 namespace TenBot.ClientEventServices;
 internal class UserVoiceStateUpdatedService : IClientEventService
@@ -37,12 +39,9 @@ internal class UserVoiceStateUpdatedService : IClientEventService
     private async Task CleanUpChannelAsync(SocketVoiceChannel voiceChannel)
     {
         await voiceChannel.DeleteAsync();
-        if (voiceChannel.PermissionOverwrites.Where(x => x.Permissions.ViewChannel == PermValue.Allow) is IEnumerable<Overwrite> overwrites && overwrites.Any())
-        {
-            await Client.GetGuild(ServerSettings.GuildID).Roles
-                        .First(x => x.Id == overwrites.First().TargetId)
-                        .DeleteAsync();
-        }
+
+        var role = PrivateVoiceManager.GetPrivateChannelRoleAsync(voiceChannel, ServerSettings, Client);
+        if (role is not null) await role.DeleteAsync();
     }
 
     private async Task CreateNewVoiceAsync(SocketUser user)

@@ -36,9 +36,6 @@ internal sealed class DiscordBot
         {  
         };
 
-        var json = File.ReadAllText(Directory.GetCurrentDirectory().Split(@"\bin")[0] + "/Data/settings.json");
-        var settings = JsonConvert.DeserializeObject<DiscordBotSettings>(json)!;
-
         var configJson = File.ReadAllText(Directory.GetCurrentDirectory().Split(@"\bin")[0] + "/Data/config.json");
         var serverSettings = JsonConvert.DeserializeObject<Dictionary<string, DiscordServerSettings>>(configJson)!["Selbsthilfegruppe_reloaded"];
 
@@ -54,11 +51,10 @@ internal sealed class DiscordBot
             _ = services.AddSingleton<InteractionService>();
             _ = services.AddSingleton<InteractionHandler>();
 
-            _ = services.AddSingleton(settings);
             _ = services.AddSingleton(serverSettings);
 
             _ = services.AddSingleton<ClientEventServiceActivator>();
-            services.RegisterImplicitServices(typeof(IClientEventService), typeof(ClientEventServiceActivator));
+            _ = services.ActivateServices<IClientEventService, ClientEventServiceActivator>();
         })
         .Build();
     }
