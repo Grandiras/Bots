@@ -15,6 +15,7 @@ internal class UserVoiceStateUpdatedService : IClientEventService
         ServerSettings = serverSettings;
     }
 
+
     public Task StartAsync()
     {
         Client.UserVoiceStateUpdated += OnUserVoiceStateUpdated;
@@ -23,49 +24,51 @@ internal class UserVoiceStateUpdatedService : IClientEventService
 
     private async Task OnUserVoiceStateUpdated(SocketUser user, SocketVoiceState oldVoice, SocketVoiceState newVoice)
     {
-        //// User enters new-private-talk channel
-        //else if (newVoice.VoiceChannel.Id == Server.Settings.NewPrivateTalkChannelID)
-        //{
-        //    var channel = await CreateNewPrivateVoiceAsync((IGuildUser)user);
-        //    await MoveUserAsync((IGuildUser)user, channel);
-        //}
+        // TODO moving
 
-        // moven
+        if (oldVoice.VoiceChannel is not null and SocketVoiceChannel voiceChannel
+            && voiceChannel.CategoryId == ServerSettings.VoiceCategoryID 
+            && voiceChannel.ConnectedUsers.Count == 0) 
+            await CleanUpChannelAsync(voiceChannel);
+        else if (newVoice.VoiceChannel?.Id == ServerSettings.NewTalkChannelID) await CreateNewVoiceAsync(user);
+        else if (newVoice.VoiceChannel?.Id == ServerSettings.NewPrivateTalkChannelID) await CreateNewPrivateVoiceAsync(user);
+    }
 
-        if (oldVoice.VoiceChannel is not null && oldVoice.VoiceChannel.CategoryId == ServerSettings.VoiceCategoryID && oldVoice.VoiceChannel.ConnectedUsers.Count == 0)
+    private async Task CleanUpChannelAsync(SocketVoiceChannel voiceChannel)
+    {
+        await voiceChannel.DeleteAsync();
+        if (voiceChannel.PermissionOverwrites.Where(x => x.Permissions.ViewChannel == PermValue.Allow) is IEnumerable<Overwrite> overwrites && overwrites.Any())
         {
-            await oldVoice.VoiceChannel.DeleteAsync();
-            return;
-        }
-
-        if (newVoice.VoiceChannel is null) return;
-
-        if (newVoice.VoiceChannel!.Id == ServerSettings.NewTalkChannelID)
-        {
-            var channel = await CreateNewVoiceAsync();
-            await MoveUserAsync(user, channel);
+            await Client.GetGuild(ServerSettings.GuildID).Roles
+                        .First(x => x.Id == overwrites.First().TargetId)
+                        .DeleteAsync();
         }
     }
 
-    private async Task<RestVoiceChannel> CreateNewVoiceAsync() 
-        => await Client.GetGuild(ServerSettings.GuildID).CreateVoiceChannelAsync("Voice", x => x.CategoryId = ServerSettings.VoiceCategoryID);
+    private async Task CreateNewVoiceAsync(SocketUser user)
+    {
+        var channel = await Client.GetGuild(ServerSettings.GuildID).CreateVoiceChannelAsync("Voice", x => x.CategoryId = ServerSettings.VoiceCategoryID);
+        await MoveUserAsync(user, channel);
+    }
 
-    //private async Task<SocketVoiceChannel> CreateNewPrivateVoiceAsync(IGuildUser user)
-    //{
-    //    var role = await Server.Internal!.CreateRoleAsync("Private Voice", isMentionable: false);
+    private async Task CreateNewPrivateVoiceAsync(SocketUser user)
+    {
+        var server = Client.GetGuild(ServerSettings.GuildID);
 
-    //    var channel = await Server.Internal.CreateVoiceChannelAsync("Private Voice", x => x.CategoryId = Server.Settings.VoiceCategoryID);
-    //    await channel.AddPermissionOverwriteAsync(Server.Internal.EveryoneRole, new OverwritePermissions(
-    //        viewChannel: PermValue.Deny));
-    //    await channel.AddPermissionOverwriteAsync(role, new OverwritePermissions(
-    //        viewChannel: PermValue.Allow));
+        var role = await server.CreateRoleAsync("Private Voice", isMentionable: false);
+        var channel = await server.CreateVoiceChannelAsync("Private Voice", x => x.CategoryId = ServerSettings.VoiceCategoryID);
 
-    //    Server.VoiceChannels.Add(new PrivateVoiceSettings(channel, role, user));
+        await SetPrivateVoicePermissionsAsync(server, role, channel);
 
-    //    await user.AddRoleAsync(role);
+        await (user as IGuildUser)!.AddRoleAsync(role);
+        await MoveUserAsync(user, channel);
+    }
+    private static async Task SetPrivateVoicePermissionsAsync(SocketGuild server, RestRole role, RestVoiceChannel channel)
+    {
+        await channel.AddPermissionOverwriteAsync(server.EveryoneRole, new OverwritePermissions(viewChannel: PermValue.Deny));
+        await channel.AddPermissionOverwriteAsync(role, new OverwritePermissions(viewChannel: PermValue.Allow));
+    }
 
-    //    return channel;
-    //}
     private static async Task MoveUserAsync(SocketUser user, RestVoiceChannel channel) 
         => await (user as IGuildUser)!.ModifyAsync(x => x.Channel = channel);
 }
