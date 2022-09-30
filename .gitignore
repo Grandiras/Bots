@@ -363,4 +363,4 @@ MigrationBackup/
 FodyWeavers.xsd
 
 # Custom
-config.json
+Data/config.json
