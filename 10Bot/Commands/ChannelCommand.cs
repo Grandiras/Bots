@@ -1,9 +1,10 @@
 ﻿using Discord;
 using Discord.Interactions;
+using TenBot.Models;
 
-namespace TenBot.SystemCommands;
+namespace TenBot.Commands;
 [Group("channel", "A command to manage your current channel.")]
-public class ChannelCommand : InteractionModuleBase
+public sealed class ChannelCommand : InteractionModuleBase
 {
     private readonly DiscordServerSettings ServerSettings;
 

@@ -1,8 +1,9 @@
 ﻿using Discord;
 using Discord.Interactions;
+using TenBot.Models;
 
-namespace TenBot.SystemCommands;
-public class AcceptCommand : InteractionModuleBase
+namespace TenBot.Commands;
+public sealed class AcceptCommand : InteractionModuleBase
 {
     private readonly DiscordServerSettings ServerSettings;
 

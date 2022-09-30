@@ -3,7 +3,7 @@
 namespace TenBot.Helpers;
 internal static class ServiceCollectionExtensions
 {
-    public static IServiceCollection ActivateServices<TInterface, TActivator>(this IServiceCollection collection)
+    public static IServiceCollection AddActivatorServices<TInterface, TActivator>(this IServiceCollection collection)
     {
         // Get all types in the executing assembly. There are many ways to do this, but this is fastest.
         foreach (var type in typeof(Program).Assembly.GetTypes())

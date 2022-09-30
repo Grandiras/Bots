@@ -1,5 +1,6 @@
 ﻿using Discord;
 using Discord.WebSocket;
+using TenBot.Models;
 
 namespace TenBot.Helpers;
 internal static class PrivateVoiceManager

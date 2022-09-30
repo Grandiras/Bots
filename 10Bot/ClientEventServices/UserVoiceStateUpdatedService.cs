@@ -3,9 +3,10 @@ using Discord.Rest;
 using Discord.WebSocket;
 using System.Reflection.Metadata.Ecma335;
 using TenBot.Helpers;
+using TenBot.Models;
 
 namespace TenBot.ClientEventServices;
-internal class UserVoiceStateUpdatedService : IClientEventService
+internal sealed class UserVoiceStateUpdatedService : IClientEventService
 {
     private readonly DiscordSocketClient Client;
     private readonly DiscordServerSettings ServerSettings;

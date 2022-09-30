@@ -2,9 +2,10 @@
 using Discord;
 using TenBot.Helpers;
 using Discord.WebSocket;
+using TenBot.Models;
 
-namespace TenBot.SystemCommands;
-public class InviteCommand : InteractionModuleBase
+namespace TenBot.Commands;
+public sealed class InviteCommand : InteractionModuleBase
 {
     private readonly DiscordServerSettings ServerSettings;
     private readonly DiscordSocketClient Client;
@@ -29,6 +30,6 @@ public class InviteCommand : InteractionModuleBase
         }
 
         await user.AddRoleAsync(role.Id);
-        await RespondAsync($"{user.Username} was added to this channel.", ephemeral: true);
+        await RespondAsync($"{user.Mention} was added to this channel.", ephemeral: true);
     }
 }

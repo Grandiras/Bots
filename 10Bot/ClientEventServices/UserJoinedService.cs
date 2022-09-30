@@ -1,24 +1,20 @@
 ﻿using Discord.WebSocket;
-using Newtonsoft.Json;
+using TenBot.Models;
+using TenBot.Services;
 
 namespace TenBot.ClientEventServices;
-internal class UserJoinedService : IClientEventService
+internal sealed class UserJoinedService : IClientEventService
 {
     private readonly DiscordSocketClient Client;
     private readonly DiscordServerSettings ServerSettings;
-
-    private readonly List<string> Messages;
-    private readonly Random Randomizer;
+    private readonly WelcomeMessages WelcomeMessages;
 
 
-    public UserJoinedService(DiscordSocketClient client, DiscordServerSettings serverSettings)
+    public UserJoinedService(DiscordSocketClient client, DiscordServerSettings serverSettings, WelcomeMessages welcomeMessages)
     {
         Client = client;
         ServerSettings = serverSettings;
-
-        var json = File.ReadAllText(Directory.GetCurrentDirectory().Split(@"\bin")[0] + "/Data/welcome_messages.json");
-        Messages = JsonConvert.DeserializeObject<List<string>>(json)!;
-        Randomizer = new();
+        WelcomeMessages = welcomeMessages;
     }
 
 
@@ -31,6 +27,5 @@ internal class UserJoinedService : IClientEventService
     private async Task OnUserJoined(SocketGuildUser user)
         => _ = await Client.GetGuild(ServerSettings.GuildID)
                            .DefaultChannel
-                           .SendMessageAsync(Messages[Randomizer.Next(0, Messages.Count - 1)]
-                                                                .Replace("[]", user.Username));
+                           .SendMessageAsync(WelcomeMessages.GetWelcomeMessage(user));
 }

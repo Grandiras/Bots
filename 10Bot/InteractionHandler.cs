@@ -2,10 +2,11 @@
 using Discord.Interactions;
 using Discord.WebSocket;
 using System.Reflection;
+using TenBot.Models;
 
 namespace TenBot;
 
-public class InteractionHandler
+public sealed class InteractionHandler
 {
     private readonly DiscordSocketClient Client;
     private readonly InteractionService Handler;

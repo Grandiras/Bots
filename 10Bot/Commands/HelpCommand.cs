@@ -1,9 +1,10 @@
 ﻿using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
+using TenBot.Models;
 
-namespace TenBot.SystemCommands;
-public class HelpCommand : InteractionModuleBase
+namespace TenBot.Commands;
+public sealed class HelpCommand : InteractionModuleBase
 {
     private readonly DiscordServerSettings ServerSettings;
     private readonly DiscordSocketClient Client;

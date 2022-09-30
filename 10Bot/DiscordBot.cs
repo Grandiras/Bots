@@ -6,17 +6,10 @@ using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using TenBot.ClientEventServices;
 using TenBot.Helpers;
+using TenBot.Models;
+using TenBot.Services;
 
 namespace TenBot;
-public sealed record DiscordBotSettings(string Language);
-public sealed record DiscordServerSettings(string Token,
-                                           ulong GuildID,
-                                           ulong NewTalkChannelID,
-                                           ulong NewPrivateTalkChannelID,
-                                           ulong VoiceCategoryID,
-                                           ulong ModeratorRoleID,
-                                           ulong MemberRoleID);
-
 internal sealed class DiscordBot
 {
     public static DiscordBot? Instance { get; private set; }
@@ -53,8 +46,10 @@ internal sealed class DiscordBot
 
             _ = services.AddSingleton(serverSettings);
 
-            _ = services.AddSingleton<ClientEventServiceActivator>();
-            _ = services.ActivateServices<IClientEventService, ClientEventServiceActivator>();
+            _ = services.AddSingleton<WelcomeMessages>();
+            _ = services.AddSingleton<CustomCommands>();
+
+            _ = services.AddActivatorServices<IClientEventService, ClientEventServiceActivator>();
         })
         .Build();
     }
