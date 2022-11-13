@@ -7,7 +7,7 @@ internal sealed class ClientEventServiceActivator
 
 
     public ClientEventServiceActivator(IEnumerable<IClientEventService> services) => Services = services;
-    
+
 
     public async Task ActivateAsync()
     {

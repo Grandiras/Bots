@@ -1,7 +1,6 @@
 ﻿using Discord;
 using Discord.Rest;
 using Discord.WebSocket;
-using System.Reflection.Metadata.Ecma335;
 using TenBot.Helpers;
 using TenBot.Models;
 
@@ -30,8 +29,8 @@ internal sealed class UserVoiceStateUpdatedService : IClientEventService
         // TODO moving
 
         if (oldVoice.VoiceChannel is not null and SocketVoiceChannel voiceChannel
-            && voiceChannel.CategoryId == ServerSettings.VoiceCategoryID 
-            && voiceChannel.ConnectedUsers.Count == 0) 
+            && voiceChannel.CategoryId == ServerSettings.VoiceCategoryID
+            && voiceChannel.ConnectedUsers.Count == 0)
             await CleanUpChannelAsync(voiceChannel);
         else if (newVoice.VoiceChannel?.Id == ServerSettings.NewTalkChannelID) await CreateNewVoiceAsync(user);
         else if (newVoice.VoiceChannel?.Id == ServerSettings.NewPrivateTalkChannelID) await CreateNewPrivateVoiceAsync(user);
@@ -69,6 +68,6 @@ internal sealed class UserVoiceStateUpdatedService : IClientEventService
         await channel.AddPermissionOverwriteAsync(role, new OverwritePermissions(viewChannel: PermValue.Allow));
     }
 
-    private static async Task MoveUserAsync(SocketUser user, RestVoiceChannel channel) 
+    private static async Task MoveUserAsync(SocketUser user, RestVoiceChannel channel)
         => await (user as IGuildUser)!.ModifyAsync(x => x.Channel = channel);
 }

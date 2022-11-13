@@ -1,7 +1,7 @@
-﻿using Discord.Interactions;
-using Discord;
-using TenBot.Helpers;
+﻿using Discord;
+using Discord.Interactions;
 using Discord.WebSocket;
+using TenBot.Helpers;
 using TenBot.Models;
 
 namespace TenBot.Commands;

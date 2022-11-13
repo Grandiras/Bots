@@ -13,7 +13,7 @@ public sealed class ChannelCommand : InteractionModuleBase
 
 
     [SlashCommand("rename", "Allows you to rename your current channel, even if you aren't allowed to through your permissions!")]
-    public async Task RenameAsync([Summary("new_name", "Enter a new name for the channel.")]string newName)
+    public async Task RenameAsync([Summary("new_name", "Enter a new name for the channel.")] string newName)
     {
         var voiceChannel = (Context.User as IGuildUser)!.VoiceChannel;
         if (voiceChannel is null)

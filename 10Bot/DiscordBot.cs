@@ -26,7 +26,7 @@ internal sealed class DiscordBot
         };
 
         var serviceConfig = new InteractionServiceConfig()
-        {  
+        {
         };
 
         var configJson = File.ReadAllText(Directory.GetCurrentDirectory().Split(@"\bin")[0] + "/Data/config.json");
