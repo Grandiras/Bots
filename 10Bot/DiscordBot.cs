@@ -30,7 +30,7 @@ internal sealed class DiscordBot
         };
 
         var configJson = File.ReadAllText(Directory.GetCurrentDirectory().Split(@"\bin")[0] + "/Data/config.json");
-        var serverSettings = JsonConvert.DeserializeObject<Dictionary<string, DiscordServerSettings>>(configJson)!["Selbsthilfegruppe_reloaded"];
+        var serverSettings = JsonConvert.DeserializeObject<Dictionary<string, DiscordServerSettings>>(configJson)!["Bottest"];
 
         Host = Microsoft.Extensions.Hosting.Host
         .CreateDefaultBuilder()

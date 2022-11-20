@@ -29,28 +29,18 @@ public sealed class CommandCommand : InteractionModuleBase
     }
 
     [SlashCommand("delete", "Deletes a custom command.")]
-    public async Task DeleteAsync([Summary("name", "The name of the command to delete."), Autocomplete(typeof(CommandAutoCompleteHandler))] string name)
+    public async Task DeleteAsync([Summary("name", "The name of the command to delete."), 
+                                   Autocomplete(typeof(CommandAutoCompleteHandler))] string name)
     {
-        if (!CustomCommands.CommandExists(name))
-        {
-            await RespondAsync($"A command named '{name}' doesn't exist!", ephemeral: true);
-            return;
-        }
-
         CustomCommands.RemoveCommand(name);
         await RespondAsync($"Command named '{name}' was successfully deleted!", ephemeral: true);
     }
 
     [SlashCommand("modify", "Change a custom command's content!")]
-    public async Task ModifyAsync([Summary("name", "The command's name to be modified."), Autocomplete(typeof(CommandAutoCompleteHandler))] string name,
+    public async Task ModifyAsync([Summary("name", "The command's name to be modified."), 
+                                   Autocomplete(typeof(CommandAutoCompleteHandler))] string name,
                                   [Summary("new_content", "Enter a new content for the selected command!")] string newContent)
     {
-        if (!CustomCommands.CommandExists(name))
-        {
-            await RespondAsync($"A command named '{name}' doesn't exist!", ephemeral: true);
-            return;
-        }
-
         CustomCommands.ModifyCommand(name, newContent);
         await RespondAsync($"Successfully updated the content of the command '{name}'", ephemeral: true);
     }

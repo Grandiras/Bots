@@ -1,16 +1,28 @@
 ﻿using Discord;
 using Discord.Interactions;
-using TenBot.Enums;
+using Discord.WebSocket;
+using TenBot.Models;
 
 namespace TenBot.Helpers;
-internal class ProjectAutoCompleteHandler : AutocompleteHandler
+public sealed class ProjectAutoCompleteHandler : AutocompleteHandler
 {
-    public override async Task<AutocompletionResult> GenerateSuggestionsAsync(IInteractionContext context,
-                                                                        IAutocompleteInteraction autocompleteInteraction,
-                                                                        IParameterInfo parameter,
-                                                                        IServiceProvider services)
+    private readonly DiscordSocketClient Client;
+    private readonly DiscordServerSettings ServerSettings;
+
+
+    public ProjectAutoCompleteHandler(DiscordSocketClient client, DiscordServerSettings serverSettings)
     {
-        var results = Enum.GetValues<ProjectType>().Select(c => new AutocompleteResult(c.ToString(), c));
+        Client = client;
+        ServerSettings = serverSettings;
+    }
+
+
+    public override async Task<AutocompletionResult> GenerateSuggestionsAsync(IInteractionContext context,
+                                                                              IAutocompleteInteraction autocompleteInteraction,
+                                                                              IParameterInfo parameter,
+                                                                              IServiceProvider services)
+    {
+        var results = Client.GetGuild(ServerSettings.GuildID).CategoryChannels.Where(x => x.PermissionOverwrites.Any(x => Client.GetGuild(ServerSettings.GuildID).Roles.Any(y => y.Name.EndsWith(" - Project") && y.Id == x.TargetId))).Select(x => new AutocompleteResult(x.Name, x.Name));
 
         await Task.CompletedTask;
 
