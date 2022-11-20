@@ -1,14 +1,16 @@
 ﻿using Discord;
 using Discord.Interactions;
+using Discord.WebSocket;
+using TenBot.Models;
 using TenBot.Services;
 
 namespace TenBot.Helpers;
-public sealed class ProjectAutoCompleteHandler : AutocompleteHandler
+public sealed class ProjectTypeAutoCompleteHandler : AutocompleteHandler
 {
-    private readonly ServerService ServerService;
+    private readonly ProjectTemplates ProjectTemplates;
 
 
-    public ProjectAutoCompleteHandler(ServerService serverService) => ServerService = serverService;
+    public ProjectTypeAutoCompleteHandler(ProjectTemplates projectTemplates) => ProjectTemplates = projectTemplates;
 
 
     public override async Task<AutocompletionResult> GenerateSuggestionsAsync(IInteractionContext context,
@@ -16,8 +18,7 @@ public sealed class ProjectAutoCompleteHandler : AutocompleteHandler
                                                                               IParameterInfo parameter,
                                                                               IServiceProvider services)
     {
-        var results = ServerService.GetCategoriesByRoles(ServerService.GetRoles(x => x.Name.EndsWith(" - Project")))
-                                   .Select(x => new AutocompleteResult(x.Name, x.Name));
+        var results = ProjectTemplates.Templates.Keys.Select(x => new AutocompleteResult(x, x));
 
         await Task.CompletedTask;
 

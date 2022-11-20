@@ -2,40 +2,42 @@
 using Discord.Interactions;
 using Discord.Rest;
 using Discord.WebSocket;
-using TenBot.Enums;
+using System.Reactive;
 using TenBot.Helpers;
 using TenBot.Models;
+using TenBot.Services;
 
 namespace TenBot.Commands;
 [DefaultMemberPermissions(GuildPermission.ManageChannels)]
 [Group("project", "A command to set up and manage projects.")]
 public sealed class ProjectCommand : InteractionModuleBase
 {
-    private readonly DiscordSocketClient Client;
-    private readonly DiscordServerSettings ServerSettings;
+    private readonly ServerService ServerService;
+    private readonly ProjectTemplates ProjectTemplates;
 
 
-    public ProjectCommand(DiscordSocketClient client, DiscordServerSettings serverSettings)
+    public ProjectCommand(ServerService serverService, ProjectTemplates projectTemplates)
     {
-        Client = client;
-        ServerSettings = serverSettings;
+        ServerService = serverService;
+        ProjectTemplates = projectTemplates;
     }
+
 
     [SlashCommand("create", "Creates a new project.")]
     public async Task CreateAsync([Summary("name", "The project's name.")] string name,
-                                  [Summary("type", "The project pattern, which should be used.")] ProjectType type)
+                                  [Summary("template", "The project pattern, which should be used."),
+                                   Autocomplete(typeof(ProjectTypeAutoCompleteHandler))] string template)
     {
-        var projectTemplate = ProjectTemplateMapper.GetProjectTemplateFromProjectType(type);
-        var server = Client.GetGuild(ServerSettings.GuildID);
+        var projectTemplate = ProjectTemplates.Templates[template];
 
-        var role = await server.CreateRoleAsync($"{name} - Project", isMentionable: true);
-        var category = await server.CreateCategoryChannelAsync(name);
+        var role = await ServerService.Server.CreateRoleAsync($"{name} - Project", isMentionable: true);
+        var category = await ServerService.Server.CreateCategoryChannelAsync(name);
 
-        await RespondAsync($"{type} project '{name}' was successfully created.", ephemeral: true);
+        await RespondAsync($"{template} project '{name}' was successfully created.", ephemeral: true);
 
-        await SetProjectChannelPermissionsAsync(server, role, category);
+        await SetProjectChannelPermissionsAsync(ServerService.Server, role, category);
 
-        foreach (var channel in projectTemplate.Channels) await CreateProjectChannelAsync(server, role, channel, category);
+        foreach (var channel in projectTemplate.Channels) await CreateProjectChannelAsync(ServerService.Server, role, channel, category);
         await (Context.User as IGuildUser)!.AddRoleAsync(role);
     }
 
@@ -43,8 +45,8 @@ public sealed class ProjectCommand : InteractionModuleBase
     public async Task DeleteAsync([Summary("name", "The project's name."),
                                    Autocomplete(typeof(ProjectAutoCompleteHandler))] string name)
     {
-        var category = Client.GetGuild(ServerSettings.GuildID).CategoryChannels.First(x => x.PermissionOverwrites.Any(x => Client.GetGuild(ServerSettings.GuildID).Roles.Any(y => y.Name.EndsWith(" - Project") && y.Id == x.TargetId)));
-        var role = Client.GetGuild(ServerSettings.GuildID).Roles.First(x => x.Name.EndsWith(" - Project") && category.PermissionOverwrites.Any(y => y.TargetId == x.Id));
+        var role = ServerService.GetRole(x => x.Name.Split(" -")[0] == name);
+        var category = ServerService.GetCategoryByRole(role);
 
         foreach (var channel in category.Channels) await channel.DeleteAsync();
         await category.DeleteAsync();
@@ -56,10 +58,9 @@ public sealed class ProjectCommand : InteractionModuleBase
     [SlashCommand("invite", "Invites another person into a project.")]
     public async Task InviteAsync([Summary("project", "The project to invite somebody in."),
                                    Autocomplete(typeof(ProjectAutoCompleteHandler))] string project,
-                                  IGuildUser user)
+                                  [Summary("user", "The user you want to invite.")] IGuildUser user)
     {
-        var category = Client.GetGuild(ServerSettings.GuildID).CategoryChannels.First(x => x.PermissionOverwrites.Any(x => Client.GetGuild(ServerSettings.GuildID).Roles.Any(y => y.Name.EndsWith(" - Project") && y.Id == x.TargetId)));
-        var role = Client.GetGuild(ServerSettings.GuildID).Roles.First(x => x.Name.EndsWith(" - Project") && category.PermissionOverwrites.Any(y => y.TargetId == x.Id));
+        var role = ServerService.GetRole(x => x.Name.Split(" -")[0] == project);
 
         if (user.RoleIds.Any(x => x == role.Id))
         {
@@ -75,6 +76,13 @@ public sealed class ProjectCommand : InteractionModuleBase
     [Group("template", "Used to manage and explain project templates.")]
     public sealed class TemplateCommand : InteractionModuleBase
     {
+        private readonly ProjectTemplates ProjectTemplates;
+
+
+        public TemplateCommand(ProjectTemplates projectTemplates) => ProjectTemplates = projectTemplates;
+
+
+
         [SlashCommand("list", "Displayes all project templates.")]
         public async Task ListAsync()
         {
@@ -82,9 +90,8 @@ public sealed class ProjectCommand : InteractionModuleBase
                 .WithColor(Color.Purple)
                 .WithTitle("Available project templates");
 
-            foreach (var projectType in Enum.GetValues(typeof(ProjectType)).Cast<ProjectType>())
+            foreach ((var projectType, var projectTemplate) in ProjectTemplates.Templates)
             {
-                var projectTemplate = ProjectTemplateMapper.GetProjectTemplateFromProjectType(projectType);
                 _ = embed.AddField(new EmbedFieldBuilder()
                                    .WithName(projectType.ToString())
                                    .WithValue(projectTemplate.Description));
@@ -94,9 +101,10 @@ public sealed class ProjectCommand : InteractionModuleBase
         }
 
         [SlashCommand("explain", "Explains a project template.")]
-        public async Task ExplainAsync([Summary("template", "The template you want to get explained.")] ProjectType template)
+        public async Task ExplainAsync([Summary("template", "The template you want to get explained."),
+                                        Autocomplete(typeof(ProjectTypeAutoCompleteHandler))] string template)
         {
-            var projectTemplate = ProjectTemplateMapper.GetProjectTemplateFromProjectType(template);
+            var projectTemplate = ProjectTemplates.Templates[template];
 
             var embed = new EmbedBuilder()
                 .WithColor(Color.Purple)

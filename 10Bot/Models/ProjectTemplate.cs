@@ -1,8 +1,8 @@
 ﻿namespace TenBot.Models;
-internal record ProjectTemplate(string Description, List<ProjectTemplateChannel> Channels);
-internal record ProjectTemplateChannel(string Name, ProjectTemplateChannelKind Kind);
+public record ProjectTemplate(string Description, List<ProjectTemplateChannel> Channels);
+public record ProjectTemplateChannel(string Name, ProjectTemplateChannelKind Kind);
 
-internal enum ProjectTemplateChannelKind
+public enum ProjectTemplateChannelKind
 {
     Text,
     Voice

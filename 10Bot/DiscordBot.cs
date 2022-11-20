@@ -48,6 +48,8 @@ internal sealed class DiscordBot
 
             _ = services.AddSingleton<WelcomeMessages>();
             _ = services.AddSingleton<CustomCommands>();
+            _ = services.AddSingleton<ProjectTemplates>();
+            _ = services.AddSingleton<ServerService>();
 
             _ = services.AddActivatorServices<IClientEventService, ClientEventServiceActivator>();
         })
