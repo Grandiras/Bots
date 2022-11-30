@@ -29,7 +29,7 @@ public sealed class WelcomeMessageCommand : InteractionModuleBase
             .WithColor(Color.Teal);
 
         foreach (var message in WelcomeMessages.GetWelcomeMessages())
-            embed.AddField(new EmbedFieldBuilder()
+            _ = embed.AddField(new EmbedFieldBuilder()
                            .WithName("Welcome message")
                            .WithValue(message));
 

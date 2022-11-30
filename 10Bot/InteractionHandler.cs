@@ -5,13 +5,16 @@ using System.Reflection;
 using TenBot.Models;
 
 namespace TenBot;
-
+/// <summary>
+/// This is a preset from Discord.NET to initialize all interaction contexts.
+/// </summary>
 public sealed class InteractionHandler
 {
     private readonly DiscordSocketClient Client;
     private readonly InteractionService Handler;
     private readonly IServiceProvider Services;
     private readonly DiscordServerSettings ServerSettings;
+
 
     public InteractionHandler(DiscordSocketClient client, InteractionService handler, IServiceProvider services, DiscordServerSettings serverSettings)
     {
@@ -21,16 +24,14 @@ public sealed class InteractionHandler
         ServerSettings = serverSettings;
     }
 
+
     public async Task InitializeAsync()
     {
-        // Process when the client is ready, so we can register our commands.
         Client.Ready += ReadyAsync;
         Handler.Log += LogAsync;
 
-        // Add the public modules that inherit InteractionModuleBase<T> to the InteractionService
-        _ = await Handler.AddModulesAsync(Assembly.GetEntryAssembly(), Services);
+        _ = await Handler.AddModulesAsync(Assembly.GetEntryAssembly(), Services); // register all existing interaction modules from the current assembly
 
-        // Process the InteractionCreated payloads to execute Interactions commands
         Client.InteractionCreated += HandleInteraction;
     }
 
@@ -46,28 +47,14 @@ public sealed class InteractionHandler
     {
         try
         {
-            // Create an execution context that matches the generic type parameter of your InteractionModuleBase<T> modules.
-            var context = new SocketInteractionContext(Client, interaction);
-
-            // Execute the incoming command.
+            var context = new SocketInteractionContext(Client, interaction); // glue for the commands and their corresponding services
             var result = await Handler.ExecuteCommandAsync(context, Services);
-
-            if (!result.IsSuccess)
-                switch (result.Error)
-                {
-                    case InteractionCommandError.UnmetPrecondition:
-                        // implement
-                        break;
-                    default:
-                        break;
-                }
         }
         catch
         {
             // If Slash Command execution fails it is most likely that the original interaction acknowledgement will persist. It is a good idea to delete the original
             // response, or at least let the user know that something went wrong during the command execution.
-            if (interaction.Type is InteractionType.ApplicationCommand)
-                _ = await interaction.GetOriginalResponseAsync().ContinueWith(async (msg) => await msg.Result.DeleteAsync());
+            if (interaction.Type is InteractionType.ApplicationCommand) _ = await interaction.GetOriginalResponseAsync().ContinueWith(async (msg) => await msg.Result.DeleteAsync());
         }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using Discord;
-using Discord.Rest;
 using Newtonsoft.Json;
 
 namespace TenBot.Services;

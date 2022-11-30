@@ -20,7 +20,7 @@ public sealed class ServerService
     public SocketCategoryChannel GetCategory(Func<SocketCategoryChannel, bool> predicated) => Server.CategoryChannels.First(predicated);
     public SocketRole GetRole(Func<SocketRole, bool> predicate) => Server.Roles.First(predicate);
 
-    public SocketCategoryChannel GetCategoryByRole(SocketRole role) 
+    public SocketCategoryChannel GetCategoryByRole(SocketRole role)
         => Server.CategoryChannels.First(x => x.PermissionOverwrites.Any(x => role.Id == x.TargetId));
 
     public IEnumerable<SocketCategoryChannel> GetCategoriesByRoles(IEnumerable<SocketRole> roles)

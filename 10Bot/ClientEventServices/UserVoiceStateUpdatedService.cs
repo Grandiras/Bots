@@ -46,7 +46,7 @@ internal sealed class UserVoiceStateUpdatedService : IClientEventService
 
     private async Task CreateNewVoiceAsync(SocketUser user)
     {
-        var channel = await Client.GetGuild(ServerSettings.GuildID).CreateVoiceChannelAsync("Voice", x => x.CategoryId = ServerSettings.VoiceCategoryID);
+        var channel = await Client.GetGuild(ServerSettings.GuildID).CreateVoiceChannelAsync("📺Voice", x => x.CategoryId = ServerSettings.VoiceCategoryID);
         await MoveUserAsync(user, channel);
     }
 
@@ -54,8 +54,8 @@ internal sealed class UserVoiceStateUpdatedService : IClientEventService
     {
         var server = Client.GetGuild(ServerSettings.GuildID);
 
-        var role = await server.CreateRoleAsync("Private Voice", isMentionable: false);
-        var channel = await server.CreateVoiceChannelAsync("Private Voice", x => x.CategoryId = ServerSettings.VoiceCategoryID);
+        var role = await server.CreateRoleAsync("🔒Private Voice", isMentionable: false);
+        var channel = await server.CreateVoiceChannelAsync("🔒Private Voice", x => x.CategoryId = ServerSettings.VoiceCategoryID);
 
         await SetPrivateVoicePermissionsAsync(server, role, channel);
 

@@ -1,7 +1,5 @@
 ﻿using Discord;
 using Discord.Interactions;
-using Discord.WebSocket;
-using TenBot.Models;
 using TenBot.Services;
 
 namespace TenBot.Helpers;

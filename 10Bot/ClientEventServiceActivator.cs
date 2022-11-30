@@ -1,6 +1,9 @@
 ﻿using TenBot.ClientEventServices;
 
 namespace TenBot;
+/// <summary>
+/// Used to configure client event singletons.
+/// </summary>
 internal sealed class ClientEventServiceActivator
 {
     private readonly IEnumerable<IClientEventService> Services;

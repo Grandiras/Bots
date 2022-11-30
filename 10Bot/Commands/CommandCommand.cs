@@ -29,7 +29,7 @@ public sealed class CommandCommand : InteractionModuleBase
     }
 
     [SlashCommand("delete", "Deletes a custom command.")]
-    public async Task DeleteAsync([Summary("name", "The name of the command to delete."), 
+    public async Task DeleteAsync([Summary("name", "The name of the command to delete."),
                                    Autocomplete(typeof(CommandAutoCompleteHandler))] string name)
     {
         CustomCommands.RemoveCommand(name);
@@ -37,7 +37,7 @@ public sealed class CommandCommand : InteractionModuleBase
     }
 
     [SlashCommand("modify", "Change a custom command's content!")]
-    public async Task ModifyAsync([Summary("name", "The command's name to be modified."), 
+    public async Task ModifyAsync([Summary("name", "The command's name to be modified."),
                                    Autocomplete(typeof(CommandAutoCompleteHandler))] string name,
                                   [Summary("new_content", "Enter a new content for the selected command!")] string newContent)
     {
