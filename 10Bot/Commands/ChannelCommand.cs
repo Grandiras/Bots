@@ -1,5 +1,7 @@
 ﻿using Discord;
 using Discord.Interactions;
+using Discord.WebSocket;
+using TenBot.Helpers;
 using TenBot.Models;
 
 namespace TenBot.Commands;
@@ -7,9 +9,14 @@ namespace TenBot.Commands;
 public sealed class ChannelCommand : InteractionModuleBase
 {
     private readonly DiscordServerSettings ServerSettings;
+    private readonly DiscordSocketClient Client;
 
 
-    public ChannelCommand(DiscordServerSettings serverSettings) => ServerSettings = serverSettings;
+    public ChannelCommand(DiscordServerSettings serverSettings, DiscordSocketClient client)
+    {
+        ServerSettings = serverSettings;
+        Client = client;
+    }
 
 
     [SlashCommand("rename", "Allows you to rename your current channel, even if you aren't allowed to through your permissions!")]
@@ -29,5 +36,21 @@ public sealed class ChannelCommand : InteractionModuleBase
 
         await voiceChannel.ModifyAsync(x => x.Name = newName);
         await RespondAsync($"The name of your current channel was set to '{newName}'.", ephemeral: true);
+    }
+
+    [UserCommand("Invite to talk")]
+    [SlashCommand("invite", "Invites somebody to your private channel.")]
+    public async Task InviteAsync(IGuildUser user)
+    {
+        var role = PrivateVoiceManager.GetPrivateChannelRoleAsync((IGuildUser)Context.User, ServerSettings, Client);
+
+        if (role is null)
+        {
+            await RespondAsync($"You can't invite someone as you are not in any private voice channel!", ephemeral: true);
+            return;
+        }
+
+        await user.AddRoleAsync(role.Id);
+        await RespondAsync($"{user.Mention} was added to this channel.", ephemeral: true);
     }
 }
