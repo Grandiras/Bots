@@ -47,11 +47,11 @@ public sealed class ProjectCommand : InteractionModuleBase
         var role = ServerService.GetRole(x => x.Name.Split(" -")[0] == name);
         var category = ServerService.GetCategoryByRole(role);
 
+        await RespondAsync($"Project '{category.Name}' was successfully deleted.", ephemeral: true);
+        
         foreach (var channel in category.Channels) await channel.DeleteAsync();
         await category.DeleteAsync();
         await role.DeleteAsync();
-
-        await RespondAsync($"Project '{category.Name}' was successfully deleted.", ephemeral: true);
     }
 
     [SlashCommand("invite", "Invites another person into a project.")]
@@ -121,6 +121,28 @@ public sealed class ProjectCommand : InteractionModuleBase
             }
 
             await RespondAsync(embeds: new Embed[] { embed.Build() }, ephemeral: true);
+        }
+
+        [SlashCommand("create", "Creates a new template from a discord category.")]
+        public async Task CreateAsync([Summary("name", "The name of the template (has to be unique!).")] string name,
+                                      [Summary("description", "Describe, what this template is for.")] string description,
+                                      [Summary("category", "The category, from which the template will be created.")] SocketCategoryChannel category)
+        {
+            if (ProjectTemplates.Templates.ContainsKey(name))
+            {
+                await RespondAsync("A project template with this name already exists!", ephemeral: true);
+                return;
+            }
+
+            try
+            {
+                ProjectTemplates.CreateProjectTemplate(name, description, category);
+                await RespondAsync($"Project template '{name}' has successfully been created.", ephemeral: true);
+            }
+            catch (NotSupportedException e)
+            {
+                await RespondAsync(e.Message, ephemeral: true);
+            }
         }
     }
 
