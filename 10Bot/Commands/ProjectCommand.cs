@@ -2,7 +2,6 @@
 using Discord.Interactions;
 using Discord.Rest;
 using Discord.WebSocket;
-using System.Reactive;
 using TenBot.Helpers;
 using TenBot.Models;
 using TenBot.Services;

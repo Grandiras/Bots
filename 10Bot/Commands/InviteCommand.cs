@@ -18,6 +18,7 @@ public sealed class InviteCommand : InteractionModuleBase
     }
 
 
+    [UserCommand("Invite to talk")]
     [SlashCommand("invite", "Invite someone to your private channel!")]
     public async Task InviteAsync(IGuildUser user)
     {

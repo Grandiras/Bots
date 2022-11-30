@@ -3,6 +3,7 @@ using Discord.Interactions;
 using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using TenBot.ClientEventServices;
 using TenBot.Helpers;
@@ -21,20 +22,16 @@ internal sealed class DiscordBot
     {
         Instance = this;
 
-        var config = new DiscordSocketConfig()
-        {
-        };
-
-        var serviceConfig = new InteractionServiceConfig()
-        {
-        };
+        var config = new DiscordSocketConfig() { };
+        var serviceConfig = new InteractionServiceConfig() { };
 
         var configJson = File.ReadAllText(Directory.GetCurrentDirectory().Split(@"\bin")[0] + "/Data/config.json");
-        var serverSettings = JsonConvert.DeserializeObject<Dictionary<string, DiscordServerSettings>>(configJson)!["Bottest"];
+        var serverSettings = JsonConvert.DeserializeObject<Dictionary<string, DiscordServerSettings>>(configJson)!["Selbsthilfegruppe_reloaded"];
 
         Host = Microsoft.Extensions.Hosting.Host
         .CreateDefaultBuilder()
         .UseContentRoot(Directory.GetCurrentDirectory().Split(@"\bin")[0] + "/Data")
+        .ConfigureLogging((logger) => logger.AddConsole())
         .ConfigureServices((context, services) =>
         {
             _ = services.AddSingleton(config);
@@ -49,6 +46,7 @@ internal sealed class DiscordBot
             _ = services.AddSingleton<WelcomeMessages>();
             _ = services.AddSingleton<CustomCommands>();
             _ = services.AddSingleton<ProjectTemplates>();
+            _ = services.AddSingleton<QuotesService>();
             _ = services.AddSingleton<ServerService>();
 
             _ = services.AddActivatorServices<IClientEventService, ClientEventServiceActivator>();

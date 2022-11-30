@@ -49,10 +49,8 @@ public sealed class CommandCommand : InteractionModuleBase
     public async Task ListAsync()
     {
         var embed = new EmbedBuilder()
-        {
-            Title = "Custom Commands",
-            Color = Color.Gold,
-        };
+            .WithTitle("Custom commands")
+            .WithColor(Color.Blue);
 
         foreach (var item in CustomCommands.GetCommands()) _ = embed.AddField(item.Name, item.Content);
 

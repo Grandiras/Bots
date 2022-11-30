@@ -1,11 +1,12 @@
 ﻿using Discord;
+using Discord.Rest;
 using Newtonsoft.Json;
 
 namespace TenBot.Services;
 public sealed class WelcomeMessages
 {
-    public List<string> Messages { get; }
-    public Random Randomizer { get; } = new();
+    private readonly List<string> Messages;
+    private readonly Random Randomizer = new();
 
 
     public WelcomeMessages()
@@ -16,5 +17,14 @@ public sealed class WelcomeMessages
 
 
     public string GetWelcomeMessage(IGuildUser user)
-        => Messages[Randomizer.Next(0, Messages.Count - 1)].Replace("[]", user.Mention);
+        => Messages[Randomizer.Next(Messages.Count - 1)].Replace("[]", user.Mention);
+    public IEnumerable<string> GetWelcomeMessages()
+        => Messages;
+
+    public void AddWelcomeMessage(string message)
+    {
+        Messages.Add(message);
+        File.WriteAllText(Directory.GetCurrentDirectory().Split(@"\bin")[0] + "/Data/welcome_messages.json",
+                          JsonConvert.SerializeObject(Messages));
+    }
 }
