@@ -1,8 +1,10 @@
-﻿using Discord.Interactions;
+﻿using Discord;
+using Discord.Interactions;
 using TenBot.Helpers;
 using TenBot.Services;
 
 namespace TenBot.Commands;
+[DefaultMemberPermissions(GuildPermission.SendMessages)]
 public sealed class ExecuteCommand : InteractionModuleBase
 {
     private readonly CustomCommands CustomCommands;

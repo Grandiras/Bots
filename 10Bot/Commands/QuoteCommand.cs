@@ -4,6 +4,7 @@ using TenBot.Models;
 using TenBot.Services;
 
 namespace TenBot.Commands;
+[DefaultMemberPermissions(GuildPermission.AddReactions)]
 [Group("quote", "Create memories with this command!")]
 public sealed class QuoteCommand : InteractionModuleBase
 {

@@ -5,6 +5,7 @@ using TenBot.Helpers;
 using TenBot.Models;
 
 namespace TenBot.Commands;
+[DefaultMemberPermissions(GuildPermission.Connect)]
 [Group("channel", "A command to manage your current channel.")]
 public sealed class ChannelCommand : InteractionModuleBase
 {

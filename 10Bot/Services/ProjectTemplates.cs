@@ -22,18 +22,22 @@ public sealed class ProjectTemplates
     public void CreateProjectTemplate(string name, string description, SocketCategoryChannel category)
     {
         var channels = new List<ProjectTemplateChannel>();
-        foreach (var channel in category.Channels.OrderBy(x => x.Position)) channels.Add(CreateProjectTemplateChannel(channel!));
+        foreach (var channel in category.Channels.OrderBy(x => x.Position))
+        {
+            var channelTemplate = CreateProjectTemplateChannel(channel!);
+            if (channelTemplate is not null) channels.Add(channelTemplate);
+        }
 
         var template = new ProjectTemplate(description, channels);
 
         Templates.Add(name, template);
         File.WriteAllText($"{FILE_PATH}/{name}.json", JsonConvert.SerializeObject(template));
     }
-    private static ProjectTemplateChannel CreateProjectTemplateChannel(SocketGuildChannel channel)
+    private static ProjectTemplateChannel? CreateProjectTemplateChannel(SocketGuildChannel channel) => channel switch
     {
-        if (channel is SocketVoiceChannel) return new(channel.Name, ProjectTemplateChannelKind.Voice);
-        if (channel is SocketTextChannel) return new(channel.Name, ProjectTemplateChannelKind.Text);
-
-        throw new NotSupportedException("This channel type is currently not supported!");
-    }
+        SocketStageChannel => new(channel.Name, ProjectTemplateChannelKind.Stage),
+        SocketVoiceChannel => new(channel.Name, ProjectTemplateChannelKind.Voice),
+        SocketTextChannel => new(channel.Name, ProjectTemplateChannelKind.Text),
+        _ => null
+    };
 }

@@ -123,7 +123,7 @@ public sealed class ProjectCommand : InteractionModuleBase
             await RespondAsync(embeds: new Embed[] { embed.Build() }, ephemeral: true);
         }
 
-        [SlashCommand("create", "Creates a new template from a discord category.")]
+        [SlashCommand("create", "Creates a new template from a discord category. Not-supported channel types will be ignored!")]
         public async Task CreateAsync([Summary("name", "The name of the template (has to be unique!).")] string name,
                                       [Summary("description", "Describe, what this template is for.")] string description,
                                       [Summary("category", "The category, from which the template will be created.")] SocketCategoryChannel category)
@@ -156,16 +156,14 @@ public sealed class ProjectCommand : InteractionModuleBase
     private static async Task CreateProjectChannelAsync(SocketGuild server, RestRole role, ProjectTemplateChannel channel,
                                                         RestCategoryChannel category)
     {
-        if (channel.Kind == ProjectTemplateChannelKind.Text)
+        RestGuildChannel restChannel = channel.Kind switch
         {
-            var textChannel = await server.CreateTextChannelAsync(channel.Name, x => x.CategoryId = category.Id);
-            await SetProjectChannelPermissionsAsync(server, role, textChannel);
-        }
-        else if (channel.Kind == ProjectTemplateChannelKind.Voice)
-        {
-            var voiceChannel = await server.CreateVoiceChannelAsync(channel.Name, x => x.CategoryId = category.Id);
-            await SetProjectChannelPermissionsAsync(server, role, voiceChannel);
-        }
-        else throw new NotSupportedException($"ProjectTemplateChannelKind value '{channel.Kind}' not supported!");
+            ProjectTemplateChannelKind.Text => await server.CreateTextChannelAsync(channel.Name, x => x.CategoryId = category.Id),
+            ProjectTemplateChannelKind.Voice => await server.CreateVoiceChannelAsync(channel.Name, x => x.CategoryId = category.Id),
+            ProjectTemplateChannelKind.Stage => await server.CreateStageChannelAsync(channel.Name, x => x.CategoryId = category.Id),
+            _ => throw new NotSupportedException($"ProjectTemplateChannelKind value '{channel.Kind}' not supported!"),
+        };
+        
+        await SetProjectChannelPermissionsAsync(server, role, restChannel);
     }
 }
