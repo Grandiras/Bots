@@ -16,7 +16,7 @@ public sealed class ProjectAutoCompleteHandler : AutocompleteHandler
                                                                               IParameterInfo parameter,
                                                                               IServiceProvider services)
     {
-        var results = ServerService.GetCategoriesByRoles(ServerService.GetRoles(x => x.Name.EndsWith(" - Project")))
+        var results = ServerService.GetCategoriesByRoles(ServerService.GetRoles(x => x.Name.EndsWith(" - Project"), context.Guild.Id), context.Guild.Id)
                                    .Select(x => new AutocompleteResult(x.Name, x.Name));
 
         await Task.CompletedTask;

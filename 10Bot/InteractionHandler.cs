@@ -2,7 +2,7 @@
 using Discord.Interactions;
 using Discord.WebSocket;
 using System.Reflection;
-using TenBot.Models;
+using TenBot.Services;
 
 namespace TenBot;
 /// <summary>
@@ -13,10 +13,10 @@ public sealed class InteractionHandler
     private readonly DiscordSocketClient Client;
     private readonly InteractionService Handler;
     private readonly IServiceProvider Services;
-    private readonly DiscordServerSettings ServerSettings;
+    private readonly DiscordServerSettingsStorage ServerSettings;
 
 
-    public InteractionHandler(DiscordSocketClient client, InteractionService handler, IServiceProvider services, DiscordServerSettings serverSettings)
+    public InteractionHandler(DiscordSocketClient client, InteractionService handler, IServiceProvider services, DiscordServerSettingsStorage serverSettings)
     {
         Client = client;
         Handler = handler;
@@ -41,7 +41,10 @@ public sealed class InteractionHandler
         return Task.CompletedTask;
     }
 
-    private async Task ReadyAsync() => _ = await Handler.RegisterCommandsToGuildAsync(ServerSettings.GuildID, true);
+    private async Task ReadyAsync()
+    {
+        foreach (var server in ServerSettings.Settings) _ = await Handler.RegisterCommandsToGuildAsync(server.Value.GuildID, true);
+    }
 
     private async Task HandleInteraction(SocketInteraction interaction)
     {

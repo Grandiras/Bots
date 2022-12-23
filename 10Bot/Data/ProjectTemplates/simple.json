@@ -2,11 +2,11 @@
   "Description":  "This is intended to be used for small projects with no need of moderation.",
   "Channels": [
     {
-      "Name": "General",
+      "Name": "😶General",
       "Kind": "Text"
     },
     {
-      "Name": "Talk",
+      "Name": "💬Talk",
       "Kind": "Voice"
     }
   ]

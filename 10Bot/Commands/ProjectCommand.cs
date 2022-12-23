@@ -13,12 +13,14 @@ public sealed class ProjectCommand : InteractionModuleBase
 {
     private readonly ServerService ServerService;
     private readonly ProjectTemplates ProjectTemplates;
+    private readonly DiscordServerSettingsStorage ServerSettings;
 
 
-    public ProjectCommand(ServerService serverService, ProjectTemplates projectTemplates)
+    public ProjectCommand(ServerService serverService, ProjectTemplates projectTemplates, DiscordServerSettingsStorage serverSettings)
     {
         ServerService = serverService;
         ProjectTemplates = projectTemplates;
+        ServerSettings = serverSettings;
     }
 
 
@@ -28,15 +30,16 @@ public sealed class ProjectCommand : InteractionModuleBase
                                    Autocomplete(typeof(ProjectTypeAutoCompleteHandler))] string template)
     {
         var projectTemplate = ProjectTemplates.Templates[template];
+        var server = ServerSettings.Settings[Context.Guild.Id];
 
-        var role = await ServerService.Server.CreateRoleAsync($"{name} - Project", isMentionable: true);
-        var category = await ServerService.Server.CreateCategoryChannelAsync(name);
+        var role = await ServerService.GetServer(server.GuildID).CreateRoleAsync($"{name} - Project", isMentionable: true);
+        var category = await ServerService.GetServer(server.GuildID).CreateCategoryChannelAsync(name);
 
         await RespondAsync($"{template} project '{name}' was successfully created.", ephemeral: true);
 
-        await SetProjectChannelPermissionsAsync(ServerService.Server, role, category);
+        await SetProjectChannelPermissionsAsync(ServerService.GetServer(server.GuildID), role, category);
 
-        foreach (var channel in projectTemplate.Channels) await CreateProjectChannelAsync(ServerService.Server, role, channel, category);
+        foreach (var channel in projectTemplate.Channels) await CreateProjectChannelAsync(ServerService.GetServer(server.GuildID), role, channel, category);
         await (Context.User as IGuildUser)!.AddRoleAsync(role);
     }
 
@@ -44,8 +47,8 @@ public sealed class ProjectCommand : InteractionModuleBase
     public async Task DeleteAsync([Summary("name", "The project's name."),
                                    Autocomplete(typeof(ProjectAutoCompleteHandler))] string name)
     {
-        var role = ServerService.GetRole(x => x.Name.Split(" -")[0] == name);
-        var category = ServerService.GetCategoryByRole(role);
+        var role = ServerService.GetRole(x => x.Name.Split(" -")[0] == name, Context.Guild.Id);
+        var category = ServerService.GetCategoryByRole(role, Context.Guild.Id);
 
         await RespondAsync($"Project '{category.Name}' was successfully deleted.", ephemeral: true);
         
@@ -59,7 +62,7 @@ public sealed class ProjectCommand : InteractionModuleBase
                                    Autocomplete(typeof(ProjectAutoCompleteHandler))] string project,
                                   [Summary("user", "The user you want to invite.")] IGuildUser user)
     {
-        var role = ServerService.GetRole(x => x.Name.Split(" -")[0] == project);
+        var role = ServerService.GetRole(x => x.Name.Split(" -")[0] == project, Context.Guild.Id);
 
         if (user.RoleIds.Any(x => x == role.Id))
         {

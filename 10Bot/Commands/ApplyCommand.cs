@@ -9,9 +9,14 @@ namespace TenBot.Commands;
 public sealed class ApplyCommand : InteractionModuleBase
 {
     private readonly ServerService ServerService;
+    private readonly DiscordServerSettingsStorage ServerSettings;
 
 
-    public ApplyCommand(ServerService serverService) => ServerService = serverService;
+    public ApplyCommand(ServerService serverService, DiscordServerSettingsStorage serverSettings)
+    {
+        ServerService = serverService;
+        ServerSettings = serverSettings;
+    }
 
 
     [SlashCommand("moderator", "Apply for the role of a moderator!")]
@@ -30,7 +35,9 @@ public sealed class ApplyCommand : InteractionModuleBase
                 .WithName("Attached application")
                 .WithValue(file.Url));
 
-        _ = await ServerService.Server.PublicUpdatesChannel.SendMessageAsync(embed: embed.Build());
+        var server = ServerSettings.Settings[Context.Guild.Id];
+
+        _ = await ServerService.GetServer(server.GuildID).PublicUpdatesChannel.SendMessageAsync(embed: embed.Build());
         await RespondAsync("Your application has successfully been redirected to an employer.", ephemeral: true);
     }
 }

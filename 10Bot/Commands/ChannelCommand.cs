@@ -2,18 +2,18 @@
 using Discord.Interactions;
 using Discord.WebSocket;
 using TenBot.Helpers;
-using TenBot.Models;
+using TenBot.Services;
 
 namespace TenBot.Commands;
 [DefaultMemberPermissions(GuildPermission.Connect)]
 [Group("channel", "A command to manage your current channel.")]
 public sealed class ChannelCommand : InteractionModuleBase
 {
-    private readonly DiscordServerSettings ServerSettings;
+    private readonly DiscordServerSettingsStorage ServerSettings;
     private readonly DiscordSocketClient Client;
 
 
-    public ChannelCommand(DiscordServerSettings serverSettings, DiscordSocketClient client)
+    public ChannelCommand(DiscordServerSettingsStorage serverSettings, DiscordSocketClient client)
     {
         ServerSettings = serverSettings;
         Client = client;
@@ -23,13 +23,15 @@ public sealed class ChannelCommand : InteractionModuleBase
     [SlashCommand("rename", "Allows you to rename your current channel, even if you aren't allowed to through your permissions!")]
     public async Task RenameAsync([Summary("new_name", "Enter a new name for the channel.")] string newName)
     {
+        var server = ServerSettings.Settings[Context.Guild.Id];
+
         var voiceChannel = (Context.User as IGuildUser)!.VoiceChannel;
         if (voiceChannel is null)
         {
             await RespondAsync($"You have to be in a voice in order to rename it!", ephemeral: true);
             return;
         }
-        if (voiceChannel!.CategoryId != ServerSettings.VoiceCategoryID)
+        if (voiceChannel!.CategoryId != server.VoiceCategoryID)
         {
             await RespondAsync($"You can only rename generated voice channels!", ephemeral: true);
             return;
@@ -43,7 +45,8 @@ public sealed class ChannelCommand : InteractionModuleBase
     [SlashCommand("invite", "Invites somebody to your private channel.")]
     public async Task InviteAsync(IGuildUser user)
     {
-        var role = PrivateVoiceManager.GetPrivateChannelRoleAsync((IGuildUser)Context.User, ServerSettings, Client);
+        var server = ServerSettings.Settings[Context.Guild.Id];
+        var role = PrivateVoiceManager.GetPrivateChannelRoleAsync((IGuildUser)Context.User, server, Client);
 
         if (role is null)
         {

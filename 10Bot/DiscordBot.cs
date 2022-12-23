@@ -19,12 +19,12 @@ internal sealed class DiscordBot
     public DiscordBot()
     {
         // runtime config
-        var config = new DiscordSocketConfig() { };
-        var serviceConfig = new InteractionServiceConfig() { };
+        var config = new DiscordSocketConfig();
+        var serviceConfig = new InteractionServiceConfig();
 
         // locally stored config
         var configJson = File.ReadAllText(Directory.GetCurrentDirectory().Split(@"\bin")[0] + "/Data/config.json");
-        var serverSettings = JsonConvert.DeserializeObject<Dictionary<string, DiscordServerSettings>>(configJson)!["Selbsthilfegruppe_reloaded"];
+        var serverSettings = new DiscordServerSettingsStorage(JsonConvert.DeserializeObject<Dictionary<ulong, DiscordServerSettings>>(configJson)!);
 
         // configure the host
         Host = Microsoft.Extensions.Hosting.Host
@@ -32,21 +32,26 @@ internal sealed class DiscordBot
         .ConfigureLogging((logger) => logger.AddConsole()) // logging
         .ConfigureServices((context, services) =>
         {
-            _ = services.AddSingleton(config);
-            _ = services.AddSingleton<DiscordSocketClient>(); // connnection to Discord
+            _ = services
+                .AddSingleton(config)
+                .AddSingleton<DiscordSocketClient>(); // connnection to Discord
 
-            _ = services.AddSingleton(serviceConfig);
-            _ = services.AddSingleton<InteractionService>();
-            _ = services.AddSingleton<InteractionHandler>();
+            _ = services
+                .AddSingleton(serviceConfig)
+                .AddSingleton<InteractionService>()
+                .AddSingleton<InteractionHandler>();
 
-            _ = services.AddSingleton(serverSettings);
+            _ = services
+                .AddSingleton(serverSettings);
 
             // custom services
-            _ = services.AddSingleton<WelcomeMessages>();
-            _ = services.AddSingleton<CustomCommands>();
-            _ = services.AddSingleton<ProjectTemplates>();
-            _ = services.AddSingleton<QuotesService>();
-            _ = services.AddSingleton<ServerService>();
+            _ = services
+                .AddSingleton<WelcomeMessages>()
+                .AddSingleton<CustomCommands>()
+                .AddSingleton<ProjectTemplates>()
+                .AddSingleton<QuotesService>()
+                .AddSingleton<ServerService>()
+                .AddSingleton<PollService>();
 
             // activator for all interaction event singletons
             _ = services.AddActivatorServices<IClientEventService, ClientEventServiceActivator>();
@@ -58,7 +63,7 @@ internal sealed class DiscordBot
     public async Task RunAsync()
     {
         var client = Host.Services.GetRequiredService<DiscordSocketClient>();
-        var serverSettings = Host.Services.GetRequiredService<DiscordServerSettings>();
+        var serverSettings = Host.Services.GetRequiredService<DiscordServerSettingsStorage>();
 
         // default logger for the Discord client
         client.Log += async (msg) =>
@@ -67,18 +72,14 @@ internal sealed class DiscordBot
             await Task.CompletedTask;
         };
 
-        client.Ready += Ready;
-
         await Host.Services.GetRequiredService<InteractionHandler>().InitializeAsync();
         await Host.Services.GetRequiredService<ClientEventServiceActivator>().ActivateAsync();
 
         // connect to Discord
-        await client.LoginAsync(TokenType.Bot, serverSettings.Token);
+        await client.LoginAsync(TokenType.Bot, serverSettings.Settings.First().Value.Token);
         await client.StartAsync();
 
         // infinite timeout
         await Task.Delay(-1);
     }
-
-    private Task Ready() => Task.CompletedTask;
 }
