@@ -365,3 +365,5 @@ FodyWeavers.xsd
 # Custom
 config.json
 beta_config.json
+/10Bot/Data/beta_config.json
+/10Bot/Data/config.json
