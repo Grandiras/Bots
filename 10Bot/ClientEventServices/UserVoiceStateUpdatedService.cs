@@ -2,6 +2,7 @@
 using Discord.Rest;
 using Discord.WebSocket;
 using TenBot.Helpers;
+using TenBot.Models;
 using TenBot.Services;
 
 namespace TenBot.ClientEventServices;
@@ -28,14 +29,16 @@ internal sealed class UserVoiceStateUpdatedService : IClientEventService
     {
         // TODO moving
 
-        var server = ServerSettings.Settings[(user as SocketGuildUser)!.Guild.Id];
+        DiscordServerSettings? oldServer = null;
+        if (oldVoice.VoiceChannel is not null) _ = ServerSettings.Settings.TryGetValue(oldVoice.VoiceChannel.Guild.Id, out oldServer);
+        _ = ServerSettings.Settings.TryGetValue(newVoice.VoiceChannel.Guild.Id, out var newServer);
 
         if (oldVoice.VoiceChannel is not null and SocketVoiceChannel voiceChannel
-            && voiceChannel.CategoryId == server.VoiceCategoryID
+            && voiceChannel.CategoryId == oldServer!.VoiceCategoryID
             && voiceChannel.ConnectedUsers.Count == 0)
             await CleanUpChannelAsync(voiceChannel);
-        else if (newVoice.VoiceChannel?.Id == server.NewTalkChannelID) await CreateNewVoiceAsync((user as SocketGuildUser)!);
-        else if (newVoice.VoiceChannel?.Id == server.NewPrivateTalkChannelID) await CreateNewPrivateVoiceAsync((user as SocketGuildUser)!);
+        else if (newVoice.VoiceChannel?.Id == newServer!.NewTalkChannelID) await CreateNewVoiceAsync((user as SocketGuildUser)!);
+        else if (newVoice.VoiceChannel?.Id == newServer!.NewPrivateTalkChannelID) await CreateNewPrivateVoiceAsync((user as SocketGuildUser)!);
     }
 
     private async Task CleanUpChannelAsync(SocketVoiceChannel voiceChannel)

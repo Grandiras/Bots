@@ -10,3 +10,5 @@
 - quizes
 - polls change duration display (change to minutes)
 - save and load poll threads on crash or shutdown
+- role selection
+- seperate quotes, welcome messages etc. for different servers
