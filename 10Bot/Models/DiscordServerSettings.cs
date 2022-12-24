@@ -4,4 +4,5 @@ public sealed record DiscordServerSettings(string Token,
                                            ulong NewTalkChannelID,
                                            ulong NewPrivateTalkChannelID,
                                            ulong VoiceCategoryID,
-                                           ulong MemberRoleID);
+                                           ulong MemberRoleID,
+                                           bool IsRoleSelectionEnabled);

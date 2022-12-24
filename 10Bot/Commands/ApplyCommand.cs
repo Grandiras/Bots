@@ -1,10 +1,10 @@
 ﻿using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
+using TenBot.Models;
 using TenBot.Services;
 
 namespace TenBot.Commands;
-[DefaultMemberPermissions(GuildPermission.AttachFiles)]
 [Group("apply", "Apply for special positions with this command!")]
 public sealed class ApplyCommand : InteractionModuleBase
 {
@@ -20,7 +20,7 @@ public sealed class ApplyCommand : InteractionModuleBase
 
 
     [SlashCommand("moderator", "Apply for the role of a moderator!")]
-    public async Task ModeratorAsync([Summary("file", "Attach your application here.")] IAttachment file)
+    public async Task ModeratorAsync()
     {
         if ((Context.User as SocketGuildUser)!.GuildPermissions.ManageMessages)
         {
@@ -28,16 +28,25 @@ public sealed class ApplyCommand : InteractionModuleBase
             return;
         }
 
-        var embed = new EmbedBuilder()
-            .WithTitle($"Application by {Context.User.Username}")
-            .WithColor(Color.DarkGreen)
-            .AddField(new EmbedFieldBuilder()
-                .WithName("Attached application")
-                .WithValue(file.Url));
+        await RespondWithModalAsync<ApplicationModal>($"{Context.User.Username}_application");
+    }
 
+    [ModalInteraction("*_application", true)]
+    public async Task ApplicationSubmittedAsync(string userName, ApplicationModal modal)
+    {
         var server = ServerSettings.Settings[Context.Guild.Id];
 
+        var embed = new EmbedBuilder()
+            .WithTitle("Application submitted")
+            .WithColor(199, 62, 38)
+            .AddField(new EmbedFieldBuilder()
+                .WithName("By")
+                .WithValue(Context.User.Username))
+            .AddField(new EmbedFieldBuilder()
+                .WithName("Content")
+                .WithValue(modal.Reason));
+
         _ = await ServerService.GetServer(server.GuildID).PublicUpdatesChannel.SendMessageAsync(embed: embed.Build());
-        await RespondAsync("Your application has successfully been redirected to an employer.", ephemeral: true);
+        await RespondAsync("Your application has successfully been redirected to the team.", ephemeral: true);
     }
 }
