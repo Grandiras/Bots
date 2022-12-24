@@ -1,7 +1,7 @@
 ﻿using Discord;
 
 namespace TenBot.Models;
-public record Poll(string Title, string Description, uint Duration, 
+public record Poll(string Title, string Description, uint Duration,
                    PollOption Option1, PollOption Option2, PollOption? Option3 = null, PollOption? Option4 = null, PollOption? Option5 = null, PollOption? Option6 = null);
 
 public class PollOption

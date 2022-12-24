@@ -1,6 +1,5 @@
 ﻿using Discord;
 using System.Diagnostics;
-using TenBot.Helpers;
 using TenBot.Models;
 
 namespace TenBot.Services;
@@ -37,7 +36,7 @@ public class PollService
         else if (optionNumber == 2) return poll.Poll.Option2;
         else if (optionNumber == 3) return poll.Poll.Option3!;
         else if (optionNumber == 4) return poll.Poll.Option4!;
-        else if (optionNumber == 5) return poll.Poll.Option5!;      
+        else if (optionNumber == 5) return poll.Poll.Option5!;
         else if (optionNumber == 6) return poll.Poll.Option6!;
 
         throw new NotImplementedException();

@@ -10,8 +10,8 @@ public sealed class WelcomeMessages
 
     public WelcomeMessages(DiscordServerSettingsStorage serverSettings)
     {
-        foreach (var server in serverSettings.Settings.Keys) 
-            WelcomeMessageDictionary.Add(server, 
+        foreach (var server in serverSettings.Settings.Keys)
+            WelcomeMessageDictionary.Add(server,
                                          JsonConvert.DeserializeObject<List<string>>(
                                              File.ReadAllText(Directory.GetCurrentDirectory().Split(@"\bin")[0] + $"/Data/Servers/{server}/welcome_messages.json"))!);
     }
