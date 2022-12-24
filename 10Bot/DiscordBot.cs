@@ -22,7 +22,7 @@ internal sealed class DiscordBot
         var config = new DiscordSocketConfig();
         var serviceConfig = new InteractionServiceConfig();
 
-        // locally stored config
+        // locally stored config (use beta-config for beta bot version)
         var configJson = File.ReadAllText(Directory.GetCurrentDirectory().Split(@"\bin")[0] + "/Data/config.json");
         var serverSettings = new DiscordServerSettingsStorage(JsonConvert.DeserializeObject<Dictionary<ulong, DiscordServerSettings>>(configJson)!);
 

@@ -20,7 +20,7 @@ public sealed class QuoteCommand : InteractionModuleBase
                                   [Summary("context", "Additional information for this quote.")] string? context = null)
     {
         var quoteObject = new Quote(quote, author, context);
-        QuotesService.AddQuote(quoteObject);
+        QuotesService.AddQuote(quoteObject, Context.Guild.Id);
 
         await RespondAsync("Quote has successfully been created.", ephemeral: true);
     }
@@ -28,7 +28,7 @@ public sealed class QuoteCommand : InteractionModuleBase
     [MessageCommand("Search for a quote")]
     public async Task SearchQuoteAsync(IMessage message)
     {
-        var quote = QuotesService.GetQuote(message.Content);
+        var quote = QuotesService.GetQuote(message.Content, Context.Guild.Id);
 
         var embed = new EmbedBuilder()
             .WithTitle("Quote")

@@ -4,43 +4,40 @@ using TenBot.Models;
 namespace TenBot.Services;
 public sealed class CustomCommands
 {
-    private readonly List<CustomCommand> Commands = new();
-
-    private readonly string FILE_PATH = Directory.GetCurrentDirectory().Split(@"\bin")[0] + "/Data/custom_commands.json";
+    private readonly Dictionary<ulong, List<CustomCommand>> Commands = new();
 
 
-    public CustomCommands()
+    public CustomCommands(DiscordServerSettingsStorage serverSettings)
     {
-        var json = File.ReadAllText(FILE_PATH);
-        Commands = JsonConvert.DeserializeObject<List<CustomCommand>>(json)!;
+        foreach (var server in serverSettings.Settings.Keys)
+            Commands.Add(server,
+                         JsonConvert.DeserializeObject<List<CustomCommand>>(
+                             File.ReadAllText(Directory.GetCurrentDirectory().Split(@"\bin")[0] + $"/Data/Servers/{server}/custom_commands.json"))!);
     }
 
 
-    public bool CommandExists(string name) => Commands.Any(c => c.Name == name);
+    public bool CommandExists(string name, ulong guildID) => Commands[guildID].Any(c => c.Name == name);
 
-    public CustomCommand? GetCommand(string name) => Commands.FirstOrDefault(c => c.Name == name);
-    public List<CustomCommand> GetCommands() => Commands;
+    public CustomCommand? GetCommand(string name, ulong guildID) => Commands[guildID].FirstOrDefault(c => c.Name == name);
+    public List<CustomCommand> GetCommands(ulong guildID) => Commands[guildID];
 
-    public void AddCommand(CustomCommand command)
+    public void AddCommand(CustomCommand command, ulong guildID)
     {
-        Commands.Add(command);
-        SaveCommands();
+        Commands[guildID].Add(command);
+        SaveCommands(guildID);
     }
-    public void RemoveCommand(string name)
+    public void RemoveCommand(string name, ulong guildID)
     {
-        _ = Commands.Remove(Commands.First(c => c.Name == name));
-        SaveCommands();
-    }
-
-    public void ModifyCommand(string name, string newContent)
-    {
-        Commands.First(c => c.Name == name).Content = newContent;
-        SaveCommands();
+        _ = Commands[guildID].Remove(Commands[guildID].First(c => c.Name == name));
+        SaveCommands(guildID);
     }
 
-    private void SaveCommands()
+    public void ModifyCommand(string name, string newContent, ulong guildID)
     {
-        var json = JsonConvert.SerializeObject(Commands);
-        File.WriteAllText(FILE_PATH, json);
+        Commands[guildID].First(c => c.Name == name).Content = newContent;
+        SaveCommands(guildID);
     }
+
+    private void SaveCommands(ulong guildID)
+        => File.WriteAllText(Directory.GetCurrentDirectory().Split(@"\bin")[0] + $"/Data/Servers/{guildID}/custom_commands.json", JsonConvert.SerializeObject(Commands[guildID]));
 }

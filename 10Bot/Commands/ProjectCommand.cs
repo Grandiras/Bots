@@ -51,7 +51,7 @@ public sealed class ProjectCommand : InteractionModuleBase
         var category = ServerService.GetCategoryByRole(role, Context.Guild.Id);
 
         await RespondAsync($"Project '{category.Name}' was successfully deleted.", ephemeral: true);
-        
+
         foreach (var channel in category.Channels) await channel.DeleteAsync();
         await category.DeleteAsync();
         await role.DeleteAsync();
@@ -166,7 +166,7 @@ public sealed class ProjectCommand : InteractionModuleBase
             ProjectTemplateChannelKind.Stage => await server.CreateStageChannelAsync(channel.Name, x => x.CategoryId = category.Id),
             _ => throw new NotSupportedException($"ProjectTemplateChannelKind value '{channel.Kind}' not supported!"),
         };
-        
+
         await SetProjectChannelPermissionsAsync(server, role, restChannel);
     }
 }

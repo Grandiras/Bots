@@ -6,10 +6,7 @@ public sealed class ServerService
     private readonly DiscordSocketClient Client;
 
 
-    public ServerService(DiscordSocketClient client)
-    {
-        Client = client;
-    }
+    public ServerService(DiscordSocketClient client) => Client = client;
 
 
     public SocketGuild GetServer(ulong guildID) => Client.GetGuild(guildID);

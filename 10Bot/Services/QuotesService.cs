@@ -4,28 +4,28 @@ using TenBot.Models;
 namespace TenBot.Services;
 public sealed class QuotesService
 {
-    private readonly List<Quote> Quotes;
-    private readonly Random Randomizer = new();
+    private readonly Dictionary<ulong, List<Quote>> Quotes = new();
 
 
-    public QuotesService()
+    public QuotesService(DiscordServerSettingsStorage serverSettings)
     {
-        var json = File.ReadAllText(Directory.GetCurrentDirectory().Split(@"\bin")[0] + "/Data/quotes.json");
-        Quotes = JsonConvert.DeserializeObject<List<Quote>>(json)!;
+        foreach (var server in serverSettings.Settings.Keys)
+            Quotes.Add(server,
+                       JsonConvert.DeserializeObject<List<Quote>>(File.ReadAllText(Directory.GetCurrentDirectory().Split(@"\bin")[0] + $"/Data/Servers/{server}/quotes.json"))!);
     }
 
 
-    public Quote GetQuote(string message) => GetBestMatchingQuote(message);
-    public void AddQuote(Quote quote)
+    public Quote GetQuote(string message, ulong guildID)
     {
-        Quotes.Add(quote);
-        File.WriteAllText(Directory.GetCurrentDirectory().Split(@"\bin")[0] + "/Data/quotes.json",
-                          JsonConvert.SerializeObject(Quotes));
+        var quotes = Quotes[guildID];
+        var results = new SimMetrics.Net.Metric.Levenstein().BatchCompareSet(quotes.Select(x => x.ActualQuote).ToArray(), message).ToList();
+        return quotes[results.IndexOf(results.Max())];
     }
-
-    private Quote GetBestMatchingQuote(string message)
+    public void AddQuote(Quote quote, ulong guildID)
     {
-        var results = new SimMetrics.Net.Metric.Levenstein().BatchCompareSet(Quotes.Select(x => x.ActualQuote).ToArray(), message).ToList();
-        return Quotes[results.IndexOf(results.Max())];
+        var quotes = Quotes[guildID];
+        quotes.Add(quote);
+        File.WriteAllText(Directory.GetCurrentDirectory().Split(@"\bin")[0] + $"/Data/Servers/{guildID}/quotes.json",
+                          JsonConvert.SerializeObject(quotes));
     }
 }

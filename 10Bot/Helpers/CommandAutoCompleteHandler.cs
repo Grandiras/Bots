@@ -16,7 +16,7 @@ public sealed class CommandAutoCompleteHandler : AutocompleteHandler
                                                                               IParameterInfo parameter,
                                                                               IServiceProvider services)
     {
-        var results = CustomCommands.GetCommands().Select(c => new AutocompleteResult(c.Name, c.Name));
+        var results = CustomCommands.GetCommands(context.Guild.Id).Select(c => new AutocompleteResult(c.Name, c.Name));
 
         await Task.CompletedTask;
 
