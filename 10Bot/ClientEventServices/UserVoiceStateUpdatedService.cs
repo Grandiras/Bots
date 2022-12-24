@@ -30,15 +30,16 @@ internal sealed class UserVoiceStateUpdatedService : IClientEventService
         // TODO moving
 
         DiscordServerSettings? oldServer = null;
+        DiscordServerSettings? newServer = null;
         if (oldVoice.VoiceChannel is not null) _ = ServerSettings.Settings.TryGetValue(oldVoice.VoiceChannel.Guild.Id, out oldServer);
-        _ = ServerSettings.Settings.TryGetValue(newVoice.VoiceChannel.Guild.Id, out var newServer);
+        if (newVoice.VoiceChannel is not null) _ = ServerSettings.Settings.TryGetValue(newVoice.VoiceChannel.Guild.Id, out newServer);
 
         if (oldVoice.VoiceChannel is not null and SocketVoiceChannel voiceChannel
             && voiceChannel.CategoryId == oldServer!.VoiceCategoryID
             && voiceChannel.ConnectedUsers.Count == 0)
             await CleanUpChannelAsync(voiceChannel);
-        else if (newVoice.VoiceChannel?.Id == newServer!.NewTalkChannelID) await CreateNewVoiceAsync((user as SocketGuildUser)!);
-        else if (newVoice.VoiceChannel?.Id == newServer!.NewPrivateTalkChannelID) await CreateNewPrivateVoiceAsync((user as SocketGuildUser)!);
+        else if (newVoice.VoiceChannel is not null && newVoice.VoiceChannel.Id == newServer!.NewTalkChannelID) await CreateNewVoiceAsync((user as SocketGuildUser)!);
+        else if (newVoice.VoiceChannel is not null && newVoice.VoiceChannel.Id == newServer!.NewPrivateTalkChannelID) await CreateNewPrivateVoiceAsync((user as SocketGuildUser)!);
     }
 
     private async Task CleanUpChannelAsync(SocketVoiceChannel voiceChannel)
