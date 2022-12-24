@@ -4,7 +4,7 @@ using TenBot.Models;
 using TenBot.Services;
 
 namespace TenBot.Commands;
-[Group("poll", "Do you want to know the opinions of your fellow server members? Use this command to create polls!")]
+//[Group("poll", "Do you want to know the opinions of your fellow server members? Use this command to create polls!")]
 public sealed class PollCommand : InteractionModuleBase
 {
     private readonly PollService PollService;
