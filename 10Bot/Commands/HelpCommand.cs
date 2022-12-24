@@ -22,20 +22,17 @@ public sealed class HelpCommand : InteractionModuleBase
     {
         var server = ServerSettings.Settings[Context.Guild.Id];
 
-        if (Context.User is not IGuildUser)
-        {
-            await RespondAsync("Your account wasn't found... Please report that!", ephemeral: true);
-            return;
-        }
-
         var embed = new EmbedBuilder()
         {
             Title = "10Bot Commands",
             Color = Color.Gold,
         };
 
-        foreach (var item in Client.GetGuild(server.GuildID).GetApplicationCommandsAsync().Result)
-            _ = embed.AddField(item.Name, item.Description);
+        foreach (var item in Client.GetGuild(server.GuildID)
+                                   .GetApplicationCommandsAsync()
+                                   .Result
+                                   .Where(x => (Context.User as IGuildUser)!.GuildPermissions.ToList().Any(y => x.DefaultMemberPermissions.Has(y))))
+            _ = embed.AddField(item.Name, item.Description is not (null or "") ? item.Description : "[not provided]");
 
         await RespondAsync(embeds: new Embed[] { embed.Build() }, ephemeral: true);
     }

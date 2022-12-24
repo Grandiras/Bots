@@ -61,7 +61,7 @@ public sealed class PollCommand : InteractionModuleBase
         PollService.CreatePoll(poll, message);
     }
 
-    [ComponentInteraction("*_option*", true)]
+    //[ComponentInteraction("*_option*", true)]
     public async Task VoteCastedAsync(string pollName, uint optionNumber)
     {
         if (PollService.HasUserVoted(pollName, Context.User.Id))
