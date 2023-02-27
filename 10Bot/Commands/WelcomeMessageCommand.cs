@@ -17,7 +17,6 @@ public sealed class WelcomeMessageCommand : InteractionModuleBase
     public async Task CreateAsync([Summary("message", "The message to be displayed on joining. Use square brackets to declare space for the username.")] string message)
     {
         WelcomeMessages.AddWelcomeMessage(message, Context.Guild.Id);
-
         await RespondAsync("Message has been successfully added.", ephemeral: true);
     }
 
@@ -33,6 +32,6 @@ public sealed class WelcomeMessageCommand : InteractionModuleBase
                            .WithName("Welcome message")
                            .WithValue(message));
 
-        await RespondAsync(embeds: new Embed[] { embed.Build() }, ephemeral: true);
+        await RespondAsync(embed: embed.Build(), ephemeral: true);
     }
 }

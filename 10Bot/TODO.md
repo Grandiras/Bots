@@ -1,12 +1,20 @@
 ﻿# TODOs
 
+- quote
+  - randomizer for all results above a threshold
+  - detection for key words
+  - management
+- polls rework
+  - optimize poll saving (no bloat parameters)
+  - polls display results
+  - polls change duration display (change to minutes)
 - project-intern moderation
-- quote-randomizer for all results above a treshhold
-- quote-detection for key words
-- quote managment
-- UserVoiceStateUpdated add support for moving 
-- polls display results
-- quizes
-- polls change duration display (change to minutes)
+- UserVoiceStateUpdated fix support for moving 
+- quizzes
 - save and load poll threads on crash or shutdown
-- role selection
+- hot reload
+- better error handling
+- release notes (+ publishing)
+- channel invite allow invitation of all members of a project
+- make switching between normal bot and beta easier
+- centralized default file path

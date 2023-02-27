@@ -2,9 +2,8 @@
 using Newtonsoft.Json;
 
 namespace TenBot.Services;
-public sealed class WelcomeMessages
+public sealed class WelcomeMessages : IService
 {
-    private readonly Random Randomizer = new();
     private readonly Dictionary<ulong, List<string>> WelcomeMessageDictionary = new();
 
 
@@ -13,14 +12,14 @@ public sealed class WelcomeMessages
         foreach (var server in serverSettings.Settings.Keys)
             WelcomeMessageDictionary.Add(server,
                                          JsonConvert.DeserializeObject<List<string>>(
-                                             File.ReadAllText(Directory.GetCurrentDirectory().Split(@"\bin")[0] + $"/Data/Servers/{server}/welcome_messages.json"))!);
+                                             File.ReadAllText(Directory.GetCurrentDirectory() + $"/Data/Servers/{server}/welcome_messages.json"))!);
     }
 
 
     public string GetWelcomeMessage(IGuildUser user)
     {
         var messages = GetWelcomeMessages(user.Guild.Id).ToList();
-        return messages[Randomizer.Next(messages.Count - 1)].Replace("[]", user.Mention);
+        return messages[Random.Shared.Next(messages.Count - 1)].Replace("[]", user.Mention);
     }
 
     public IEnumerable<string> GetWelcomeMessages(ulong guildID) => WelcomeMessageDictionary[guildID];
@@ -29,7 +28,7 @@ public sealed class WelcomeMessages
     {
         var messages = GetWelcomeMessages(guildID).ToList();
         messages.Add(message);
-        File.WriteAllText(Directory.GetCurrentDirectory().Split(@"\bin")[0] + $"/Data/Servers/{guildID}/welcome_messages.json",
-                          JsonConvert.SerializeObject(messages));
+        File.WriteAllText(Directory.GetCurrentDirectory() + $"/Data/Servers/{guildID}/welcome_messages.json",
+                          JsonConvert.SerializeObject(messages, Formatting.Indented));
     }
 }

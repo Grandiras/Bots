@@ -1,7 +1,7 @@
 ﻿using Discord.WebSocket;
 
 namespace TenBot.Services;
-public sealed class ServerService
+public sealed class ServerService : IService
 {
     private readonly DiscordSocketClient Client;
 

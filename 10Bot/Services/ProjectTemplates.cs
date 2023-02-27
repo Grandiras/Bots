@@ -3,9 +3,9 @@ using Newtonsoft.Json;
 using TenBot.Models;
 
 namespace TenBot.Services;
-public sealed class ProjectTemplates
+public sealed class ProjectTemplates : IService
 {
-    private readonly string FILE_PATH = Directory.GetCurrentDirectory().Split(@"\bin")[0] + "/Data/ProjectTemplates";
+    private readonly string FILE_PATH = Directory.GetCurrentDirectory() + "/Data/ProjectTemplates";
 
     public Dictionary<string, ProjectTemplate> Templates { get; } = new();
 
@@ -30,7 +30,7 @@ public sealed class ProjectTemplates
         var template = new ProjectTemplate(description, channels);
 
         Templates.Add(name, template);
-        File.WriteAllText($"{FILE_PATH}/{name}.json", JsonConvert.SerializeObject(template));
+        File.WriteAllText($"{FILE_PATH}/{name}.json", JsonConvert.SerializeObject(template, Formatting.Indented));
     }
     private static ProjectTemplateChannel? CreateProjectTemplateChannel(SocketGuildChannel channel) => channel switch
     {

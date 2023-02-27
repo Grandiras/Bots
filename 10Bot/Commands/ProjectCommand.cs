@@ -27,20 +27,22 @@ public sealed class ProjectCommand : InteractionModuleBase
     [SlashCommand("create", "Creates a new project.")]
     public async Task CreateAsync([Summary("name", "The project's name.")] string name,
                                   [Summary("template", "The project pattern, which should be used."),
-                                   Autocomplete(typeof(ProjectTypeAutoCompleteHandler))] string template)
+                                   Autocomplete(typeof(ProjectTypeAutoCompleteHandler))] string template,
+                                  [Summary("is_public", "Determines, whether this project will be discoverable through role selection.")] bool is_public = true)
     {
+        var fixedName = name.Replace("-", " ");
+
         var projectTemplate = ProjectTemplates.Templates[template];
-        var server = ServerSettings.Settings[Context.Guild.Id];
 
-        var role = await ServerService.GetServer(server.GuildID).CreateRoleAsync($"{name} - Project", isMentionable: true);
-        var category = await ServerService.GetServer(server.GuildID).CreateCategoryChannelAsync(name);
+        var role = await ServerService.GetServer(Context.Guild.Id).CreateRoleAsync($"{fixedName} - Project{(is_public ? " - Public" : "")}", isMentionable: true);
+        var category = await ServerService.GetServer(Context.Guild.Id).CreateCategoryChannelAsync(fixedName);
 
-        await RespondAsync($"{template} project '{name}' was successfully created.", ephemeral: true);
+        await RespondAsync($"{template} project '{fixedName}' was successfully created.", ephemeral: true);
 
-        await SetProjectChannelPermissionsAsync(ServerService.GetServer(server.GuildID), role, category);
+        await SetProjectChannelPermissionsAsync(ServerService.GetServer(Context.Guild.Id), role, category);
 
-        foreach (var channel in projectTemplate.Channels) await CreateProjectChannelAsync(ServerService.GetServer(server.GuildID), role, channel, category);
-        await (Context.User as IGuildUser)!.AddRoleAsync(role);
+        foreach (var channel in projectTemplate.Channels) await CreateProjectChannelAsync(ServerService.GetServer(Context.Guild.Id), role, channel, category);
+        await ((SocketGuildUser)Context.User).AddRoleAsync(role);
     }
 
     [SlashCommand("delete", "Deletes an existing project.")]
@@ -85,7 +87,7 @@ public sealed class ProjectCommand : InteractionModuleBase
 
 
 
-        [SlashCommand("list", "Displayes all project templates.")]
+        [SlashCommand("list", "Displays all project templates.")]
         public async Task ListAsync()
         {
             var embed = new EmbedBuilder()
@@ -93,13 +95,11 @@ public sealed class ProjectCommand : InteractionModuleBase
                 .WithTitle("Available project templates");
 
             foreach ((var projectType, var projectTemplate) in ProjectTemplates.Templates)
-            {
                 _ = embed.AddField(new EmbedFieldBuilder()
-                                   .WithName(projectType.ToString())
-                                   .WithValue(projectTemplate.Description));
-            }
+                    .WithName(projectType.ToString())
+                    .WithValue(projectTemplate.Description));
 
-            await RespondAsync(embeds: new Embed[] { embed.Build() }, ephemeral: true);
+            await RespondAsync(embed: embed.Build(), ephemeral: true);
         }
 
         [SlashCommand("explain", "Explains a project template.")]
@@ -117,13 +117,11 @@ public sealed class ProjectCommand : InteractionModuleBase
                            .WithValue(projectTemplate.Description));
 
             foreach (var channel in projectTemplate.Channels)
-            {
                 _ = embed.AddField(new EmbedFieldBuilder()
-                               .WithName($"Includes channel '{channel.Name}'")
-                               .WithValue("Type: " + channel.Kind.ToString()));
-            }
+                    .WithName($"Includes channel '{channel.Name}'")
+                    .WithValue("Type: " + channel.Kind.ToString()));
 
-            await RespondAsync(embeds: new Embed[] { embed.Build() }, ephemeral: true);
+            await RespondAsync(embed: embed.Build(), ephemeral: true);
         }
 
         [SlashCommand("create", "Creates a new template from a discord category. Not-supported channel types will be ignored!")]

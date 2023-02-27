@@ -1,10 +1,12 @@
-﻿using TenBot.Models;
+﻿using Newtonsoft.Json;
+using TenBot.Models;
 
 namespace TenBot.Services;
-public sealed class DiscordServerSettingsStorage
+public sealed class DiscordServerSettingsStorage : IService
 {
     public Dictionary<ulong, DiscordServerSettings> Settings { get; }
 
 
-    public DiscordServerSettingsStorage(Dictionary<ulong, DiscordServerSettings> settings) => Settings = settings;
+    public DiscordServerSettingsStorage()
+        => Settings = JsonConvert.DeserializeObject<Dictionary<ulong, DiscordServerSettings>>(File.ReadAllText(Directory.GetCurrentDirectory() + "/Data/beta_config.json"))!;
 }

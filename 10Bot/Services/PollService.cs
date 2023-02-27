@@ -3,7 +3,7 @@ using System.Diagnostics;
 using TenBot.Models;
 
 namespace TenBot.Services;
-public class PollService
+public class PollService : IService
 {
     private readonly List<PollData> Polls = new();
 

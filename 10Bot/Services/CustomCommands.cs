@@ -2,7 +2,7 @@
 using TenBot.Models;
 
 namespace TenBot.Services;
-public sealed class CustomCommands
+public sealed class CustomCommands : IService
 {
     private readonly Dictionary<ulong, List<CustomCommand>> Commands = new();
 
@@ -12,7 +12,7 @@ public sealed class CustomCommands
         foreach (var server in serverSettings.Settings.Keys)
             Commands.Add(server,
                          JsonConvert.DeserializeObject<List<CustomCommand>>(
-                             File.ReadAllText(Directory.GetCurrentDirectory().Split(@"\bin")[0] + $"/Data/Servers/{server}/custom_commands.json"))!);
+                             File.ReadAllText(Directory.GetCurrentDirectory() + $"/Data/Servers/{server}/custom_commands.json"))!);
     }
 
 
@@ -39,5 +39,6 @@ public sealed class CustomCommands
     }
 
     private void SaveCommands(ulong guildID)
-        => File.WriteAllText(Directory.GetCurrentDirectory().Split(@"\bin")[0] + $"/Data/Servers/{guildID}/custom_commands.json", JsonConvert.SerializeObject(Commands[guildID]));
+        => File.WriteAllText(Directory.GetCurrentDirectory() + $"/Data/Servers/{guildID}/custom_commands.json",
+                             JsonConvert.SerializeObject(Commands[guildID], Formatting.Indented));
 }

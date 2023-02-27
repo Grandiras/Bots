@@ -54,6 +54,6 @@ public sealed class CommandCommand : InteractionModuleBase
 
         foreach (var item in CustomCommands.GetCommands(Context.Guild.Id)) _ = embed.AddField(item.Name, item.Content);
 
-        await RespondAsync(embeds: new Embed[] { embed.Build() }, ephemeral: true);
+        await RespondAsync(embed: embed.Build(), ephemeral: true);
     }
 }

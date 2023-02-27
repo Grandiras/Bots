@@ -5,15 +5,15 @@ namespace TenBot.ClientEventServices;
 internal sealed class UserJoinedService : IClientEventService
 {
     private readonly DiscordSocketClient Client;
-    private readonly DiscordServerSettingsStorage ServerSettings;
     private readonly WelcomeMessages WelcomeMessages;
+    private readonly ServerService ServerService;
 
 
-    public UserJoinedService(DiscordSocketClient client, DiscordServerSettingsStorage serverSettings, WelcomeMessages welcomeMessages)
+    public UserJoinedService(DiscordSocketClient client, WelcomeMessages welcomeMessages, ServerService serverService)
     {
         Client = client;
-        ServerSettings = serverSettings;
         WelcomeMessages = welcomeMessages;
+        ServerService = serverService;
     }
 
 
@@ -24,7 +24,7 @@ internal sealed class UserJoinedService : IClientEventService
     }
 
     private async Task OnUserJoined(SocketGuildUser user)
-        => _ = await Client.GetGuild(ServerSettings.Settings[user.Guild.Id].GuildID)
-                           .DefaultChannel
-                           .SendMessageAsync(WelcomeMessages.GetWelcomeMessage(user));
+          => await ServerService.GetServer(user.Guild.Id)
+                                .DefaultChannel
+                                .SendMessageAsync(WelcomeMessages.GetWelcomeMessage(user));
 }

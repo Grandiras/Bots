@@ -9,20 +9,15 @@ namespace TenBot.Commands;
 public sealed class ApplyCommand : InteractionModuleBase
 {
     private readonly ServerService ServerService;
-    private readonly DiscordServerSettingsStorage ServerSettings;
 
 
-    public ApplyCommand(ServerService serverService, DiscordServerSettingsStorage serverSettings)
-    {
-        ServerService = serverService;
-        ServerSettings = serverSettings;
-    }
+    public ApplyCommand(ServerService serverService) => ServerService = serverService;
 
 
     [SlashCommand("moderator", "Apply for the role of a moderator!")]
     public async Task ModeratorAsync()
     {
-        if ((Context.User as SocketGuildUser)!.GuildPermissions.ManageMessages)
+        if (((SocketGuildUser)Context.User).GuildPermissions.ManageMessages)
         {
             await RespondAsync("You are already a moderator!", ephemeral: true);
             return;
@@ -34,19 +29,17 @@ public sealed class ApplyCommand : InteractionModuleBase
     [ModalInteraction("*_application", true)]
     public async Task ApplicationSubmittedAsync(string userName, ApplicationModal modal)
     {
-        var server = ServerSettings.Settings[Context.Guild.Id];
-
         var embed = new EmbedBuilder()
             .WithTitle("Application submitted")
             .WithColor(199, 62, 38)
             .AddField(new EmbedFieldBuilder()
                 .WithName("By")
-                .WithValue(Context.User.Username))
+                .WithValue(userName))
             .AddField(new EmbedFieldBuilder()
                 .WithName("Content")
                 .WithValue(modal.Reason));
 
-        _ = await ServerService.GetServer(server.GuildID).PublicUpdatesChannel.SendMessageAsync(embed: embed.Build());
+        _ = await ServerService.GetServer(Context.Guild.Id).PublicUpdatesChannel.SendMessageAsync(embed: embed.Build());
         await RespondAsync("Your application has successfully been redirected to the team.", ephemeral: true);
     }
 }

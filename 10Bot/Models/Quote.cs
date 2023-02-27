@@ -1,2 +1,2 @@
 ﻿namespace TenBot.Models;
-public record Quote(string ActualQuote, string Author, string? Context = null);
+public sealed record Quote(string ActualQuote, string Author, string? Context = null);
