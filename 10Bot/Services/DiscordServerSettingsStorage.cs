@@ -4,9 +4,14 @@ using TenBot.Models;
 namespace TenBot.Services;
 public sealed class DiscordServerSettingsStorage : IService
 {
-    public Dictionary<ulong, DiscordServerSettings> Settings { get; }
+    private readonly SettingsService Settings;
+
+    public Dictionary<ulong, DiscordServerSettings> ServerSettings { get; }
 
 
-    public DiscordServerSettingsStorage()
-        => Settings = JsonConvert.DeserializeObject<Dictionary<ulong, DiscordServerSettings>>(File.ReadAllText(Directory.GetCurrentDirectory() + "/Data/beta_config.json"))!;
+    public DiscordServerSettingsStorage(SettingsService settings)
+    {
+        Settings = settings;
+        ServerSettings = JsonConvert.DeserializeObject<Dictionary<ulong, DiscordServerSettings>>(File.ReadAllText(Settings.RootDirectory + (Settings.IsBeta ? "beta_config.json" : "config.json")))!;
+    }
 }

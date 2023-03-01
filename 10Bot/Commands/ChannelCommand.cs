@@ -10,15 +10,13 @@ namespace TenBot.Commands;
 public sealed class ChannelCommand : InteractionModuleBase
 {
     private readonly DiscordServerSettingsStorage ServerSettings;
-    private readonly DiscordSocketClient Client;
     private readonly ServerService ServerService;
     private readonly PrivateVoiceManager PrivateVoiceManager;
 
 
-    public ChannelCommand(DiscordServerSettingsStorage serverSettings, DiscordSocketClient client, ServerService serverService, PrivateVoiceManager privateVoiceManager)
+    public ChannelCommand(DiscordServerSettingsStorage serverSettings, ServerService serverService, PrivateVoiceManager privateVoiceManager)
     {
         ServerSettings = serverSettings;
-        Client = client;
         ServerService = serverService;
         PrivateVoiceManager = privateVoiceManager;
     }
@@ -27,7 +25,7 @@ public sealed class ChannelCommand : InteractionModuleBase
     [SlashCommand("rename", "Allows you to rename your current channel, even if you aren't allowed to through your permissions!")]
     public async Task RenameAsync([Summary("new_name", "Enter a new name for the channel.")] string newName)
     {
-        var serverSettings = ServerSettings.Settings[Context.Guild.Id];
+        var serverSettings = ServerSettings.ServerSettings[Context.Guild.Id];
 
         var voiceChannel = ((SocketGuildUser)Context.User).VoiceChannel;
         if (voiceChannel is null)
@@ -74,9 +72,7 @@ public sealed class ChannelCommand : InteractionModuleBase
         }
 
         var projectRole = ServerService.GetRole(x => x.Name.Split(" -")[0] == name, Context.Guild.Id);
-
-        foreach (var user in projectRole.Members.Where(x => !x.Roles.Any(y => y == role))) 
-            await user.AddRoleAsync(role);
+        await ((SocketGuildUser)Context.User).VoiceChannel.AddPermissionOverwriteAsync(projectRole, new OverwritePermissions(viewChannel: PermValue.Allow));
 
         await RespondAsync($"The users were added to this channel.", ephemeral: true);
     }

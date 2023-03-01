@@ -29,8 +29,8 @@ internal sealed class UserVoiceStateUpdatedService : IClientEventService
 
     private async Task OnUserVoiceStateUpdated(SocketUser user, SocketVoiceState oldVoice, SocketVoiceState newVoice)
     {
-        var oldServer = oldVoice.VoiceChannel is not null ? ServerSettings.Settings[oldVoice.VoiceChannel.Guild.Id] : null;
-        var newServer = newVoice.VoiceChannel is not null ? ServerSettings.Settings[newVoice.VoiceChannel.Guild.Id] : null;
+        var oldServer = oldVoice.VoiceChannel is not null ? ServerSettings.ServerSettings[oldVoice.VoiceChannel.Guild.Id] : null;
+        var newServer = newVoice.VoiceChannel is not null ? ServerSettings.ServerSettings[newVoice.VoiceChannel.Guild.Id] : null;
 
         if (oldVoice.VoiceChannel is not null and SocketVoiceChannel voiceChannel
             && voiceChannel.CategoryId == oldServer!.VoiceCategoryID
@@ -50,7 +50,7 @@ internal sealed class UserVoiceStateUpdatedService : IClientEventService
     private async Task CreateNewVoiceAsync(SocketGuildUser user)
     {
         var server = ServerService.GetServer(user.Guild.Id);
-        var serverSettings = ServerSettings.Settings[user.Guild.Id];
+        var serverSettings = ServerSettings.ServerSettings[user.Guild.Id];
 
         var channel = await server.CreateVoiceChannelAsync("📺Talk", x => x.CategoryId = serverSettings.VoiceCategoryID);
         await MoveUserAsync(user, channel);
@@ -59,7 +59,7 @@ internal sealed class UserVoiceStateUpdatedService : IClientEventService
     private async Task CreateNewPrivateVoiceAsync(SocketGuildUser user)
     {
         var server = ServerService.GetServer(user.Guild.Id);
-        var serverSettings = ServerSettings.Settings[user.Guild.Id];
+        var serverSettings = ServerSettings.ServerSettings[user.Guild.Id];
 
         var role = await server.CreateRoleAsync("🔒Private Talk", isMentionable: false);
         var channel = await server.CreateVoiceChannelAsync("🔒Private Talk", x => x.CategoryId = serverSettings.VoiceCategoryID);

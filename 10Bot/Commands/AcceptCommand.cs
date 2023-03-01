@@ -14,7 +14,7 @@ public sealed class AcceptCommand : InteractionModuleBase
     [SlashCommand("accept", "Accept the rules to get the 'Member' role!")]
     public async Task AcceptAsync()
     {
-        var serverSettings = ServerSettings.Settings[Context.Guild.Id];
+        var serverSettings = ServerSettings.ServerSettings[Context.Guild.Id];
 
         if (Context.User is not SocketGuildUser user)
         {

@@ -6,12 +6,15 @@ public sealed class QuotesService : IService
 {
     private readonly Dictionary<ulong, List<Quote>> Quotes = new();
 
+    private readonly SettingsService Settings;
 
-    public QuotesService(DiscordServerSettingsStorage serverSettings)
+
+    public QuotesService(DiscordServerSettingsStorage serverSettings, SettingsService settings)
     {
-        foreach (var server in serverSettings.Settings.Keys)
-            Quotes.Add(server,
-                       JsonConvert.DeserializeObject<List<Quote>>(File.ReadAllText(Directory.GetCurrentDirectory() + $"/Data/Servers/{server}/quotes.json"))!);
+        Settings = settings;
+
+        foreach (var server in serverSettings.ServerSettings.Keys)
+            Quotes.Add(server, JsonConvert.DeserializeObject<List<Quote>>(File.ReadAllText(Settings.RootDirectory + $"Servers/{server}/quotes.json"))!);
     }
 
 
@@ -27,7 +30,6 @@ public sealed class QuotesService : IService
     {
         var quotes = Quotes[guildID];
         quotes.Add(quote);
-        File.WriteAllText(Directory.GetCurrentDirectory() + $"/Data/Servers/{guildID}/quotes.json",
-                          JsonConvert.SerializeObject(quotes, Formatting.Indented));
+        File.WriteAllText(Settings.RootDirectory + $"Servers/{guildID}/quotes.json", JsonConvert.SerializeObject(quotes, Formatting.Indented));
     }
 }

@@ -8,6 +8,10 @@
   - optimize poll saving (no bloat parameters)
   - polls display results
   - polls change duration display (change to minutes)
+- automation
+  - version management
+  - server management
+  - automated pushing
 - project-intern moderation
 - UserVoiceStateUpdated fix support for moving 
 - quizzes
@@ -15,6 +19,5 @@
 - hot reload
 - better error handling
 - release notes (+ publishing)
-- channel invite allow invitation of all members of a project
-- make switching between normal bot and beta easier
-- centralized default file path
+- feature selection per server
+- version migration

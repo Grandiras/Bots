@@ -5,16 +5,17 @@ using TenBot.Models;
 namespace TenBot.Services;
 public sealed class ProjectTemplates : IService
 {
-    private readonly string FILE_PATH = Directory.GetCurrentDirectory() + "/Data/ProjectTemplates";
+    private readonly SettingsService Settings;
 
     public Dictionary<string, ProjectTemplate> Templates { get; } = new();
 
 
-    public ProjectTemplates()
+    public ProjectTemplates(SettingsService settings)
     {
-        var files = Directory.GetFiles(FILE_PATH).Where(x => x.EndsWith(".json"));
-        foreach (var file in files) Templates.Add(file.Split(@"\").Last().Split(".json")[0],
-                                                  JsonConvert.DeserializeObject<ProjectTemplate>(File.ReadAllText(file))!);
+        Settings = settings;
+        
+        var files = Directory.GetFiles(Settings.RootDirectory + "ProjectTemplates").Where(x => x.EndsWith(".json"));
+        foreach (var file in files) Templates.Add(file.Split(@"\").Last().Split(".json")[0], JsonConvert.DeserializeObject<ProjectTemplate>(File.ReadAllText(file))!);
     }
 
 
@@ -30,7 +31,7 @@ public sealed class ProjectTemplates : IService
         var template = new ProjectTemplate(description, channels);
 
         Templates.Add(name, template);
-        File.WriteAllText($"{FILE_PATH}/{name}.json", JsonConvert.SerializeObject(template, Formatting.Indented));
+        File.WriteAllText(Settings.RootDirectory + $"ProjectTemplates/{name}.json", JsonConvert.SerializeObject(template, Formatting.Indented));
     }
     private static ProjectTemplateChannel? CreateProjectTemplateChannel(SocketGuildChannel channel) => channel switch
     {

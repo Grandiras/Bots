@@ -43,7 +43,7 @@ public sealed class InteractionHandler
 
     private async Task ReadyAsync()
     {
-        foreach (var server in ServerSettings.Settings) _ = await Handler.RegisterCommandsToGuildAsync(server.Value.GuildID, true);
+        foreach (var server in ServerSettings.ServerSettings) _ = await Handler.RegisterCommandsToGuildAsync(server.Value.GuildID, true);
     }
 
     private async Task HandleInteraction(SocketInteraction interaction)

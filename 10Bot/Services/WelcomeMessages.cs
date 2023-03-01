@@ -6,13 +6,15 @@ public sealed class WelcomeMessages : IService
 {
     private readonly Dictionary<ulong, List<string>> WelcomeMessageDictionary = new();
 
+    private readonly SettingsService Settings;
 
-    public WelcomeMessages(DiscordServerSettingsStorage serverSettings)
+
+    public WelcomeMessages(DiscordServerSettingsStorage serverSettings, SettingsService settings)
     {
-        foreach (var server in serverSettings.Settings.Keys)
-            WelcomeMessageDictionary.Add(server,
-                                         JsonConvert.DeserializeObject<List<string>>(
-                                             File.ReadAllText(Directory.GetCurrentDirectory() + $"/Data/Servers/{server}/welcome_messages.json"))!);
+        Settings = settings;
+        
+        foreach (var server in serverSettings.ServerSettings.Keys)
+            WelcomeMessageDictionary.Add(server, JsonConvert.DeserializeObject<List<string>>(File.ReadAllText(Settings.RootDirectory + $"Servers/{server}/welcome_messages.json"))!);
     }
 
 
@@ -28,7 +30,6 @@ public sealed class WelcomeMessages : IService
     {
         var messages = GetWelcomeMessages(guildID).ToList();
         messages.Add(message);
-        File.WriteAllText(Directory.GetCurrentDirectory() + $"/Data/Servers/{guildID}/welcome_messages.json",
-                          JsonConvert.SerializeObject(messages, Formatting.Indented));
+        File.WriteAllText(Settings.RootDirectory + $"Servers/{guildID}/welcome_messages.json", JsonConvert.SerializeObject(messages, Formatting.Indented));
     }
 }

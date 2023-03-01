@@ -6,13 +6,15 @@ public sealed class CustomCommands : IService
 {
     private readonly Dictionary<ulong, List<CustomCommand>> Commands = new();
 
+    private readonly SettingsService Settings;
 
-    public CustomCommands(DiscordServerSettingsStorage serverSettings)
+
+    public CustomCommands(DiscordServerSettingsStorage serverSettings, SettingsService settings)
     {
-        foreach (var server in serverSettings.Settings.Keys)
-            Commands.Add(server,
-                         JsonConvert.DeserializeObject<List<CustomCommand>>(
-                             File.ReadAllText(Directory.GetCurrentDirectory() + $"/Data/Servers/{server}/custom_commands.json"))!);
+        Settings = settings;
+        
+        foreach (var server in serverSettings.ServerSettings.Keys)
+            Commands.Add(server, JsonConvert.DeserializeObject<List<CustomCommand>>(File.ReadAllText(Settings.RootDirectory + $"Servers/{server}/custom_commands.json"))!);
     }
 
 
@@ -39,6 +41,6 @@ public sealed class CustomCommands : IService
     }
 
     private void SaveCommands(ulong guildID)
-        => File.WriteAllText(Directory.GetCurrentDirectory() + $"/Data/Servers/{guildID}/custom_commands.json",
+        => File.WriteAllText(Settings.RootDirectory + $"Servers/{guildID}/custom_commands.json",
                              JsonConvert.SerializeObject(Commands[guildID], Formatting.Indented));
 }
