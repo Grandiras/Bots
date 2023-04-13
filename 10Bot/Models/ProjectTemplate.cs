@@ -6,5 +6,6 @@ public enum ProjectTemplateChannelKind
 {
     Text,
     Voice,
-    Stage
+    Stage,
+	Forum
 }

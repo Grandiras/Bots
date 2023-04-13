@@ -4,17 +4,24 @@ using Newtonsoft.Json;
 namespace TenBot.Services;
 public sealed class WelcomeMessages : IService
 {
+    private const string WELCOME_MESSAGE_FILE = "welcome_messages.json";
+
     private readonly Dictionary<ulong, List<string>> WelcomeMessageDictionary = new();
 
     private readonly SettingsService Settings;
+    private readonly FileSystemManager FileSystemManager;
 
 
-    public WelcomeMessages(DiscordServerSettingsStorage serverSettings, SettingsService settings)
+    public WelcomeMessages(DiscordServerSettingsStorage serverSettings, SettingsService settings, FileSystemManager fileSystemManager)
     {
         Settings = settings;
-        
+        FileSystemManager = fileSystemManager;
+
         foreach (var server in serverSettings.ServerSettings.Keys)
-            WelcomeMessageDictionary.Add(server, JsonConvert.DeserializeObject<List<string>>(File.ReadAllText(Settings.RootDirectory + $"Servers/{server}/welcome_messages.json"))!);
+        {
+            FileSystemManager.CreateServerDirectoryIfNotExisting(server);
+            WelcomeMessageDictionary.Add(server, JsonConvert.DeserializeObject<List<string>>(File.ReadAllText(Settings.RootDirectory + $"Servers/{server}/" + WELCOME_MESSAGE_FILE))!);
+        }
     }
 
 

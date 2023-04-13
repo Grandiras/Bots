@@ -38,6 +38,7 @@ public sealed class ProjectTemplates : IService
         SocketStageChannel => new(channel.Name, ProjectTemplateChannelKind.Stage),
         SocketVoiceChannel => new(channel.Name, ProjectTemplateChannelKind.Voice),
         SocketTextChannel => new(channel.Name, ProjectTemplateChannelKind.Text),
+        SocketForumChannel => new(channel.Name, ProjectTemplateChannelKind.Forum),
         _ => null
     };
 }

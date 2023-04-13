@@ -7,13 +7,15 @@ internal sealed class UserJoinedService : IClientEventService
     private readonly DiscordSocketClient Client;
     private readonly WelcomeMessages WelcomeMessages;
     private readonly ServerService ServerService;
+    private readonly DiscordServerSettingsStorage ServerSettings;
 
 
-    public UserJoinedService(DiscordSocketClient client, WelcomeMessages welcomeMessages, ServerService serverService)
+    public UserJoinedService(DiscordSocketClient client, WelcomeMessages welcomeMessages, ServerService serverService, DiscordServerSettingsStorage serverSettings)
     {
         Client = client;
         WelcomeMessages = welcomeMessages;
         ServerService = serverService;
+        ServerSettings = serverSettings;
     }
 
 
@@ -25,6 +27,6 @@ internal sealed class UserJoinedService : IClientEventService
 
     private async Task OnUserJoined(SocketGuildUser user)
           => await ServerService.GetServer(user.Guild.Id)
-                                .DefaultChannel
+                                .SystemChannel
                                 .SendMessageAsync(WelcomeMessages.GetWelcomeMessage(user));
 }

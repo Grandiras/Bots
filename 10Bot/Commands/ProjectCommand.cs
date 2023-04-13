@@ -13,14 +13,12 @@ public sealed class ProjectCommand : InteractionModuleBase
 {
     private readonly ServerService ServerService;
     private readonly ProjectTemplates ProjectTemplates;
-    private readonly DiscordServerSettingsStorage ServerSettings;
 
 
-    public ProjectCommand(ServerService serverService, ProjectTemplates projectTemplates, DiscordServerSettingsStorage serverSettings)
+    public ProjectCommand(ServerService serverService, ProjectTemplates projectTemplates)
     {
         ServerService = serverService;
         ProjectTemplates = projectTemplates;
-        ServerSettings = serverSettings;
     }
 
 
@@ -162,6 +160,7 @@ public sealed class ProjectCommand : InteractionModuleBase
             ProjectTemplateChannelKind.Text => await server.CreateTextChannelAsync(channel.Name, x => x.CategoryId = category.Id),
             ProjectTemplateChannelKind.Voice => await server.CreateVoiceChannelAsync(channel.Name, x => x.CategoryId = category.Id),
             ProjectTemplateChannelKind.Stage => await server.CreateStageChannelAsync(channel.Name, x => x.CategoryId = category.Id),
+            ProjectTemplateChannelKind.Forum => await server.CreateForumChannelAsync(channel.Name, x => x.CategoryId = category.Id),
             _ => throw new NotSupportedException($"ProjectTemplateChannelKind value '{channel.Kind}' not supported!"),
         };
 
