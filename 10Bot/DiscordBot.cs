@@ -4,82 +4,61 @@ using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using TenBot.ClientEventServices;
-using TenBot.Helpers;
 using TenBot.Models;
 using TenBot.Services;
 
 namespace TenBot;
 internal sealed class DiscordBot
 {
-    private readonly IHost Host;
+	private readonly IHost Host;
 
 
-    public DiscordBot()
-    {
-        // runtime config
-        var config = new DiscordSocketConfig();
-        var serviceConfig = new InteractionServiceConfig();
+	public DiscordBot() => Host = Microsoft.Extensions.Hosting.Host
+		.CreateDefaultBuilder()
+		.ConfigureLogging((logger) => logger.AddConsole())
+		.ConfigureServices((context, services) => _ = services
 
-        // locally stored config (use beta-config for beta bot version)
-        var configJson = File.ReadAllText(Directory.GetCurrentDirectory().Split(@"\bin")[0] + "/Data/config.json");
-        var serverSettings = new DiscordServerSettingsStorage(JsonConvert.DeserializeObject<Dictionary<ulong, DiscordServerSettings>>(configJson)!);
+			.AddSingleton(new TenBotSettings
+			{
+				IsBeta = true,
+				RootPath = Directory.GetCurrentDirectory().Split(@"\bin")[0] + @"\Data"
+			})
 
-        // configure the host
-        Host = Microsoft.Extensions.Hosting.Host
-        .CreateDefaultBuilder()
-        .ConfigureLogging((logger) => logger.AddConsole()) // logging
-        .ConfigureServices((context, services) =>
-        {
-            _ = services
-                .AddSingleton(config)
-                .AddSingleton<DiscordSocketClient>(); // connnection to Discord
+			.AddSingleton(new DiscordSocketConfig())
+			.AddSingleton<DiscordSocketClient>()
 
-            _ = services
-                .AddSingleton(serviceConfig)
-                .AddSingleton<InteractionService>()
-                .AddSingleton<InteractionHandler>();
+			.AddSingleton(new InteractionServiceConfig())
+			.AddSingleton<InteractionService>()
+			.AddSingleton<InteractionHandler>()
 
-            _ = services
-                .AddSingleton(serverSettings);
+			.Scan(scan => scan
+				.FromCallingAssembly()
+				.AddClasses(classes => classes
+					.AssignableTo<IService>())
+					.AsSelf()
+					.WithSingletonLifetime()))
 
-            // custom services
-            _ = services
-                .AddSingleton<WelcomeMessages>()
-                .AddSingleton<CustomCommands>()
-                .AddSingleton<ProjectTemplates>()
-                .AddSingleton<QuotesService>()
-                .AddSingleton<ServerService>()
-                .AddSingleton<PollService>();
-
-            // activator for all interaction event singletons
-            _ = services.AddActivatorServices<IClientEventService, ClientEventServiceActivator>();
-        })
-        .Build();
-    }
+		.Build();
 
 
-    public async Task RunAsync()
-    {
-        var client = Host.Services.GetRequiredService<DiscordSocketClient>();
-        var serverSettings = Host.Services.GetRequiredService<DiscordServerSettingsStorage>();
+	public async Task RunAsync()
+	{
+		var client = Host.Services.GetRequiredService<DiscordSocketClient>();
+		var settings = Host.Services.GetRequiredService<TenBotSettings>();
 
-        // default logger for the Discord client
-        client.Log += async (msg) =>
-        {
-            Console.WriteLine(msg.ToString());
-            await Task.CompletedTask;
-        };
+		client.Log += async (msg) =>
+		{
+			Console.WriteLine(msg.ToString());
+			await Task.CompletedTask;
+		};
 
-        await Host.Services.GetRequiredService<InteractionHandler>().InitializeAsync();
-        await Host.Services.GetRequiredService<ClientEventServiceActivator>().ActivateAsync();
+		await Host.Services.GetRequiredService<InteractionHandler>().InitializeAsync();
+		foreach (var service in Host.Services.GetServices<IClientEventService>()) await service.StartAsync();
 
-        // connect to Discord
-        await client.LoginAsync(TokenType.Bot, serverSettings.Settings.First().Value.Token);
-        await client.StartAsync();
+		await client.LoginAsync(TokenType.Bot, settings.Configuration.Token);
+		await client.StartAsync();
 
-        // infinite timeout
-        await Task.Delay(-1);
-    }
+		await Task.Delay(-1); // infinite timeout
+	}
 }

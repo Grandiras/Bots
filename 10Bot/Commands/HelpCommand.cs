@@ -6,37 +6,35 @@ using TenBot.Services;
 namespace TenBot.Commands;
 public sealed class HelpCommand : InteractionModuleBase
 {
-    private readonly DiscordServerSettingsStorage ServerSettings;
-    private readonly DiscordSocketClient Client;
+	private readonly ServerSettings ServerSettings;
+	private readonly DiscordSocketClient Client;
 
 
-    public HelpCommand(DiscordServerSettingsStorage serverSettings, DiscordSocketClient client)
-    {
-        ServerSettings = serverSettings;
-        Client = client;
-    }
+	public HelpCommand(ServerSettings serverSettings, DiscordSocketClient client)
+	{
+		ServerSettings = serverSettings;
+		Client = client;
+	}
 
 
-    [SlashCommand("help", "Displayes a list of all commands and their descriptions existing here.")]
-    public async Task RenameAsync()
-    {
-        var server = ServerSettings.Settings[Context.Guild.Id];
+	[SlashCommand("help", "Displayes a list of all commands and their descriptions existing here.")]
+	public async Task RenameAsync()
+	{
+		if (Context.User is not IGuildUser)
+		{
+			await RespondAsync("Your account wasn't found... Please report that!", ephemeral: true);
+			return;
+		}
 
-        if (Context.User is not IGuildUser)
-        {
-            await RespondAsync("Your account wasn't found... Please report that!", ephemeral: true);
-            return;
-        }
+		var embed = new EmbedBuilder()
+		{
+			Title = "10Bot Commands",
+			Color = Color.Gold,
+		};
 
-        var embed = new EmbedBuilder()
-        {
-            Title = "10Bot Commands",
-            Color = Color.Gold,
-        };
+		foreach (var item in Client.GetGuild(Context.Guild.Id).GetApplicationCommandsAsync().Result)
+			_ = embed.AddField(item.Name, item.Description);
 
-        foreach (var item in Client.GetGuild(server.GuildID).GetApplicationCommandsAsync().Result)
-            _ = embed.AddField(item.Name, item.Description);
-
-        await RespondAsync(embeds: new Embed[] { embed.Build() }, ephemeral: true);
-    }
+		await RespondAsync(embeds: new Embed[] { embed.Build() }, ephemeral: true);
+	}
 }

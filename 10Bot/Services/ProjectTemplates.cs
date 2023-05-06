@@ -3,40 +3,43 @@ using Newtonsoft.Json;
 using TenBot.Models;
 
 namespace TenBot.Services;
-public sealed class ProjectTemplates
+public sealed class ProjectTemplates : IService, IDisposable
 {
-    private readonly string FILE_PATH = Directory.GetCurrentDirectory().Split(@"\bin")[0] + "/Data/ProjectTemplates";
+	private const string DIRECTORY_NAME = @"\ProjectTemplates";
 
-    public Dictionary<string, ProjectTemplate> Templates { get; } = new();
+	private readonly TenBotSettings Configuration;
 
-
-    public ProjectTemplates()
-    {
-        var files = Directory.GetFiles(FILE_PATH).Where(x => x.EndsWith(".json"));
-        foreach (var file in files) Templates.Add(file.Split(@"\").Last().Split(".json")[0],
-                                                  JsonConvert.DeserializeObject<ProjectTemplate>(File.ReadAllText(file))!);
-    }
+	public Dictionary<string, ProjectTemplate> Templates { get; } = new();
 
 
-    public void CreateProjectTemplate(string name, string description, SocketCategoryChannel category)
-    {
-        var channels = new List<ProjectTemplateChannel>();
-        foreach (var channel in category.Channels.OrderBy(x => x.Position))
-        {
-            var channelTemplate = CreateProjectTemplateChannel(channel!);
-            if (channelTemplate is not null) channels.Add(channelTemplate);
-        }
+	public ProjectTemplates(TenBotSettings configuration)
+	{
+		Configuration = configuration;
 
-        var template = new ProjectTemplate(description, channels);
+		foreach (var file in Directory.GetFiles(configuration.RootPath + DIRECTORY_NAME).Where(x => x.EndsWith(".json")))
+			Templates.Add(file.Split(@"\").Last().Split(".json")[0], JsonConvert.DeserializeObject<ProjectTemplate>(File.ReadAllText(file))!);
+	}
 
-        Templates.Add(name, template);
-        File.WriteAllText($"{FILE_PATH}/{name}.json", JsonConvert.SerializeObject(template));
-    }
-    private static ProjectTemplateChannel? CreateProjectTemplateChannel(SocketGuildChannel channel) => channel switch
-    {
-        SocketStageChannel => new(channel.Name, ProjectTemplateChannelKind.Stage),
-        SocketVoiceChannel => new(channel.Name, ProjectTemplateChannelKind.Voice),
-        SocketTextChannel => new(channel.Name, ProjectTemplateChannelKind.Text),
-        _ => null
-    };
+
+	public void CreateProjectTemplate(string name, string description, SocketCategoryChannel category)
+	{
+		var template = new ProjectTemplate(description, new());
+
+		foreach (var channel in category.Channels.OrderBy(x => x.Position)) template.Channels.Add(CreateProjectTemplateChannel(channel!));
+
+		Templates.Add(name, template);
+		SaveTemplate(name);
+	}
+	private static ProjectTemplateChannel CreateProjectTemplateChannel(SocketGuildChannel channel) => channel switch
+	{
+		SocketStageChannel => new(channel.Name, ProjectTemplateChannelKind.Stage),
+		SocketVoiceChannel => new(channel.Name, ProjectTemplateChannelKind.Voice),
+		SocketTextChannel => new(channel.Name, ProjectTemplateChannelKind.Text),
+		SocketForumChannel => new(channel.Name, ProjectTemplateChannelKind.Forum),
+		_ => throw new NotSupportedException()
+	};
+
+	private void SaveTemplate(string name) => File.WriteAllText(Configuration.RootPath + $"{DIRECTORY_NAME}/{name}.json", JsonConvert.SerializeObject(Templates[name]));
+
+	public void Dispose() => Templates.Keys.ToList().ForEach(SaveTemplate);
 }

@@ -4,7 +4,8 @@ public record ProjectTemplateChannel(string Name, ProjectTemplateChannelKind Kin
 
 public enum ProjectTemplateChannelKind
 {
-    Text,
-    Voice,
-    Stage
+	Text,
+	Voice,
+	Stage,
+	Forum
 }
