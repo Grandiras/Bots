@@ -26,13 +26,16 @@ internal sealed class UserVoiceStateUpdatedService : IClientEventService
 	private async Task OnUserVoiceStateUpdated(SocketUser user, SocketVoiceState oldVoice, SocketVoiceState newVoice)
 	{
 		if (oldVoice.VoiceChannel is not null and SocketVoiceChannel voiceChannel
-			&& voiceChannel.CategoryId == ServerSettings.Configurations[oldVoice.VoiceChannel.Guild.Id].VoiceCategoryID
-			&& voiceChannel.ConnectedUsers.Count == 0)
+			&& voiceChannel.CategoryId == ServerSettings.Configurations[oldVoice.VoiceChannel.Guild.Id].VoiceCategoryID && voiceChannel.ConnectedUsers.Count == 0)
 			await CleanUpChannelAsync(voiceChannel);
-		else if (newVoice.VoiceChannel is not null && newVoice.VoiceChannel.Id == ServerSettings.Configurations[newVoice.VoiceChannel.Guild.Id].NewTalkChannelID)
-			await CreateNewVoiceAsync((user as SocketGuildUser)!);
-		else if (newVoice.VoiceChannel is not null && newVoice.VoiceChannel.Id == ServerSettings.Configurations[newVoice.VoiceChannel.Guild.Id].NewPrivateTalkChannelID)
-			await CreateNewPrivateVoiceAsync((user as SocketGuildUser)!);
+
+		if (newVoice.VoiceChannel is not null)
+		{
+			if (newVoice.VoiceChannel.Id == ServerSettings.Configurations[newVoice.VoiceChannel.Guild.Id].NewTalkChannelID)
+				await CreateNewVoiceAsync((SocketGuildUser)user);
+			else if (newVoice.VoiceChannel.Id == ServerSettings.Configurations[newVoice.VoiceChannel.Guild.Id].NewPrivateTalkChannelID)
+				await CreateNewPrivateVoiceAsync((SocketGuildUser)user);
+		}
 	}
 
 	private async Task CleanUpChannelAsync(SocketVoiceChannel voiceChannel)

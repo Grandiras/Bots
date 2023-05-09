@@ -12,7 +12,7 @@ public sealed class TenBotSettings
 	{
 		get
 		{
-			CachedConfiguration ??= JsonConvert.DeserializeObject<TenBotConfiguration>(File.ReadAllText(IsBeta ? RootPath + @"\beta_config.json" : @"\config.json"))!;
+			CachedConfiguration ??= JsonConvert.DeserializeObject<TenBotConfiguration>(File.ReadAllText(RootPath + (IsBeta ? "/beta_config.json" : "/config.json")))!;
 			return CachedConfiguration;
 		}
 	}

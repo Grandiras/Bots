@@ -5,14 +5,12 @@ namespace TenBot.ClientEventServices;
 internal sealed class UserJoinedService : IClientEventService
 {
 	private readonly DiscordSocketClient Client;
-	private readonly ServerSettings ServerSettings;
 	private readonly WelcomeMessages WelcomeMessages;
 
 
-	public UserJoinedService(DiscordSocketClient client, ServerSettings serverSettings, WelcomeMessages welcomeMessages)
+	public UserJoinedService(DiscordSocketClient client, WelcomeMessages welcomeMessages)
 	{
 		Client = client;
-		ServerSettings = serverSettings;
 		WelcomeMessages = welcomeMessages;
 	}
 

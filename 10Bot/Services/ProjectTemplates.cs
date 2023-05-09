@@ -5,7 +5,7 @@ using TenBot.Models;
 namespace TenBot.Services;
 public sealed class ProjectTemplates : IService, IDisposable
 {
-	private const string DIRECTORY_NAME = @"\ProjectTemplates";
+	private const string DIRECTORY_NAME = "/ProjectTemplates";
 
 	private readonly TenBotSettings Configuration;
 
