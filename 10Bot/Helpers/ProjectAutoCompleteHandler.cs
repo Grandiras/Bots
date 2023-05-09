@@ -5,10 +5,10 @@ using TenBot.Services;
 namespace TenBot.Helpers;
 public sealed class ProjectAutoCompleteHandler : AutocompleteHandler
 {
-    private readonly ServerService ServerService;
+	private readonly ServerService ServerService;
 
 
-    public ProjectAutoCompleteHandler(ServerService serverService) => ServerService = serverService;
+	public ProjectAutoCompleteHandler(ServerService serverService) => ServerService = serverService;
 
 
     public override async Task<AutocompletionResult> GenerateSuggestionsAsync(IInteractionContext context,
@@ -19,8 +19,8 @@ public sealed class ProjectAutoCompleteHandler : AutocompleteHandler
         var results = ServerService.GetCategoriesByRoles(ServerService.GetRoles(x => x.Name.EndsWith(" - Project") || x.Name.EndsWith(" - Project - Public"), context.Guild.Id), context.Guild.Id)
                                    .Select(x => new AutocompleteResult(x.Name, x.Name));
 
-        await Task.CompletedTask;
+		await Task.CompletedTask;
 
-        return AutocompletionResult.FromSuccess(results.Take(25));
-    }
+		return AutocompletionResult.FromSuccess(results.Take(25));
+	}
 }

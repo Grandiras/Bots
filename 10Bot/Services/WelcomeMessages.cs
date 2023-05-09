@@ -1,42 +1,41 @@
 ﻿using Discord;
-using Newtonsoft.Json;
 
 namespace TenBot.Services;
-public sealed class WelcomeMessages : IService
+public sealed class WelcomeMessages : IService, IDisposable
 {
-    private const string WELCOME_MESSAGE_FILE = "welcome_messages.json";
+	private const string FILE_NAME = "welcome_messages.json";
 
-    private readonly Dictionary<ulong, List<string>> WelcomeMessageDictionary = new();
+	private readonly ServerSettings ServerSettings;
+
+	private readonly Random Randomizer = new();
+	private readonly Dictionary<ulong, List<string>> Messages = new();
 
     private readonly SettingsService Settings;
     private readonly FileSystemManager FileSystemManager;
 
 
-    public WelcomeMessages(DiscordServerSettingsStorage serverSettings, SettingsService settings, FileSystemManager fileSystemManager)
-    {
-        Settings = settings;
-        FileSystemManager = fileSystemManager;
+	public WelcomeMessages(ServerSettings serverSettings)
+	{
+		ServerSettings = serverSettings;
 
-        foreach (var server in serverSettings.ServerSettings.Keys)
-        {
-            FileSystemManager.CreateServerDirectoryIfNotExisting(server);
-            WelcomeMessageDictionary.Add(server, JsonConvert.DeserializeObject<List<string>>(File.ReadAllText(Settings.RootDirectory + $"Servers/{server}/" + WELCOME_MESSAGE_FILE))!);
-        }
+		Messages = ServerSettings.GetAllServerConfiguration<List<string>>(FILE_NAME);
+	}
+
+
+	public string GetWelcomeMessage(IGuildUser user)
+	{
+		var messages = GetWelcomeMessages(user.Guild.Id).ToList();
+		return messages[Randomizer.Next(messages.Count - 1)].Replace("[]", user.Mention);
     }
+	public IEnumerable<string> GetWelcomeMessages(ulong serverID) => Messages[serverID];
 
+	public void AddWelcomeMessage(string message, ulong serverID)
+	{
+		var messages = GetWelcomeMessages(serverID).ToList();
+		messages.Add(message);
 
-    public string GetWelcomeMessage(IGuildUser user)
-    {
-        var messages = GetWelcomeMessages(user.Guild.Id).ToList();
-        return messages[Random.Shared.Next(messages.Count - 1)].Replace("[]", user.Mention);
-    }
+		ServerSettings.SaveServerConfiguration(serverID, FILE_NAME, messages);
+	}
 
-    public IEnumerable<string> GetWelcomeMessages(ulong guildID) => WelcomeMessageDictionary[guildID];
-
-    public void AddWelcomeMessage(string message, ulong guildID)
-    {
-        var messages = GetWelcomeMessages(guildID).ToList();
-        messages.Add(message);
-        File.WriteAllText(Settings.RootDirectory + $"Servers/{guildID}/welcome_messages.json", JsonConvert.SerializeObject(messages, Formatting.Indented));
-    }
+	public void Dispose() => ServerSettings.SaveAllServerConfiguration(FILE_NAME, Messages);
 }

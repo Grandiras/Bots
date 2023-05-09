@@ -5,16 +5,16 @@ using TenBot.Services;
 namespace TenBot.Commands;
 public sealed class AcceptCommand : InteractionModuleBase
 {
-    private readonly DiscordServerSettingsStorage ServerSettings;
+	private readonly ServerSettings ServerSettings;
 
 
-    public AcceptCommand(DiscordServerSettingsStorage serverSettings) => ServerSettings = serverSettings;
+	public AcceptCommand(ServerSettings serverSettings) => ServerSettings = serverSettings;
 
 
     [SlashCommand("accept", "Accept the rules to get the 'Member' role!")]
     public async Task AcceptAsync()
     {
-        var serverSettings = ServerSettings.ServerSettings[Context.Guild.Id];
+        var server = ServerSettings.Configurations[Context.Guild.Id];
 
         if (Context.User is not SocketGuildUser user)
         {
@@ -22,13 +22,13 @@ public sealed class AcceptCommand : InteractionModuleBase
             return;
         }
 
-        if (user.Roles.Any(x => x.Id == serverSettings.MemberRoleID))
+        if (user.Roles.Any(x => x.Id == server.MemberRoleID))
         {
             await RespondAsync("Really? You already have this role -_-", ephemeral: true);
             return;
         }
 
-        await user.AddRoleAsync(serverSettings.MemberRoleID);
+        await user.AddRoleAsync(server.MemberRoleID);
         await RespondAsync("You got that role. Try /discover to find projects to join!", ephemeral: true);
     }
 }

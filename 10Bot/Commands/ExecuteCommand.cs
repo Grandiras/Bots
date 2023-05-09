@@ -7,10 +7,10 @@ namespace TenBot.Commands;
 [DefaultMemberPermissions(GuildPermission.SendMessages)]
 public sealed class ExecuteCommand : InteractionModuleBase
 {
-    private readonly CustomCommands CustomCommands;
+	private readonly CustomCommands CustomCommands;
 
 
-    public ExecuteCommand(CustomCommands customCommands) => CustomCommands = customCommands;
+	public ExecuteCommand(CustomCommands customCommands) => CustomCommands = customCommands;
 
 
     [SlashCommand("execute", "Executes a custom command.")]

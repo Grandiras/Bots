@@ -8,10 +8,10 @@ namespace TenBot.Commands;
 [Group("quote", "Create memories with this command!")]
 public sealed class QuoteCommand : InteractionModuleBase
 {
-    private readonly QuotesService QuotesService;
+	private readonly QuotesService QuotesService;
 
 
-    public QuoteCommand(QuotesService quotesService) => QuotesService = quotesService;
+	public QuoteCommand(QuotesService quotesService) => QuotesService = quotesService;
 
 
     [SlashCommand("create", "Creates a new memory.")]
@@ -57,21 +57,21 @@ public sealed class QuoteCommand : InteractionModuleBase
         await RespondAsync(embed: embed.Build());
     }
 
-    [MessageCommand("Search for a quote")]
-    public async Task SearchQuoteAsync(IMessage message)
-    {
-        var quote = QuotesService.GetQuote(message.Content, Context.Guild.Id);
+	[MessageCommand("Search for a quote")]
+	public async Task SearchQuoteAsync(IMessage message)
+	{
+		var quote = QuotesService.GetQuote(message.Content, Context.Guild.Id);
 
-        var embed = new EmbedBuilder()
-            .WithTitle("Quote")
-            .WithDescription(quote.ActualQuote)
-            .WithColor(Color.Green)
-            .WithFields(new EmbedFieldBuilder()
-                .WithName("By")
-                .WithValue($"{quote.Author}{(quote.Context is not null ? $", {quote.Context}" : "")}"),
-                        new EmbedFieldBuilder()
-                .WithName("Responding to")
-                .WithValue(message));
+		var embed = new EmbedBuilder()
+			.WithTitle("Quote")
+			.WithDescription(quote.ActualQuote)
+			.WithColor(Color.Green)
+			.WithFields(new EmbedFieldBuilder()
+				.WithName("By")
+				.WithValue($"{quote.Author}{(quote.Context is not null ? $", {quote.Context}" : "")}"),
+						new EmbedFieldBuilder()
+				.WithName("Responding to")
+				.WithValue(message));
 
         await RespondAsync(embed: embed.Build());
     }
