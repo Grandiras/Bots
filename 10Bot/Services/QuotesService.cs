@@ -9,8 +9,6 @@ public sealed class QuotesService : IService, IDisposable
 
 	private readonly Dictionary<ulong, List<Quote>> Quotes = new();
 
-    private readonly SettingsService Settings;
-
 	public QuotesService(ServerSettings serverSettings)
 	{
 		ServerSettings = serverSettings;
@@ -25,7 +23,7 @@ public sealed class QuotesService : IService, IDisposable
 		var results = new SimMetrics.Net.Metric.Levenstein().BatchCompareSet(quotes.Select(x => x.ActualQuote).ToArray(), message).ToList();
 		return quotes[results.IndexOf(results.Max())];
 	}
-	public Quote GetRandomQuote(ulong guildID) => Quotes[serverID][Random.Shared.Next(0, Quotes[serverID].Count)];
+	public Quote GetRandomQuote(ulong serverID) => Quotes[serverID][Random.Shared.Next(0, Quotes[serverID].Count)];
 
 	public void AddQuote(Quote quote, ulong serverID)
 	{

@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using TenBot.Models;
 
 namespace TenBot.Services;
 public sealed class ServerSettings : IService
@@ -26,7 +25,10 @@ public sealed class ServerSettings : IService
 
 
 	public T GetServerConfiguration<T>(ulong serverID, string fileName) where T : class
-		=> JsonConvert.DeserializeObject<T>(File.ReadAllText(Configuration.RootPath + $"/Servers/{serverID}/{fileName}"))!;
+	{
+		if (!File.Exists(Configuration.RootPath + $"/Servers/{serverID}/{fileName}")) File.Create(Configuration.RootPath + $"/Servers/{serverID}/{fileName}").Close();
+		return JsonConvert.DeserializeObject<T>(File.ReadAllText(Configuration.RootPath + $"/Servers/{serverID}/{fileName}"))!;
+	}
 	public void SaveServerConfiguration<T>(ulong serverID, string fileName, T content) where T : class
 		=> File.WriteAllText(Configuration.RootPath + $"/Servers/{serverID}/{fileName}", JsonConvert.SerializeObject(content));
 

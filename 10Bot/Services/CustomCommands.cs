@@ -9,8 +9,6 @@ public sealed class CustomCommands : IService, IDisposable
 
 	private readonly Dictionary<ulong, List<CustomCommand>> Commands = new();
 
-    private readonly SettingsService Settings;
-
 
 	public CustomCommands(ServerSettings serverSettings)
 	{

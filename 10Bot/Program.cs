@@ -7,52 +7,47 @@ using TenBot;
 using TenBot.ClientEventServices;
 using TenBot.Services;
 
-var client = new DiscordSocketClient();
-
-var settings = new SettingsService()
-{
-    RootDirectory = Directory.GetCurrentDirectory() + "/Data/",
-    IsBeta = true,
-    VersionNumber = 1
-};
-
 var host = Host
-.CreateDefaultBuilder()
-.ConfigureServices(services => _ = services
-    .AddSingleton(client)
-    .AddSingleton(settings)
-    .AddSingleton<DiscordServerSettingsStorage>()
+		.CreateDefaultBuilder()
+		.ConfigureServices((context, services) => _ = services
 
-    .AddSingleton<InteractionService>()
-    .AddSingleton<InteractionHandler>()
+			.AddSingleton(new TenBotSettings
+			{
+				IsBeta = true,
+				RootPath = Directory.GetCurrentDirectory().Split(@"\bin")[0] + "/Data"
+			})
 
-    .Scan(scan => scan
-        .FromCallingAssembly()
-        .AddClasses(classes => classes.AssignableTo<IClientEventService>())
-        .As<IClientEventService>()
-        .WithSingletonLifetime())
+			.AddSingleton(new DiscordSocketConfig())
+			.AddSingleton<DiscordSocketClient>()
 
-    .Scan(scan => scan
-        .FromCallingAssembly()
-        .AddClasses(classes => classes.AssignableTo<IService>())
-        .AsSelf()
-        .WithSingletonLifetime()))
-.Build();
+			.AddSingleton(new InteractionServiceConfig())
+			.AddSingleton<InteractionService>()
+			.AddSingleton<InteractionHandler>()
 
-client.Log += async msg =>
+			.Scan(scan => scan
+				.FromCallingAssembly()
+				.AddClasses(classes => classes.AssignableTo<IClientEventService>())
+					.As<IClientEventService>()
+					.WithSingletonLifetime()
+				.AddClasses(classes => classes.AssignableTo<IService>())
+					.AsSelf()
+					.WithSingletonLifetime()))
+
+		.Build();
+
+var client = host.Services.GetRequiredService<DiscordSocketClient>();
+var settings = host.Services.GetRequiredService<TenBotSettings>();
+
+client.Log += async (msg) =>
 {
-    Console.WriteLine(msg.ToString());
-    await Task.CompletedTask;
+	Console.WriteLine(msg.ToString());
+	await Task.CompletedTask;
 };
 
 await host.Services.GetRequiredService<InteractionHandler>().InitializeAsync();
+foreach (var service in host.Services.GetServices<IClientEventService>()) await service.StartAsync();
 
-host.Services
-    .GetServices(typeof(IClientEventService))
-    .ToList()
-	.ForEach(async service => await ((IClientEventService)service!).StartAsync());
-
-await client.LoginAsync(TokenType.Bot, host.Services.GetRequiredService<DiscordServerSettingsStorage>().ServerSettings.First().Value.Token);
+await client.LoginAsync(TokenType.Bot, settings.Configuration.Token);
 await client.StartAsync();
 
-await host.RunAsync();
+await Task.Delay(-1); // infinite timeout

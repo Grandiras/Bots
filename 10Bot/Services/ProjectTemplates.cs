@@ -17,7 +17,7 @@ public sealed class ProjectTemplates : IService, IDisposable
 		Configuration = configuration;
 
 		foreach (var file in Directory.GetFiles(configuration.RootPath + DIRECTORY_NAME).Where(x => x.EndsWith(".json")))
-			Templates.Add(file.Split(@"\").Split("/").Last().Last().Split(".json")[0], JsonConvert.DeserializeObject<ProjectTemplate>(File.ReadAllText(file))!);
+			Templates.Add(file.Split(@"\").Select(x => x.Split("/")).Last().Last().Split(".json")[0], JsonConvert.DeserializeObject<ProjectTemplate>(File.ReadAllText(file))!);
 	}
 
 

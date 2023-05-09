@@ -5,7 +5,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using TenBot.ClientEventServices;
-using TenBot.Models;
 using TenBot.Services;
 
 namespace TenBot;
@@ -21,8 +20,8 @@ internal sealed class DiscordBot
 
 			.AddSingleton(new TenBotSettings
 			{
-				IsBeta = false,
-				RootPath = Directory.GetCurrentDirectory()/*.Split(@"\bin")[0]*/ + "/Data"
+				IsBeta = true,
+				RootPath = Directory.GetCurrentDirectory().Split("/bin")[0] + "/Data"
 			})
 
 			.AddSingleton(new DiscordSocketConfig())

@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace TenBot.Models;
+namespace TenBot.Services;
 public sealed class TenBotSettings
 {
 	private TenBotConfiguration? CachedConfiguration;

@@ -10,9 +10,6 @@ public sealed class WelcomeMessages : IService, IDisposable
 	private readonly Random Randomizer = new();
 	private readonly Dictionary<ulong, List<string>> Messages = new();
 
-    private readonly SettingsService Settings;
-    private readonly FileSystemManager FileSystemManager;
-
 
 	public WelcomeMessages(ServerSettings serverSettings)
 	{
@@ -26,7 +23,7 @@ public sealed class WelcomeMessages : IService, IDisposable
 	{
 		var messages = GetWelcomeMessages(user.Guild.Id).ToList();
 		return messages[Randomizer.Next(messages.Count - 1)].Replace("[]", user.Mention);
-    }
+	}
 	public IEnumerable<string> GetWelcomeMessages(ulong serverID) => Messages[serverID];
 
 	public void AddWelcomeMessage(string message, ulong serverID)
