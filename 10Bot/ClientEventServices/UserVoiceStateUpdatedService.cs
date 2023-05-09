@@ -77,7 +77,7 @@ internal sealed class UserVoiceStateUpdatedService : IClientEventService
 		var permission = voiceChannel.PermissionOverwrites.Where(x => x.Permissions.ViewChannel == PermValue.Allow);
 
 		return permission is IEnumerable<Overwrite> overwrites && overwrites.Any()
-			? Client.GetGuild(voiceChannel.Guild.Id).Roles.First(x => x.Id == overwrites.First().TargetId)
+			? Client.GetGuild(voiceChannel.Guild.Id).Roles.First(x => x.Id == overwrites.First().TargetId && !x.Name.EndsWith(" - Project") && !x.Name.EndsWith(" - Project - Public"))
 			: null;
 	}
 }

@@ -5,19 +5,10 @@
 - detection for key words
 - management
 
-## Polls Rework
-- optimize poll saving (no bloat parameters)
-- polls display results
-- polls change duration display (change to minutes)
-- save and load poll threads on crash or shutdown
-
 ## Automation
 - version management
 - server management
 - automated pushing
-
-## UserVoiceStateUpdated 
-- fix support for moving (?)
 
 ## Project-intern Moderation
 
@@ -42,3 +33,6 @@
 
 ## Channel Management
 - implement conversion between public and private channels
+
+## Fix /help Command
+- not all commands are displayed
