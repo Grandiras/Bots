@@ -11,39 +11,37 @@ namespace TenBot.Commands;
 [Group("project", "A command to set up and manage projects.")]
 public sealed class ProjectCommand : InteractionModuleBase
 {
-    private readonly ServerService ServerService;
+	private readonly ServerService ServerService;
 	private readonly ProjectTemplates ProjectTemplates;
-	private readonly ServerSettings ServerSettings;
 
 
-	public ProjectCommand(ServerService serverService, ProjectTemplates projectTemplates, ServerSettings serverSettings)
+	public ProjectCommand(ServerService serverService, ProjectTemplates projectTemplates)
 	{
 		ServerService = serverService;
 		ProjectTemplates = projectTemplates;
-		ServerSettings = serverSettings;
 	}
 
 
-    [SlashCommand("create", "Creates a new project.")]
-    public async Task CreateAsync([Summary("name", "The project's name.")] string name,
-                                  [Summary("template", "The project pattern, which should be used."),
-                                   Autocomplete(typeof(ProjectTypeAutoCompleteHandler))] string template,
-                                  [Summary("is_public", "Determines, whether this project will be discoverable through role selection.")] bool isPublic = true)
-    {
-        var fixedName = name.Replace("-", " ");
+	[SlashCommand("create", "Creates a new project.")]
+	public async Task CreateAsync([Summary("name", "The project's name.")] string name,
+								  [Summary("template", "The project pattern, which should be used."),
+								   Autocomplete(typeof(ProjectTypeAutoCompleteHandler))] string template,
+								  [Summary("is_public", "Determines, whether this project will be discoverable through role selection.")] bool isPublic = true)
+	{
+		var fixedName = name.Replace("-", " ");
 
-        var projectTemplate = ProjectTemplates.Templates[template];
+		var projectTemplate = ProjectTemplates.Templates[template];
 
-        var role = await ServerService.GetServer(Context.Guild.Id).CreateRoleAsync($"{fixedName} - Project{(isPublic ? " - Public" : "")}", isMentionable: true);
-        var category = await ServerService.GetServer(Context.Guild.Id).CreateCategoryChannelAsync(fixedName);
+		var role = await ServerService.GetServer(Context.Guild.Id).CreateRoleAsync($"{fixedName} - Project{(isPublic ? " - Public" : "")}", isMentionable: true);
+		var category = await ServerService.GetServer(Context.Guild.Id).CreateCategoryChannelAsync(fixedName);
 
-        await RespondAsync($"{template} project '{fixedName}' was successfully created.", ephemeral: true);
+		await RespondAsync($"{template} project '{fixedName}' was successfully created.", ephemeral: true);
 
-        await SetProjectChannelPermissionsAsync(ServerService.GetServer(Context.Guild.Id), role, category);
+		await SetProjectChannelPermissionsAsync(ServerService.GetServer(Context.Guild.Id), role, category);
 
-        foreach (var channel in projectTemplate.Channels) await CreateProjectChannelAsync(ServerService.GetServer(Context.Guild.Id), role, channel, category);
-        await ((SocketGuildUser)Context.User).AddRoleAsync(role);
-    }
+		foreach (var channel in projectTemplate.Channels) await CreateProjectChannelAsync(ServerService.GetServer(Context.Guild.Id), role, channel, category);
+		await ((SocketGuildUser)Context.User).AddRoleAsync(role);
+	}
 
 	[SlashCommand("delete", "Deletes an existing project.")]
 	public async Task DeleteAsync([Summary("name", "The project's name."),
@@ -86,20 +84,20 @@ public sealed class ProjectCommand : InteractionModuleBase
 		public TemplateCommand(ProjectTemplates projectTemplates) => ProjectTemplates = projectTemplates;
 
 
-        [SlashCommand("list", "Displays all project templates.")]
-        public async Task ListAsync()
-        {
-            var embed = new EmbedBuilder()
-                .WithColor(Color.Purple)
-                .WithTitle("Available project templates");
+		[SlashCommand("list", "Displays all project templates.")]
+		public async Task ListAsync()
+		{
+			var embed = new EmbedBuilder()
+				.WithColor(Color.Purple)
+				.WithTitle("Available project templates");
 
-            foreach ((var projectType, var projectTemplate) in ProjectTemplates.Templates)
-                _ = embed.AddField(new EmbedFieldBuilder()
-                    .WithName(projectType.ToString())
-                    .WithValue(projectTemplate.Description));
+			foreach ((var projectType, var projectTemplate) in ProjectTemplates.Templates)
+				_ = embed.AddField(new EmbedFieldBuilder()
+					.WithName(projectType.ToString())
+					.WithValue(projectTemplate.Description));
 
-            await RespondAsync(embed: embed.Build(), ephemeral: true);
-        }
+			await RespondAsync(embed: embed.Build(), ephemeral: true);
+		}
 
 		[SlashCommand("explain", "Explains a project template.")]
 		public async Task ExplainAsync([Summary("template", "The template you want to get explained."),
@@ -115,13 +113,13 @@ public sealed class ProjectCommand : InteractionModuleBase
 						   .WithName("Description")
 						   .WithValue(projectTemplate.Description));
 
-            foreach (var channel in projectTemplate.Channels)
-                _ = embed.AddField(new EmbedFieldBuilder()
-                    .WithName($"Includes channel '{channel.Name}'")
-                    .WithValue("Type: " + channel.Kind.ToString()));
+			foreach (var channel in projectTemplate.Channels)
+				_ = embed.AddField(new EmbedFieldBuilder()
+					.WithName($"Includes channel '{channel.Name}'")
+					.WithValue("Type: " + channel.Kind.ToString()));
 
-            await RespondAsync(embed: embed.Build(), ephemeral: true);
-        }
+			await RespondAsync(embed: embed.Build(), ephemeral: true);
+		}
 
 		[SlashCommand("create", "Creates a new template from a discord category. Not-supported channel types will be ignored!")]
 		public async Task CreateAsync([Summary("name", "The name of the template (has to be unique!).")] string name,

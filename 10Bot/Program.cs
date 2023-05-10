@@ -13,8 +13,8 @@ var host = Host
 
 			.AddSingleton(new TenBotSettings
 			{
-				IsBeta = false,
-				RootPath = Directory.GetCurrentDirectory()/*.Split(@"\bin")[0]*/ + "/Data"
+				IsBeta = true,
+				RootPath = Directory.GetCurrentDirectory().Split(@"\bin")[0] + "/Data"
 			})
 
 			.AddSingleton(new DiscordSocketConfig())

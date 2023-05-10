@@ -1,6 +1,7 @@
 ﻿using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
+using TenBot.Helpers;
 using TenBot.Services;
 
 namespace TenBot.Commands;
@@ -44,7 +45,6 @@ public sealed class ChannelCommand : InteractionModuleBase
 	[SlashCommand("invite", "Invites somebody to your private channel.")]
 	public async Task InviteAsync(IGuildUser user)
 	{
-		_ = ServerSettings.Configurations[Context.Guild.Id];
 		var role = GetPrivateChannelRoleAsync((IGuildUser)Context.User);
 
 		if (role is null)
@@ -55,6 +55,13 @@ public sealed class ChannelCommand : InteractionModuleBase
 
 		await user.AddRoleAsync(role.Id);
 		await RespondAsync($"{user.Mention} was added to this channel.", ephemeral: true);
+	}
+
+	[SlashCommand("invite_project", "Invites all project members for the specified project to your channel.")]
+	public async Task InviteProjectAsync([Summary("The project to invite (you must be a member of this project!)."), Autocomplete(typeof(PersonalProjectAutoCompleteHandler))] string project)
+	{
+		await ((IGuildUser)Context.User).VoiceChannel.AddPermissionOverwriteAsync(Context.Guild.Roles.First(x => x.Name.StartsWith(project)), new OverwritePermissions(viewChannel: PermValue.Allow));
+		await RespondAsync($"All '{project}' members were added to this channel.", ephemeral: true);
 	}
 
 	private SocketRole? GetPrivateChannelRoleAsync(IGuildUser user)
