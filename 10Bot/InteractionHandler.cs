@@ -28,12 +28,14 @@ public sealed class InteractionHandler
 	public async Task InitializeAsync()
 	{
 		Client.Ready += ReadyAsync;
+		Client.JoinedGuild += GuildAddedAsync;
 		Handler.Log += LogAsync;
 
 		_ = await Handler.AddModulesAsync(Assembly.GetEntryAssembly(), Services); // register all existing interaction modules from the current assembly
 
 		Client.InteractionCreated += HandleInteraction;
 	}
+
 
 	private Task LogAsync(LogMessage log)
 	{
@@ -45,6 +47,7 @@ public sealed class InteractionHandler
 	{
 		foreach (var serverID in ServerSettings.Configurations.Keys) _ = await Handler.RegisterCommandsToGuildAsync(serverID, true);
 	}
+	private async Task GuildAddedAsync(SocketGuild server) => _ = await Handler.RegisterCommandsToGuildAsync(server.Id, true);
 
 	private async Task HandleInteraction(SocketInteraction interaction)
 	{

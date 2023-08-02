@@ -29,6 +29,8 @@ internal sealed class UserVoiceStateUpdatedService : IClientEventService
 			&& voiceChannel.CategoryId == ServerSettings.Configurations[oldVoice.VoiceChannel.Guild.Id].VoiceCategoryID && voiceChannel.ConnectedUsers.Count == 0)
 			await CleanUpChannelAsync(voiceChannel);
 
+		if (!((oldVoice.VoiceChannel is null || newVoice.VoiceChannel is null) && (oldVoice.VoiceChannel is null || newVoice.VoiceChannel is null || oldVoice.VoiceChannel!.Id != newVoice.VoiceChannel!.Id))) return;
+
 		if (newVoice.VoiceChannel is not null)
 		{
 			if (newVoice.VoiceChannel.Id == ServerSettings.Configurations[newVoice.VoiceChannel.Guild.Id].NewTalkChannelID)

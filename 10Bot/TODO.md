@@ -17,7 +17,7 @@
 
 ## Hot Reload
 
-## Better Error Handling
+## Better Error Handling / Avoiding
 
 ## Release Notes (+ Publishing)
 
@@ -30,9 +30,6 @@
 ## Dynamic Server Support
 - allow for adding new servers at runtime
 - fetch errors for unknown server
-
-## Channel Management
-- implement conversion between public and private channels
 
 ## Fix /help Command
 - not all commands are displayed

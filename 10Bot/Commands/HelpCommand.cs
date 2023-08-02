@@ -1,7 +1,6 @@
 ﻿using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
-using TenBot.Services;
 
 namespace TenBot.Commands;
 public sealed class HelpCommand : InteractionModuleBase
@@ -13,7 +12,7 @@ public sealed class HelpCommand : InteractionModuleBase
 
 
     [SlashCommand("help", "Displays a list of all commands and their descriptions existing here.")]
-    public async Task RenameAsync()
+    public async Task ListAsync()
     {
         var embed = new EmbedBuilder()
         {

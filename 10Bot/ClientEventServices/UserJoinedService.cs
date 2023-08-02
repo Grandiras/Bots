@@ -22,5 +22,6 @@ internal sealed class UserJoinedService : IClientEventService
 	}
 
 	private async Task OnUserJoined(SocketGuildUser user)
-		=> _ = await Client.GetGuild(user.Guild.Id).DefaultChannel.SendMessageAsync(WelcomeMessages.GetWelcomeMessage(user));
+		=> _ = await Client.GetGuild(user.Guild.Id).CategoryChannels.First().Channels.Where(x => x is SocketTextChannel).Select(x => x as SocketTextChannel).First()!
+			.SendMessageAsync(WelcomeMessages.GetWelcomeMessage(user));
 }

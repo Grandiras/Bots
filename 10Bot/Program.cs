@@ -8,40 +8,40 @@ using TenBot.ClientEventServices;
 using TenBot.Services;
 
 var host = Host
-		.CreateDefaultBuilder()
-		.ConfigureServices((context, services) => _ = services
+.CreateDefaultBuilder()
+.ConfigureServices((context, services) => _ = services
 
-			.AddSingleton(new TenBotSettings
-			{
-				IsBeta = true,
-				RootPath = Directory.GetCurrentDirectory().Split(@"\bin")[0] + "/Data"
-			})
+    .AddSingleton(new TenBotSettings
+    {
+        IsBeta = true,
+        RootPath = Directory.GetCurrentDirectory().Split(@"\bin")[0] + "/Data"
+    })
 
-			.AddSingleton(new DiscordSocketConfig())
-			.AddSingleton<DiscordSocketClient>()
+    .AddSingleton(new DiscordSocketConfig())
+    .AddSingleton<DiscordSocketClient>()
 
-			.AddSingleton(new InteractionServiceConfig())
-			.AddSingleton<InteractionService>()
-			.AddSingleton<InteractionHandler>()
+    .AddSingleton(new InteractionServiceConfig())
+    .AddSingleton<InteractionService>()
+    .AddSingleton<InteractionHandler>()
 
-			.Scan(scan => scan
-				.FromCallingAssembly()
-				.AddClasses(classes => classes.AssignableTo<IClientEventService>())
-					.As<IClientEventService>()
-					.WithSingletonLifetime()
-				.AddClasses(classes => classes.AssignableTo<IService>())
-					.AsSelf()
-					.WithSingletonLifetime()))
+    .Scan(scan => scan
+        .FromCallingAssembly()
+        .AddClasses(classes => classes.AssignableTo<IClientEventService>())
+            .As<IClientEventService>()
+            .WithSingletonLifetime()
+        .AddClasses(classes => classes.AssignableTo<IService>())
+            .AsSelf()
+            .WithSingletonLifetime()))
 
-		.Build();
+.Build();
 
 var client = host.Services.GetRequiredService<DiscordSocketClient>();
 var settings = host.Services.GetRequiredService<TenBotSettings>();
 
 client.Log += async (msg) =>
 {
-	Console.WriteLine(msg.ToString());
-	await Task.CompletedTask;
+    Console.WriteLine(msg.ToString());
+    await Task.CompletedTask;
 };
 
 await host.Services.GetRequiredService<InteractionHandler>().InitializeAsync();
