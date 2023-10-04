@@ -11,7 +11,7 @@ public sealed class ServerFeature
     public required string Description { get; init; }
     public required Color Color { get; init; }
     public required bool IsStandard { get; init; }
-    public OneOf<IFeature, IStandardFeature> FeatureReference { get; init; }
+    public required OneOf<IFeature, IStandardFeature> FeatureReference { get; init; }
     public bool RequiresSetup { get; init; } = false;
     public Func<ModuleInfo>? CommandHandlerModuleHandler { get; init; }
     public Type? SetupModalType { get; init; }

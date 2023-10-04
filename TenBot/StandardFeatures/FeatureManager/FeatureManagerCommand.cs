@@ -75,7 +75,7 @@ public sealed class FeatureManagerCommand : InteractionModuleBase<ServerInteract
 
     [SlashCommand("disable", "Disable a feature on this server.")]
     public async Task DisableAsync([Summary("feature", "The feature to disable."), Autocomplete(typeof(FeatureDisablementAutoCompleteHandler))] string featureName,
-                                   [Summary("reset", "Determine, whether all the data stored should be wiped.")] bool reset = true)
+                                   [Summary("reset", "Determine, whether all the data stored should be wiped.")] bool reset = false)
     {
         var feature = FeatureManager.GetFeatureByName(featureName).AsT0;
 

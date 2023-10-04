@@ -12,5 +12,5 @@ public sealed class WelcomeMessagesAutoCompleteHandler : ServerAutoCompleteHandl
 
 
     public override async Task<AutocompletionResult> GenerateSuggestionsAsync(ServerInteractionContext context, IAutocompleteInteraction autocompleteInteraction, IParameterInfo parameter, IServiceProvider services)
-        => AutocompletionResult.FromSuccess(WelcomeMessagesService.GetMessages(context.ServerID).Select(x => new AutocompleteResult(x, x)).Take(25));
+        => AutocompletionResult.FromSuccess(WelcomeMessagesService.GetMessages(context.ServerID).Take(25).Select(x => new AutocompleteResult(x, x)));
 }

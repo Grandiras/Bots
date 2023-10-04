@@ -3,7 +3,7 @@ using Discord.Interactions;
 using TenBot.ServerAbstractions;
 using TenBot.Services;
 
-namespace TenBot.Helpers;
+namespace TenBot.StandardFeatures.FeatureManager;
 public sealed class FeatureEnablementAutoCompleteHandler : ServerAutoCompleteHandler
 {
     private readonly FeatureService FeatureManager;
@@ -13,7 +13,7 @@ public sealed class FeatureEnablementAutoCompleteHandler : ServerAutoCompleteHan
 
 
     public override async Task<AutocompletionResult> GenerateSuggestionsAsync(ServerInteractionContext context, IAutocompleteInteraction autocompleteInteraction, IParameterInfo parameter, IServiceProvider services)
-        => AutocompletionResult.FromSuccess(FeatureManager.GetFeatures().Where(x => !x.IsStandard && !context.HasFeature(x)).Select(x => new AutocompleteResult(x.Name, x.Name)).Take(25));
+        => AutocompletionResult.FromSuccess(FeatureManager.GetFeatures().Where(x => !x.IsStandard && !context.HasFeature(x)).Take(25).Select(x => new AutocompleteResult(x.Name, x.Name)));
 }
 
 public sealed class FeatureDisablementAutoCompleteHandler : ServerAutoCompleteHandler
@@ -25,5 +25,5 @@ public sealed class FeatureDisablementAutoCompleteHandler : ServerAutoCompleteHa
 
 
     public override async Task<AutocompletionResult> GenerateSuggestionsAsync(ServerInteractionContext context, IAutocompleteInteraction autocompleteInteraction, IParameterInfo parameter, IServiceProvider services)
-        => AutocompletionResult.FromSuccess(FeatureManager.GetFeatures().Where(x => !x.IsStandard && context.HasFeature(x)).Select(x => new AutocompleteResult(x.Name, x.Name)).Take(25));
+        => AutocompletionResult.FromSuccess(FeatureManager.GetFeatures().Where(x => !x.IsStandard && context.HasFeature(x)).Take(25).Select(x => new AutocompleteResult(x.Name, x.Name)));
 }

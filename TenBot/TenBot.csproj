@@ -25,6 +25,7 @@
     <PackageReference Include="OneOf" Version="3.0.263" />
     <PackageReference Include="OneOf.SourceGenerator" Version="3.0.263" />
     <PackageReference Include="Scrutor" Version="4.2.2" />
+    <PackageReference Include="SimMetrics.Net" Version="1.0.5" />
   </ItemGroup>
 
 </Project>
