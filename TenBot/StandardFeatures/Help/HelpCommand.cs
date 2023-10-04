@@ -28,7 +28,7 @@ public sealed class HelpCommand : InteractionModuleBase<ServerInteractionContext
         var embed = new EmbedBuilder()
         {
             Title = "10Bot Commands",
-            Color = Color.Gold,
+            Color = Feature.Color,
         };
 
         foreach (var item in await Context.GetApplicationCommandsForUserAsync(Context.User)) _ = embed.AddField(item.Name, item.Description is not (null or "") ? item.Description : "[not provided]");

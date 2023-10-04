@@ -39,7 +39,7 @@ builder.Services.Scan(scan => scan.FromCallingAssembly()
         .WithSingletonLifetime()
     .AddClasses(classes => classes.AssignableTo<IFeature>())
         .AsSelf()
-        .WithSingletonLifetime());
+        .WithSingletonLifetime());  
 
 var host = builder.Build();
 

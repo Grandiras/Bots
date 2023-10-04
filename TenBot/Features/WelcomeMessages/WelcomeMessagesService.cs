@@ -11,7 +11,7 @@ public sealed class WelcomeMessagesService : IFeature, IMustPostInitialize
     private readonly FeatureService FeatureManager;
 
     private readonly Random Randomizer = new();
-    private readonly Dictionary<ulong, WelcomeMessageData> Messages = new();
+    private readonly Dictionary<ulong, WelcomeMessagesData> Messages = new();
 
     public ServerFeature Feature => new()
     {
@@ -32,7 +32,7 @@ public sealed class WelcomeMessagesService : IFeature, IMustPostInitialize
         Client = client;
         FeatureManager = featureManager;
 
-        Messages = ServerManager.ReadConcurrentFeatureDataWithKeysAsync<WelcomeMessageData>(Feature).Result.AsT0;
+        Messages = ServerManager.ReadConcurrentFeatureDataWithKeysAsync<WelcomeMessagesData>(Feature).Result.AsT0;
     }
 
 
@@ -60,7 +60,7 @@ public sealed class WelcomeMessagesService : IFeature, IMustPostInitialize
     }
     public async Task AddForServerAsync(ulong id)
     {
-        Messages.Add(id, (await ServerManager.ReadFeatureDataAsync<WelcomeMessageData>(id, Feature)).AsT0);
+        Messages.Add(id, (await ServerManager.ReadFeatureDataAsync<WelcomeMessagesData>(id, Feature)).AsT0);
         await ServerManager.SaveFeatureDataAsync(id, Feature, Messages[id]);
     }
     public async Task RemoveForServerAsync(ulong id, bool reset)
