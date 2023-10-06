@@ -65,4 +65,18 @@ public sealed class CustomCommandCommand : InteractionModuleBase<ServerInteracti
 
         await RespondAsync(embed: embed.Build(), ephemeral: true);
     }
+
+    [SlashCommand("execute", "Executes a custom command."), DefaultMemberPermissions(GuildPermission.SendMessages)] // TODO fix permissions if needed
+    public async Task ExecuteAsync([Summary("name", "The name of the command."), Autocomplete(typeof(CustomCommandsAutoCompleteHandler))] string name)
+    {
+        var command = CustomCommandsService.GetCommand(name, Context.Guild.Id);
+
+        if (command.IsT1)
+        {
+            await RespondAsync("Command not found.");
+            return;
+        }
+
+        await RespondAsync(command.AsT0.Content);
+    }
 }

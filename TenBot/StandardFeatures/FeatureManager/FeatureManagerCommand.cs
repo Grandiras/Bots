@@ -17,7 +17,6 @@ public sealed class FeatureManagerCommand : InteractionModuleBase<ServerInteract
         Description = "View and manage all features available on this server.",
         Color = Color.Blue,
         IsStandard = true,
-        FeatureReference = this,
         CommandHandlerModuleHandler = FeatureManager.GetModuleInfo<FeatureManagerCommand>
     };
 

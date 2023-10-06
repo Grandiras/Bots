@@ -29,7 +29,8 @@ public sealed class FeatureService : IService
         return feature is not null ? feature : new NotFound();
     }
 
-    public IEnumerable<ModuleInfo> GetFeatureModuleInfosForServer(Server server) => GetFeaturesForServer(server).Where(x => x.CommandHandlerModuleHandler is not null).Select(x => x.CommandHandlerModuleHandler!());
+    public IEnumerable<ModuleInfo> GetFeatureModuleInfosForServer(Server server)
+        => GetFeaturesForServer(server).Where(x => x.CommandHandlerModuleHandler is not null).Select(x => x.CommandHandlerModuleHandler!());
     public OneOf<ModuleInfo, No> GetFeatureModuleInfo(ServerFeature feature) => feature.CommandHandlerModuleHandler is not null ? feature.CommandHandlerModuleHandler() : new No();
 
     public ModuleInfo GetModuleInfo<T>() where T : InteractionModuleBase<ServerInteractionContext> => Interactions.GetModuleInfo<T>();

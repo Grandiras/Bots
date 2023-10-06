@@ -3,7 +3,7 @@ using Discord.Interactions;
 using TenBot.ServerAbstractions;
 
 namespace TenBot.Features.Quotes;
-[Group("quotes", "Create memories with this command.")]
+[Group("quotes", "Create memories with this command."), DefaultMemberPermissions(GuildPermission.SendMessages)]
 public sealed class QuotesCommand : InteractionModuleBase<ServerInteractionContext>
 {
     private readonly QuotesService QuotesService;
@@ -20,9 +20,12 @@ public sealed class QuotesCommand : InteractionModuleBase<ServerInteractionConte
     {
         QuotesService.AddQuote(new(quote, author, context), Context.ServerID);
 
-        await RespondAsync("Quote has successfully been created.", ephemeral: true);
 
-        if (!display) return;
+        if (!display)
+        {
+            await RespondAsync("Quote has successfully been created.", ephemeral: true);
+            return;
+        }
 
         await RespondAsync(embed: new EmbedBuilder()
             .WithTitle("New Quote")
@@ -79,14 +82,14 @@ public sealed class QuotesCommand : InteractionModuleBase<ServerInteractionConte
         .WithColor(QuotesService.Feature.Color)
         .WithFields(
             QuotesService.GetQuotes(Context.Guild.Id).Select(x => new EmbedFieldBuilder()
-            .WithName(x.Author)
-            .WithValue(x.Quote)))
+            .WithName(x.Quote)
+            .WithValue(x.Author)))
         .Build());
 
     [MessageCommand("Search for a quote")]
-    public async Task SearchAsync([Summary("message", "The message to search for.")] string message)
+    public async Task SearchAsync([Summary("message", "The message to search for.")] IMessage message)
     {
-        var quote = QuotesService.GetQuote(message, Context.Guild.Id);
+        var quote = QuotesService.GetQuote(message.Content, Context.Guild.Id);
 
         if (quote.IsT1)
         {

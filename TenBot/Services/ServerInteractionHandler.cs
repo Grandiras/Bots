@@ -16,6 +16,7 @@ public sealed class ServerInteractionHandler : IService, IMustInitialize, IMustP
     private readonly ServerService ServerManager;
     private readonly FeatureService FeatureManager;
 
+
     public ServerInteractionHandler(DiscordSocketClient client, InteractionService interactions, IServiceProvider services, ILogger<ServerInteractionHandler> logger, ServerService serverManager, FeatureService featureManager)
     {
         Client = client;
@@ -34,7 +35,7 @@ public sealed class ServerInteractionHandler : IService, IMustInitialize, IMustP
 
         Interactions.Log += LogAsync;
 
-        _ = await Interactions.AddModulesAsync(Assembly.GetEntryAssembly(), Services);
+        var result = await Interactions.AddModulesAsync(Assembly.GetEntryAssembly(), Services);
 
         Client.InteractionCreated += HandleInteractionAsync;
     }

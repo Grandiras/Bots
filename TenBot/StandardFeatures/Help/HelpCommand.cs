@@ -15,7 +15,6 @@ public sealed class HelpCommand : InteractionModuleBase<ServerInteractionContext
         Description = "Provides a list of all commands and their descriptions existing here.",
         Color = Color.Gold,
         IsStandard = true,
-        FeatureReference = this,
         CommandHandlerModuleHandler = FeatureManager.GetModuleInfo<HelpCommand>
     };
 

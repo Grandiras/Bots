@@ -59,7 +59,7 @@ public sealed class QuotesService : IFeature
 
         var results = new Levenstein().BatchCompareSet(Quotes[serverID].Select(x => x.Quote).ToArray(), message).ToList();
         return results.Max() is >= 0.5 ? Quotes[serverID][results.IndexOf(results.Max())] : new None();
-    }
+    } // TODO fine tuning
 
     public void AddQuote(QuotesData quote, ulong serverID)
     {
