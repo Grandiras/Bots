@@ -6,14 +6,8 @@ using TenBot.ServerAbstractions;
 namespace TenBot.Features.VoiceManager;
 
 [Group("channel", "Manages voice channels dynamically."), DefaultMemberPermissions(GuildPermission.Connect)]
-public sealed class VoiceManagerCommand : InteractionModuleBase<ServerInteractionContext>
+public sealed class VoiceManagerCommand(VoiceManagerService VoiceManagerService) : InteractionModuleBase<ServerInteractionContext>
 {
-    private readonly VoiceManagerService VoiceManagerService;
-
-
-    public VoiceManagerCommand(VoiceManagerService voiceManagerService) => VoiceManagerService = voiceManagerService;
-
-
     [SlashCommand("rename", "Renames your current channel.")]
     public async Task RenameAsync([Summary("newName", "The new name for your channel.")] string newName)
     {

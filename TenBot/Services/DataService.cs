@@ -23,7 +23,7 @@ public sealed class DataService : IService
     {
         var fullPath = Path.Combine(DataRootPath, path);
 
-        return Directory.Exists(fullPath) ? Directory.GetDirectories(fullPath).Select(x => Path.GetFileName(x)!.ToString()).ToList() : new global::OneOf.Types.NotFound();
+        return Directory.Exists(fullPath) ? Directory.GetDirectories(fullPath).Select(x => Path.GetFileName(x)!.ToString()).ToList() : new NotFound();
     }
     public OneOf<List<string>, NotFound> GetAllFiles(string path)
     {

@@ -10,7 +10,7 @@ public sealed class CustomCommandsService : IFeature
     private readonly FeatureService FeatureService;
     private readonly ServerService ServerService;
 
-    private readonly Dictionary<ulong, List<CustomCommandsData>> Commands = new();
+    private readonly Dictionary<ulong, List<CustomCommandsData>> Commands = [];
 
     public ServerFeature Feature => new()
     {
@@ -34,7 +34,7 @@ public sealed class CustomCommandsService : IFeature
 
     public async Task AddForServerAsync(ulong id)
     {
-        Commands.Add(id, (await ServerService.ReadFeatureDataAsync<List<CustomCommandsData>>(id, Feature)).Match(some => some, none => new()));
+        Commands.Add(id, (await ServerService.ReadFeatureDataAsync<List<CustomCommandsData>>(id, Feature)).Match(some => some, none => []));
         await ServerService.SaveFeatureDataAsync(id, Feature, Commands[id]);
     }
     public async Task RemoveForServerAsync(ulong serverID, bool reset)

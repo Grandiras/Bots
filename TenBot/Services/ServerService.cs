@@ -19,7 +19,7 @@ public sealed class ServerService : IService, IMustPostInitialize
     private readonly InteractionService Interactions;
     private readonly FeatureService FeatureManager;
 
-    public List<Server> Servers { get; } = new();
+    public List<Server> Servers { get; } = [];
 
 
     public ServerService(DataService dataService, DiscordSocketClient client, BotConfiguration configuration, ILogger<ServerService> logger, InteractionService interactions, FeatureService featureManager)
@@ -31,7 +31,7 @@ public sealed class ServerService : IService, IMustPostInitialize
         Interactions = interactions;
         FeatureManager = featureManager;
 
-        Servers = DataService.ReadFromConcurrentFilesAsync<Server>(SERVER_DATA_PATH, "config.json").Result.AsT0;
+        Servers = DataService.ReadFromConcurrentFilesAsync<Server>(SERVER_DATA_PATH, "config.json").Result.Match(x => x, x => []);
     }
 
 
@@ -39,7 +39,7 @@ public sealed class ServerService : IService, IMustPostInitialize
     {
         Client.Guilds.ToList().ForEach(async x => { if (!Servers.Any(y => y.Id == x.Id)) await AddServerAsync(x); });
 
-        Logger.LogInformation("Listening on {} servers", Servers.Count);
+        Logger.LogInformation("Listening on {} servers.", Servers.Count);
 
         await Task.CompletedTask;
 

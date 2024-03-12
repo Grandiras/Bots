@@ -4,14 +4,8 @@ using TenBot.ServerAbstractions;
 
 namespace TenBot.Features.Quotes;
 [Group("quotes", "Create memories with this command."), DefaultMemberPermissions(GuildPermission.SendMessages)]
-public sealed class QuotesCommand : InteractionModuleBase<ServerInteractionContext>
+public sealed class QuotesCommand(QuotesService QuotesService) : InteractionModuleBase<ServerInteractionContext>
 {
-    private readonly QuotesService QuotesService;
-
-
-    public QuotesCommand(QuotesService quotesService) => QuotesService = quotesService;
-
-
     [SlashCommand("create", "Creates a new memory.")]
     public async Task CreateAsync([Summary("quote", "This is the actual quote.")] string quote,
                                   [Summary("author", "The person, who is responsible for this quote.")] string author,
@@ -77,11 +71,11 @@ public sealed class QuotesCommand : InteractionModuleBase<ServerInteractionConte
     }
 
     [SlashCommand("list", "Lists all available quotes.")]
-    public async Task ListAsync() => await RespondAsync(embed: new EmbedBuilder()
+    public async Task ListAsync()
+        => await RespondAsync(embed: new EmbedBuilder()
         .WithTitle("Quotes")
         .WithColor(QuotesService.Feature.Color)
-        .WithFields(
-            QuotesService.GetQuotes(Context.Guild.Id).Select(x => new EmbedFieldBuilder()
+        .WithFields(QuotesService.GetQuotes(Context.Guild.Id).Select(x => new EmbedFieldBuilder()
             .WithName(x.Quote)
             .WithValue(x.Author)))
         .Build());

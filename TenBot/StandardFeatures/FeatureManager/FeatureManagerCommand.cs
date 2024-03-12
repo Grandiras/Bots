@@ -7,10 +7,8 @@ using TenBot.Services;
 
 namespace TenBot.StandardFeatures.FeatureManager;
 [Group("features", "View and manage all features available on this server."), DefaultMemberPermissions(GuildPermission.Administrator)]
-public sealed class FeatureManagerCommand : InteractionModuleBase<ServerInteractionContext>, IStandardFeature
+public sealed class FeatureManagerCommand(FeatureService FeatureManager) : InteractionModuleBase<ServerInteractionContext>, IStandardFeature
 {
-    private readonly FeatureService FeatureManager;
-
     public ServerFeature Feature => new()
     {
         Name = "Features",
@@ -19,9 +17,6 @@ public sealed class FeatureManagerCommand : InteractionModuleBase<ServerInteract
         IsStandard = true,
         CommandHandlerModuleHandler = FeatureManager.GetModuleInfo<FeatureManagerCommand>
     };
-
-
-    public FeatureManagerCommand(FeatureService featureManager) => FeatureManager = featureManager;
 
 
     [SlashCommand("list", "List all features available on this server.")]
@@ -60,15 +55,21 @@ public sealed class FeatureManagerCommand : InteractionModuleBase<ServerInteract
     [SlashCommand("enable", "Enable a feature on this server.")]
     public async Task EnableAsync([Summary("feature", "The feature to enable."), Autocomplete(typeof(FeatureEnablementAutoCompleteHandler))] string featureName)
     {
-        var feature = FeatureManager.GetFeatureByName(featureName).AsT0;
+        var feature = FeatureManager.GetFeatureByName(featureName);
 
-        if (feature.RequiresSetup && !Context.FeatureDataExists(feature))
-            _ = this.InvokeGenericMethod(nameof(RespondWithModalAsync), feature.SetupModalType!, false, feature.SetupModalType!.Name, null);
+        if (feature.IsT1)
+        {
+            await RespondAsync($"Feature '{featureName}' not found!", ephemeral: true);
+            return;
+        }
+
+        if (feature.AsT0.RequiresSetup && !Context.FeatureDataExists(feature.AsT0))
+            _ = this.InvokeGenericMethod(nameof(RespondWithModalAsync), feature.AsT0.SetupModalType!, false, feature.AsT0.SetupModalType!.Name, null);
         else
         {
-            _ = Context.AddFeatureAsync(feature);
-            _ = feature.FeatureReference.AsT0.AddForServerAsync(Context.ServerID);
-            await RespondAsync($"Enabled feature '{feature.Name}' on this server.", ephemeral: true);
+            _ = Context.AddFeatureAsync(feature.AsT0);
+            _ = feature.AsT0.FeatureReference.AsT0.AddForServerAsync(Context.ServerID);
+            await RespondAsync($"Enabled feature '{feature.AsT0.Name}' on this server.", ephemeral: true);
         }
     }
 
@@ -76,12 +77,18 @@ public sealed class FeatureManagerCommand : InteractionModuleBase<ServerInteract
     public async Task DisableAsync([Summary("feature", "The feature to disable."), Autocomplete(typeof(FeatureDisablementAutoCompleteHandler))] string featureName,
                                    [Summary("reset", "Determine, whether all the data stored should be wiped.")] bool reset = false)
     {
-        var feature = FeatureManager.GetFeatureByName(featureName).AsT0;
+        var feature = FeatureManager.GetFeatureByName(featureName);
 
-        await feature.FeatureReference.AsT0.RemoveForServerAsync(Context.ServerID, reset);
-        _ = Context.RemoveFeatureAsync(feature);
+        if (feature.IsT1)
+        {
+            await RespondAsync($"Feature '{featureName}' not found!", ephemeral: true);
+            return;
+        }
 
-        await RespondAsync($"Disabled feature '{feature.Name}' on this server. This action might take a few moments.", ephemeral: true);
+        await feature.AsT0.FeatureReference.AsT0.RemoveForServerAsync(Context.ServerID, reset);
+        _ = Context.RemoveFeatureAsync(feature.AsT0);
+
+        await RespondAsync($"Disabled feature '{feature.AsT0.Name}' on this server. This action might take a few moments.", ephemeral: true);
     }
 
     [SlashCommand("disable-all", "Disable all features on this server.")]
@@ -95,4 +102,6 @@ public sealed class FeatureManagerCommand : InteractionModuleBase<ServerInteract
 
         await RespondAsync($"Disabled all features on this server. This action might take a few moments.", ephemeral: true);
     }
+
+    // TODO: Add a command to view feature details, to reset feature data, to reinitialize feature
 }

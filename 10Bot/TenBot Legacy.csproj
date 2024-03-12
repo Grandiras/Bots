@@ -15,8 +15,4 @@
     <PackageReference Include="SimMetrics.Net" Version="1.0.5" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Data\ProjectTemplates\" />
-  </ItemGroup>
-
 </Project>

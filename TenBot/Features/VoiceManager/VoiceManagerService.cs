@@ -10,7 +10,7 @@ public class VoiceManagerService : IFeature, IMustPostInitialize
     private readonly DiscordSocketClient Client;
     private readonly FeatureService FeatureManager;
 
-    private readonly Dictionary<ulong, VoiceManagerData> Data = new();
+    private readonly Dictionary<ulong, VoiceManagerData> Data = [];
 
     public ServerFeature Feature => new()
     {
@@ -73,7 +73,7 @@ public class VoiceManagerService : IFeature, IMustPostInitialize
             VoiceChannelCategoryName = modal.VoiceChannelCategory
         });
 
-        _ = CreateChannelsAsync(id, Data[id]);
+        await CreateChannelsAsync(id, Data[id]);
         await ServerManager.SaveFeatureDataAsync(id, Feature, Data[id]);
     }
     public async Task AddForServerAsync(ulong id)
@@ -103,11 +103,11 @@ public class VoiceManagerService : IFeature, IMustPostInitialize
     private async Task CreateChannelsAsync(ulong serverID, VoiceManagerData data)
     {
         data.VoiceCreationCategory = await CreateChannelAsync(serverID, data.VoiceCreationCategoryName, ChannelType.Category);
-        data.NewVoiceChannel = await CreateChannelAsync(serverID, data.NewVoiceChannelName, ChannelType.Voice);
-        data.NewPrivateVoiceChannel = await CreateChannelAsync(serverID, data.NewPrivateVoiceChannelName, ChannelType.Voice);
+        data.NewVoiceChannel = await CreateChannelAsync(serverID, data.NewVoiceChannelName, ChannelType.Voice, data.VoiceCreationCategory);
+        data.NewPrivateVoiceChannel = await CreateChannelAsync(serverID, data.NewPrivateVoiceChannelName, ChannelType.Voice, data.VoiceCreationCategory);
         data.VoiceChannelCategory = await CreateChannelAsync(serverID, data.VoiceChannelCategoryName, ChannelType.Category);
     }
-    private async Task<ulong> CreateChannelAsync(ulong serverID, string name, ChannelType type)
+    private async Task<ulong> CreateChannelAsync(ulong serverID, string name, ChannelType type, ulong categoryId = 0)
     {
         var result = ServerManager.HasChannel(serverID, name, type);
 
@@ -116,7 +116,7 @@ public class VoiceManagerService : IFeature, IMustPostInitialize
             : type switch
             {
                 ChannelType.Category => (await Client.GetGuild(serverID).CreateCategoryChannelAsync(name)).Id,
-                ChannelType.Voice => (await Client.GetGuild(serverID).CreateVoiceChannelAsync(name)).Id,
+                ChannelType.Voice => (await Client.GetGuild(serverID).CreateVoiceChannelAsync(name, x => x.CategoryId = categoryId is not 0 ? categoryId : null)).Id,
                 _ => throw new NotImplementedException()
             };
     }

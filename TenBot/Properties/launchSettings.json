@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "TenBot": {
+      "commandName": "Project"
+    },
+    "Container (Dockerfile)": {
+      "commandName": "Docker"
+    }
+  }
+}

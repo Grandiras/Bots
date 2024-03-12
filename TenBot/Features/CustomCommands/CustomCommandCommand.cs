@@ -4,14 +4,8 @@ using TenBot.ServerAbstractions;
 
 namespace TenBot.Features.CustomCommands;
 [Group("command", "Create custom commands for your server!"), DefaultMemberPermissions(GuildPermission.ManageMessages)]
-public sealed class CustomCommandCommand : InteractionModuleBase<ServerInteractionContext>
+public sealed class CustomCommandCommand(CustomCommandsService CustomCommandsService) : InteractionModuleBase<ServerInteractionContext>
 {
-    private readonly CustomCommandsService CustomCommandsService;
-
-
-    public CustomCommandCommand(CustomCommandsService customCommandsService) => CustomCommandsService = customCommandsService;
-
-
     // TODO allow for more complex content
     [SlashCommand("create", "Creates a new custom command.")]
     public async Task CreateAsync([Summary("name", "The name of the command.")] string name,

@@ -7,23 +7,11 @@ using TenBot.Models;
 using TenBot.Services;
 
 namespace TenBot.ServerAbstractions;
-public sealed class ServerInteractionContext : SocketInteractionContext
+public sealed class ServerInteractionContext(DiscordSocketClient Client, SocketInteraction Interaction, ServerService ServerManager, FeatureService FeatureManager) : SocketInteractionContext(Client, Interaction)
 {
-    private readonly ServerService ServerManager;
-    private readonly FeatureService FeatureManager;
-
-    public ulong ServerID { get; }
+    public ulong ServerID { get; } = Interaction.GuildId!.Value;
 
     public new SocketGuildUser User => (SocketGuildUser)Interaction.User;
-
-
-    public ServerInteractionContext(DiscordSocketClient client, SocketInteraction interaction, ServerService serverManager, FeatureService featureManager) : base(client, interaction)
-    {
-        ServerManager = serverManager;
-        FeatureManager = featureManager;
-
-        ServerID = interaction.GuildId!.Value;
-    }
 
 
     public Server GetServer() => ServerManager.GetServerById(ServerID).AsT0;
@@ -43,5 +31,5 @@ public sealed class ServerInteractionContext : SocketInteractionContext
 
     public async Task<IEnumerable<SocketApplicationCommand>> GetApplicationCommandsAsync() => await Client.GetGuild(ServerID).GetApplicationCommandsAsync();
     public async Task<IEnumerable<SocketApplicationCommand>> GetApplicationCommandsForUserAsync(SocketGuildUser user)
-        => (await Client.GetGuild(ServerID).GetApplicationCommandsAsync()).Where<SocketApplicationCommand>(x => user.GuildPermissions.ToList().Any(y => x.DefaultMemberPermissions.Has(y)));
+        => (await Client.GetGuild(ServerID).GetApplicationCommandsAsync()).Where(x => user.GuildPermissions.ToList().Any(y => x.DefaultMemberPermissions.Has(y)));
 }

@@ -5,14 +5,8 @@ using TenBot.ServerAbstractions;
 namespace TenBot.Features.WelcomeMessages;
 
 [Group("welcome-messages", "Sends a welcome message to new users."), DefaultMemberPermissions(GuildPermission.Administrator)]
-public sealed class WelcomeMessagesCommand : InteractionModuleBase<ServerInteractionContext>
+public sealed class WelcomeMessagesCommand(WelcomeMessagesService WelcomeMessagesService) : InteractionModuleBase<ServerInteractionContext>
 {
-    private readonly WelcomeMessagesService WelcomeMessagesService;
-
-
-    public WelcomeMessagesCommand(WelcomeMessagesService welcomeMessagesService) => WelcomeMessagesService = welcomeMessagesService;
-
-
     [SlashCommand("add", "Adds a new welcome message to your server.")]
     public async Task AddAsync([Summary("message", "The message to add. Use '[]' as a placeholder for a mention of the user.")] string message)
     {
@@ -23,6 +17,12 @@ public sealed class WelcomeMessagesCommand : InteractionModuleBase<ServerInterac
     [SlashCommand("remove", "Removes a welcome message from your server.")]
     public async Task RemoveAsync([Summary("message", "The message to remove."), Autocomplete(typeof(WelcomeMessagesAutoCompleteHandler))] string message)
     {
+        if (!WelcomeMessagesService.GetMessages(Context.ServerID).Any(x => x == message))
+        {
+            await RespondAsync($"'{message}' does not exist!", ephemeral: true);
+            return;
+        }
+
         await WelcomeMessagesService.RemoveMessage(Context.ServerID, message);
         await RespondAsync($"The message '{message}' was successfully removed.", ephemeral: true);
     }

@@ -1,13 +1,6 @@
 ﻿namespace TenBot.Features.CustomCommands;
-public sealed class CustomCommandsData
+public sealed class CustomCommandsData(string name, string content)
 {
-    public string Name { get; set; }
-    public string Content { get; set; }
-
-
-    public CustomCommandsData(string name, string content)
-    {
-        Name = name;
-        Content = content;
-    }
+    public string Name { get; set; } = name;
+    public string Content { get; set; } = content;
 }

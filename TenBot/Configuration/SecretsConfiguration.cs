@@ -1,15 +1,8 @@
 ﻿using Microsoft.Extensions.Configuration;
 
 namespace TenBot.Configuration;
-public sealed class SecretsConfiguration
+public sealed class SecretsConfiguration(ConfigurationManager configuration)
 {
-    public string Token { get; set; }
-    public string BetaToken { get; set; }
-
-
-    public SecretsConfiguration(ConfigurationManager configuration)
-    {
-        Token = configuration["Token"]!;
-        BetaToken = configuration["BetaToken"]!;
-    }
+    public string Token { get; set; } = configuration["Secrets:Token"]!;
+    public string BetaToken { get; set; } = configuration["Secrets:BetaToken"]!;
 }
