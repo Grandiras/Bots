@@ -5,5 +5,5 @@ public sealed class Server
     public required ulong Id { get; init; }
     public required bool IsBeta { get; init; }
 
-    public List<string> Features { get; init; } = new();
+    public List<string> Features { get; init; } = [];
 }

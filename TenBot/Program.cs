@@ -1,5 +1,6 @@
 ﻿using Discord;
 using Discord.Interactions;
+using Discord.Rest;
 using Discord.WebSocket;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -29,6 +30,7 @@ builder.Services
 
 builder.Services
     .AddSingleton<DiscordSocketClient>()
+    .AddSingleton<DiscordRestClient>()
     .AddSingleton(new DiscordSocketConfig())
     .AddSingleton<ServerInteractionHandler>()
     .AddSingleton<InteractionService>()

@@ -11,7 +11,7 @@ public sealed class QuotesService : IFeature
     private readonly FeatureService FeatureService;
     private readonly ServerService ServerService;
 
-    private readonly Dictionary<ulong, List<QuotesData>> Quotes = new();
+    private readonly Dictionary<ulong, List<QuotesData>> Quotes = [];
 
     public ServerFeature Feature => new()
     {
@@ -35,7 +35,7 @@ public sealed class QuotesService : IFeature
 
     public async Task AddForServerAsync(ulong id)
     {
-        Quotes.Add(id, (await ServerService.ReadFeatureDataAsync<List<QuotesData>>(id, Feature)).Match(some => some, none => new()));
+        Quotes.Add(id, (await ServerService.ReadFeatureDataAsync<List<QuotesData>>(id, Feature)).Match(some => some, none => []));
         await ServerService.SaveFeatureDataAsync(id, Feature, Quotes[id]);
     }
     public async Task RemoveForServerAsync(ulong serverID, bool reset)

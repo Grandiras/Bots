@@ -11,7 +11,7 @@ public sealed class WelcomeMessagesService : IFeature, IMustPostInitialize
     private readonly FeatureService FeatureManager;
 
     private readonly Random Randomizer = new();
-    private readonly Dictionary<ulong, WelcomeMessagesData> Messages = new();
+    private readonly Dictionary<ulong, WelcomeMessagesData> Messages = [];
 
     public ServerFeature Feature => new()
     {
