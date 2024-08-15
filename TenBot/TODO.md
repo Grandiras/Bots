@@ -5,6 +5,9 @@
 - detection for key words
 - management
 
+## Projects
+- fix announcement channels
+
 ## Automation
 - version management
 - server management
