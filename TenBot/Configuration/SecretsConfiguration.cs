@@ -11,7 +11,7 @@ public sealed class SecretsConfiguration(ConfigurationManager configuration)
 #endif
     public string BetaToken { get; set; }
 #if DEBUG
-        = configuration["BetaToken"] ?? throw new Exception("Token missing!");
+        = configuration["BetaToken"] ?? throw new Exception("BetaToken missing!");
 #else
         = Environment.GetEnvironmentVariable("BetaToken") ?? throw new Exception("BetaToken missing!");
 #endif

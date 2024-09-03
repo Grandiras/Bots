@@ -15,7 +15,7 @@ public sealed class BotConfigurator : IService
         SecretsConfiguration = secretsConfiguration;
         Logger = logger;
 
-        Logger.LogInformation("Bot is running in {} mode", BotConfiguration.IsBeta ? "beta" : "production");
+        Logger.LogInformation("Bot is running in {} mode.", BotConfiguration.IsBeta ? "beta" : "production");
     }
 
 

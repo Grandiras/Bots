@@ -64,7 +64,8 @@ public sealed class FeatureManagerCommand(FeatureService FeatureManager) : Inter
         }
 
         if (feature.AsT0.RequiresSetup && !Context.FeatureDataExists(feature.AsT0))
-            _ = this.InvokeGenericMethod(nameof(RespondWithModalAsync), feature.AsT0.SetupModalType!, false, feature.AsT0.SetupModalType!.Name, null);
+            _ = this.InvokeGenericMethod(nameof(RespondWithModalAsync), feature.AsT0.SetupModalType!, false, feature.AsT0.SetupModalType!.Name, null, null);
+
         else
         {
             _ = Context.AddFeatureAsync(feature.AsT0);
