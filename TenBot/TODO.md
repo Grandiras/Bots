@@ -5,13 +5,8 @@
 - detection for key words
 - management
 
-## Projects
-- fix announcement channels
-
 ## Automation
 - version management
-- server management
-- automated pushing
 
 ## Project-intern Moderation
 
@@ -24,10 +19,19 @@
 
 ## Release Notes (+ Publishing)
 
-## Version Migration
+## Version Data Migration
 
 ## Localization
 
 ## Module Packaging
 
 ## In-Code ToDos
+
+## Documentation
+
+## Logging
+
+## Testing
+
+## Fix Module Activation 
+- currently broken, maybe it's Discord's fault

@@ -101,7 +101,7 @@ public sealed class ServerService : IService, IMustPostInitialize
 
         await DataService.SaveToFileAsync(Path.Combine(SERVER_DATA_PATH, server.Name, "config.json"), server, true);
 
-        var featureModule = FeatureManager.GetFeatureModuleInfo(feature);
+        var featureModule = FeatureService.GetFeatureModuleInfo(feature);
         if (featureModule.IsT0) _ = await Interactions.AddModulesToGuildAsync(serverID, false, featureModule.AsT0);
 
         return new Success();
@@ -119,7 +119,7 @@ public sealed class ServerService : IService, IMustPostInitialize
 
         await DataService.SaveToFileAsync(Path.Combine(SERVER_DATA_PATH, server.Name, "config.json"), server, true);
 
-        var featureModule = FeatureManager.GetFeatureModuleInfo(feature);
+        var featureModule = FeatureService.GetFeatureModuleInfo(feature);
         if (featureModule.IsT0) _ = await Interactions.RemoveModulesFromGuildAsync(serverID, featureModule.AsT0);
 
         return new Success();

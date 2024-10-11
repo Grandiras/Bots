@@ -5,10 +5,8 @@ using TenBot.ServerAbstractions;
 using TenBot.Services;
 
 namespace TenBot.StandardFeatures.Help;
-public sealed class HelpCommand : InteractionModuleBase<ServerInteractionContext>, IStandardFeature
+public sealed class HelpCommand(FeatureService FeatureManager) : InteractionModuleBase<ServerInteractionContext>, IStandardFeature
 {
-    private readonly FeatureService FeatureManager;
-
     public ServerFeature Feature => new()
     {
         Name = "Help",
@@ -17,10 +15,6 @@ public sealed class HelpCommand : InteractionModuleBase<ServerInteractionContext
         IsStandard = true,
         CommandHandlerModuleHandler = FeatureManager.GetModuleInfo<HelpCommand>
     };
-
-
-    public HelpCommand(FeatureService featureManager) => FeatureManager = featureManager;
-
 
     [SlashCommand("help", "Provides a list of all commands and their descriptions existing here.")]
     public async Task ListAsync()

@@ -7,5 +7,6 @@ public enum ProjectDataChannelKind
     Text,
     Voice,
     Stage,
-    Forum
+    Forum,
+    News
 }

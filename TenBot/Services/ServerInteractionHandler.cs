@@ -7,27 +7,8 @@ using TenBot.Helpers;
 using TenBot.ServerAbstractions;
 
 namespace TenBot.Services;
-public sealed class ServerInteractionHandler : IService, IMustInitialize, IMustPostInitialize
+public sealed class ServerInteractionHandler(DiscordSocketClient Client, InteractionService Interactions, IServiceProvider Services, ILogger<ServerInteractionHandler> Logger, ServerService ServerManager, FeatureService FeatureManager) : IService, IMustInitialize, IMustPostInitialize
 {
-    private readonly DiscordSocketClient Client;
-    private readonly InteractionService Interactions;
-    private readonly IServiceProvider Services;
-    private readonly ILogger<ServerInteractionHandler> Logger;
-    private readonly ServerService ServerManager;
-    private readonly FeatureService FeatureManager;
-
-
-    public ServerInteractionHandler(DiscordSocketClient client, InteractionService interactions, IServiceProvider services, ILogger<ServerInteractionHandler> logger, ServerService serverManager, FeatureService featureManager)
-    {
-        Client = client;
-        Interactions = interactions;
-        Services = services;
-        Logger = logger;
-        ServerManager = serverManager;
-        FeatureManager = featureManager;
-    }
-
-
     public async Task InitializeAsync()
     {
         Client.JoinedGuild += GuildAddedAsync;
@@ -39,7 +20,7 @@ public sealed class ServerInteractionHandler : IService, IMustInitialize, IMustP
 
         Client.InteractionCreated += HandleInteractionAsync;
     }
-    public async Task PostInitializeAsync() { foreach (var server in ServerManager.Servers) { _ = await Interactions.AddModulesToGuildAsync(server.Id, true, FeatureManager.GetFeatureModuleInfosForServer(server).ToArray()); } }
+    public async Task PostInitializeAsync() { foreach (var server in ServerManager.Servers) { _ = await Interactions.AddModulesToGuildAsync(server.Id, true, FeatureManager.GetFeatureModuleInfoForServer(server).ToArray()); } }
 
     private Task LogAsync(LogMessage log)
     {
@@ -50,7 +31,7 @@ public sealed class ServerInteractionHandler : IService, IMustInitialize, IMustP
     private async Task GuildAddedAsync(SocketGuild server)
     {
         await ServerManager.AddServerAsync(server);
-        _ = await Interactions.AddModulesToGuildAsync(server.Id, true, FeatureManager.GetFeatureModuleInfosForServer(ServerManager.GetServerById(server.Id).AsT0).ToArray());
+        _ = await Interactions.AddModulesToGuildAsync(server.Id, true, FeatureManager.GetFeatureModuleInfoForServer(ServerManager.GetServerById(server.Id).AsT0).ToArray());
 
         Logger.LogInformation("Joined server: {}", server.Name);
     }

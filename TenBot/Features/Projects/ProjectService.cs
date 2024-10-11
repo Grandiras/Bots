@@ -73,6 +73,7 @@ public sealed class ProjectService : IFeature
     {
         SocketStageChannel => new(channel.Name, ProjectDataChannelKind.Stage),
         SocketVoiceChannel => new(channel.Name, ProjectDataChannelKind.Voice),
+        SocketNewsChannel => new(channel.Name, ProjectDataChannelKind.News),
         SocketTextChannel => new(channel.Name, ProjectDataChannelKind.Text),
         SocketForumChannel => new(channel.Name, ProjectDataChannelKind.Forum),
         _ => throw new NotSupportedException()
