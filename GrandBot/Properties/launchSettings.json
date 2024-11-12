@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "GrandBot": {
+      "commandName": "Project"
+    },
+    "Container (Dockerfile)": {
+      "commandName": "Docker"
+    }
+  }
+}

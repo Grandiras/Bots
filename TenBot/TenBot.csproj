@@ -13,6 +13,7 @@
     <IsPublishable>True</IsPublishable>
     <EnableSdkContainerSupport>True</EnableSdkContainerSupport>
     <DockerfileContext>.</DockerfileContext>
+    <PublishAot>True</PublishAot>
   </PropertyGroup>
   <ItemGroup>
     <Content Include="appsettings.json">
