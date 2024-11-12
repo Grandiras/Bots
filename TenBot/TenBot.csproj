@@ -27,7 +27,7 @@
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.0" />
     <PackageReference Include="OneOf" Version="3.0.271" />
     <PackageReference Include="OneOf.SourceGenerator" Version="3.0.271" />
-    <PackageReference Include="Scrutor" Version="5.0.1" />
+    <PackageReference Include="Scrutor" Version="5.0.2" />
     <PackageReference Include="SimMetrics.Net" Version="1.0.5" />
   </ItemGroup>
 </Project>
