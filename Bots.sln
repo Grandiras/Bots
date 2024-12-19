@@ -6,6 +6,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TenBot", "TenBot\TenBot.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GrandBot", "GrandBot\GrandBot.csproj", "{4FD51A9F-E27B-4447-AE56-46E6DFFDA486}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bots.AppHost", "Bots.AppHost\Bots.AppHost.csproj", "{D64AC6F1-8296-4B37-A98D-98565BACCA7A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bots.ServiceDefaults", "Bots.ServiceDefaults\Bots.ServiceDefaults.csproj", "{0701F72D-01F2-02B6-0962-024E38C49C8B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -20,6 +24,14 @@ Global
 		{4FD51A9F-E27B-4447-AE56-46E6DFFDA486}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4FD51A9F-E27B-4447-AE56-46E6DFFDA486}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4FD51A9F-E27B-4447-AE56-46E6DFFDA486}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D64AC6F1-8296-4B37-A98D-98565BACCA7A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D64AC6F1-8296-4B37-A98D-98565BACCA7A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D64AC6F1-8296-4B37-A98D-98565BACCA7A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D64AC6F1-8296-4B37-A98D-98565BACCA7A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0701F72D-01F2-02B6-0962-024E38C49C8B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0701F72D-01F2-02B6-0962-024E38C49C8B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0701F72D-01F2-02B6-0962-024E38C49C8B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0701F72D-01F2-02B6-0962-024E38C49C8B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
