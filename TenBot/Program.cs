@@ -14,15 +14,7 @@ using TenBot.StandardFeatures;
 
 var builder = new HostApplicationBuilder();
 
-builder.Configuration
-#if DEBUG
-    .AddUserSecrets<Program>();
-#else
-    .AddEnvironmentVariables();
-#endif
-
-builder.Logging
-    .AddSimpleConsole();
+builder.AddServiceDefaults();
 
 builder.Services
     .AddSingleton(new SecretsConfiguration(builder.Configuration))

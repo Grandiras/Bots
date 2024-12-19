@@ -371,3 +371,6 @@ beta_config.json
 /10Bot/Data/config.json
 /TenBot/Dockerfile
 /TenBot/docker_update.bat
+/Bots.AppHost/aspirate-output/docker-compose.yaml
+/Bots.AppHost/aspirate-state.json
+/Bots.AppHost/aspirate-output/tenbot/kustomization.yaml
