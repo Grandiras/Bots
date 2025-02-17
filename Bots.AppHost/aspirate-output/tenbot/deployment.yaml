@@ -1,0 +1,37 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tenbot
+  labels:
+    app: tenbot
+spec:
+  minReadySeconds: 60
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tenbot
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: tenbot
+    spec:
+      imagePullSecrets:
+      - name: regcred
+      containers:
+      - name: tenbot
+        image: grandiras/tenbot:latest
+        imagePullPolicy: IfNotPresent
+        envFrom:
+        - configMapRef:
+            name: tenbot-env
+        volumeMounts:
+        - mountPath: /data
+          name: tenbot-data
+      volumes:
+      - name: tenbot-data
+        persistentVolumeClaim:
+          claimName: tenbot-pvc
+      terminationGracePeriodSeconds: 180

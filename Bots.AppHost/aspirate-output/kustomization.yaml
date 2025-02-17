@@ -1,0 +1,8 @@
+resources:
+- tenbot
+- dashboard.yaml
+
+generatorOptions:
+  disableNameSuffixHash: true
+
+
