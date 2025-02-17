@@ -10,9 +10,6 @@
 
 ## Project-intern Moderation
 
-## Quizzes
-- https://the-trivia-api.com/docs/
-
 ## Hot Reload
 
 ## Better Error Handling / Avoiding

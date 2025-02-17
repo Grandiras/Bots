@@ -39,6 +39,9 @@ builder.Services.Scan(scan => scan.FromCallingAssembly()
         .AsSelf()
         .WithSingletonLifetime());
 
+// Add milvus
+builder.AddMilvusClient("quotes-db");
+
 var app = builder.Build();
 
 // Add exception handling and OpenAPI documentation
