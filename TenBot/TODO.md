@@ -33,8 +33,5 @@
 
 ## Testing
 
-## Fix Module Activation 
-- currently broken, maybe it's Discord's fault
-
 ## Add visualization API
 - host e.g. images on a server and send them as response

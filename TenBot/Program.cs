@@ -13,15 +13,7 @@ using TenBot.StandardFeatures;
 
 var builder = new HostApplicationBuilder();
 
-builder.Configuration
-#if DEBUG
-    .AddUserSecrets<Program>();
-#else
-    .AddEnvironmentVariables();
-#endif
-
-builder.Logging
-    .AddSimpleConsole();
+builder.AddServiceDefaults();
 
 builder.Services
     .AddSingleton(new SecretsConfiguration(builder.Configuration))
@@ -29,10 +21,10 @@ builder.Services
 
 builder.Services
     .AddSingleton<DiscordSocketClient>()
-    .AddSingleton(new DiscordSocketConfig())
+    .AddSingleton(new DiscordSocketConfig() { GatewayIntents = GatewayIntents.AllUnprivileged | GatewayIntents.MessageContent })
     .AddSingleton<ServerInteractionHandler>()
     .AddSingleton(x => new InteractionService(x.GetRequiredService<DiscordSocketClient>(), x.GetRequiredService<InteractionServiceConfig>()))
-    .AddSingleton(new InteractionServiceConfig() { UseCompiledLambda = true, EnableAutocompleteHandlers = true });
+    .AddSingleton(new InteractionServiceConfig() { UseCompiledLambda = true });
 
 builder.Services.Scan(scan => scan.FromCallingAssembly()
     .AddClasses(classes => classes.AssignableTo<IService>())
