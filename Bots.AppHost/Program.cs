@@ -5,7 +5,6 @@ var betaToken = builder.AddParameter("BetaToken", builder.Configuration["BetaTok
 
 #if DEBUG
 builder.AddProject<Projects.TenBot>("tenbot")
-    .WithOtlpExporter()
     .WithEnvironment("Bot__DataRootPath", "Data")
     .WithEnvironment("Bot__IsBeta", "true")
     .WithEnvironment("Token", botToken)

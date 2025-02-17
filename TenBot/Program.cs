@@ -1,19 +1,17 @@
 ﻿using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using TenBot.Configuration;
 using TenBot.Features;
 using TenBot.Helpers;
 using TenBot.Services;
 using TenBot.StandardFeatures;
 
-var builder = new HostApplicationBuilder();
+var builder = WebApplication.CreateBuilder();
 
 builder.AddServiceDefaults();
+builder.Services.AddProblemDetails();
+builder.Services.AddOpenApi();
 
 builder.Services
     .AddSingleton(new SecretsConfiguration(builder.Configuration))
@@ -37,11 +35,14 @@ builder.Services.Scan(scan => scan.FromCallingAssembly()
         .AsSelf()
         .WithSingletonLifetime());
 
-var host = builder.Build();
+var app = builder.Build();
 
-var client = host.Services.GetRequiredService<DiscordSocketClient>();
-var configurator = host.Services.GetRequiredService<BotConfigurator>();
-var logger = host.Services.GetRequiredService<ILogger<Program>>();
+app.UseExceptionHandler();
+if (app.Environment.IsDevelopment()) _ = app.MapOpenApi();
+
+var client = app.Services.GetRequiredService<DiscordSocketClient>();
+var configurator = app.Services.GetRequiredService<BotConfigurator>();
+var logger = app.Services.GetRequiredService<ILogger<Program>>();
 
 client.Log += async (msg) =>
 {
@@ -50,14 +51,16 @@ client.Log += async (msg) =>
 };
 client.Ready += async () =>
 {
-    foreach (var service in host.Services.GetAllServicesWith<IMustPostInitialize>()) await service.PostInitializeAsync();
+    foreach (var service in app.Services.GetAllServicesWith<IMustPostInitialize>()) await service.PostInitializeAsync();
 };
 
-foreach (var service in host.Services.GetAllServicesWith<IMustInitialize>()) _ = service.InitializeAsync();
+foreach (var service in app.Services.GetAllServicesWith<IMustInitialize>()) _ = service.InitializeAsync();
 
 await client.LoginAsync(TokenType.Bot, configurator.GetToken());
 await client.StartAsync();
 
 await client.SetCustomStatusAsync("Use /help for more information!");
 
-await Task.Delay(-1); // Infinite timeout
+app.MapDefaultEndpoints();
+
+app.Run();
