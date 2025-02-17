@@ -18,11 +18,20 @@ spec:
       labels:
         app: tenbot
     spec:
+      imagePullSecrets:
+      - name: regcred
       containers:
       - name: tenbot
-        image: tenbot:latest
+        image: grandiras/tenbot:latest
         imagePullPolicy: IfNotPresent
         envFrom:
         - configMapRef:
             name: tenbot-env
+        volumeMounts:
+        - mountPath: /data
+          name: tenbot-data
+      volumes:
+      - name: tenbot-data
+        persistentVolumeClaim:
+          claimName: tenbot-pvc
       terminationGracePeriodSeconds: 180

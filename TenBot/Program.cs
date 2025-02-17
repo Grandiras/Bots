@@ -1,6 +1,5 @@
 ﻿using Discord;
 using Discord.Interactions;
-using Discord.Rest;
 using Discord.WebSocket;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,10 +21,9 @@ builder.Services
 
 builder.Services
     .AddSingleton<DiscordSocketClient>()
-    .AddSingleton<DiscordRestClient>()
-    .AddSingleton(new DiscordSocketConfig())
+    .AddSingleton(new DiscordSocketConfig() { GatewayIntents = GatewayIntents.AllUnprivileged | GatewayIntents.MessageContent })
     .AddSingleton<ServerInteractionHandler>()
-    .AddSingleton<InteractionService>()
+    .AddSingleton(x => new InteractionService(x.GetRequiredService<DiscordSocketClient>(), x.GetRequiredService<InteractionServiceConfig>()))
     .AddSingleton(new InteractionServiceConfig() { UseCompiledLambda = true });
 
 builder.Services.Scan(scan => scan.FromCallingAssembly()
@@ -52,8 +50,7 @@ client.Log += async (msg) =>
 };
 client.Ready += async () =>
 {
-    foreach (var service in host.Services.GetAllServicesWith<IMustPostInitialize>()) _ = service.PostInitializeAsync();
-    await Task.CompletedTask;
+    foreach (var service in host.Services.GetAllServicesWith<IMustPostInitialize>()) await service.PostInitializeAsync();
 };
 
 foreach (var service in host.Services.GetAllServicesWith<IMustInitialize>()) _ = service.InitializeAsync();
@@ -63,4 +60,4 @@ await client.StartAsync();
 
 await client.SetCustomStatusAsync("Use /help for more information!");
 
-await Task.Delay(-1); // infinite timeout
+await Task.Delay(-1); // Infinite timeout

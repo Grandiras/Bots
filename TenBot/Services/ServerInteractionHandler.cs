@@ -20,7 +20,13 @@ public sealed class ServerInteractionHandler(DiscordSocketClient Client, Interac
 
         Client.InteractionCreated += HandleInteractionAsync;
     }
-    public async Task PostInitializeAsync() { foreach (var server in ServerManager.Servers) { _ = await Interactions.AddModulesToGuildAsync(server.Id, true, FeatureManager.GetFeatureModuleInfoForServer(server).ToArray()); } }
+    public async Task PostInitializeAsync()
+    {
+        foreach (var server in ServerManager.Servers)
+        {
+            _ = await Interactions.AddModulesToGuildAsync(server.Id, true, [.. FeatureManager.GetFeatureModuleInfoForServer(server)]);
+        }
+    }
 
     private Task LogAsync(LogMessage log)
     {
