@@ -19,7 +19,7 @@ builder.Services
 
 builder.Services
     .AddSingleton<DiscordSocketClient>()
-    .AddSingleton(new DiscordSocketConfig() { GatewayIntents = GatewayIntents.AllUnprivileged | GatewayIntents.MessageContent })
+    .AddSingleton(new DiscordSocketConfig() { GatewayIntents = (GatewayIntents.AllUnprivileged | GatewayIntents.MessageContent) & ~GatewayIntents.GuildScheduledEvents & ~GatewayIntents.GuildInvites })
     .AddSingleton<ServerInteractionHandler>()
     .AddSingleton(x => new InteractionService(x.GetRequiredService<DiscordSocketClient>(), x.GetRequiredService<InteractionServiceConfig>()))
     .AddSingleton(new InteractionServiceConfig() { UseCompiledLambda = true });
@@ -46,7 +46,7 @@ var logger = app.Services.GetRequiredService<ILogger<Program>>();
 
 client.Log += async (msg) =>
 {
-    logger.Log(msg.Severity.ToLogLevel(), "{}", msg.ToString());
+    logger.Log(msg.Severity.ToLogLevel(), "{}", msg.ToString(prependTimestamp: false));
     await Task.CompletedTask;
 };
 client.Ready += async () =>
