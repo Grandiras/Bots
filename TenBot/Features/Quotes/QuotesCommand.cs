@@ -14,7 +14,7 @@ public sealed class QuotesCommand(QuotesService QuotesService) : InteractionModu
     {
         await DeferAsync(!display);
 
-        _ = QuotesService.AddQuote(new(quote, author, context), Context.ServerID);
+        _ = QuotesService.AddQuote(new(quote, author, context ?? ""), Context.ServerID);
 
         _ = await FollowupAsync(embed: new EmbedBuilder()
             .WithTitle("New Quote")
@@ -57,7 +57,7 @@ public sealed class QuotesCommand(QuotesService QuotesService) : InteractionModu
 
         _ = await FollowupAsync(embed: new EmbedBuilder()
             .WithTitle("Quote")
-            .WithDescription(quote.AsT0.Quote)
+            .WithDescription(quote.AsT0.Content)
             .WithColor(QuotesService.Feature.Color)
             .WithFields(
                 new EmbedFieldBuilder()
@@ -77,7 +77,7 @@ public sealed class QuotesCommand(QuotesService QuotesService) : InteractionModu
             .WithTitle("Quotes")
             .WithColor(QuotesService.Feature.Color)
             .WithFields((await QuotesService.GetQuotes(Context.Guild.Id)).Select(x => new EmbedFieldBuilder()
-                .WithName(x.Quote)
+                .WithName(x.Content)
                 .WithValue(x.Author + (x.Context is not null ? $", {x.Context}" : ""))))
             .Build(), ephemeral: true);
     }
@@ -97,7 +97,7 @@ public sealed class QuotesCommand(QuotesService QuotesService) : InteractionModu
 
         _ = await FollowupAsync(embed: new EmbedBuilder()
             .WithTitle("Quote")
-            .WithDescription(quote.AsT0.Quote)
+            .WithDescription(quote.AsT0.Content)
             .WithColor(QuotesService.Feature.Color)
             .WithFields(
                 new EmbedFieldBuilder()
