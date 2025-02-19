@@ -40,11 +40,11 @@
     <ProjectReference Include="..\Bots.ServiceDefaults\Bots.ServiceDefaults.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="model\model.onnx">
+    <Content Include="model\model.onnx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="model\vocab.txt">
+    </Content>
+    <Content Include="model\vocab.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
+    </Content>
   </ItemGroup>
 </Project>
