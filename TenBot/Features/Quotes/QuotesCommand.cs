@@ -34,7 +34,7 @@ public sealed class QuotesCommand(QuotesService QuotesService) : InteractionModu
 
         if (quote is null || (await QuotesService.GetQuote(Guid.Parse(quote), Context.ServerID)).IsT1)
         {
-            _ = await FollowupAsync("Quote not found.", ephemeral: true);
+            _ = await FollowupAsync("Quote not found!", ephemeral: true);
             return;
         }
 
@@ -51,7 +51,7 @@ public sealed class QuotesCommand(QuotesService QuotesService) : InteractionModu
 
         if (quote.IsT1)
         {
-            _ = await FollowupAsync("No quotes found.", ephemeral: true);
+            _ = await FollowupAsync("No quotes found!", ephemeral: true);
             return;
         }
 
@@ -73,10 +73,13 @@ public sealed class QuotesCommand(QuotesService QuotesService) : InteractionModu
     public async Task ListAsync()
     {
         await DeferAsync(ephemeral: true);
+
+        var quotes = await QuotesService.GetQuotes(Context.Guild.Id);
+
         _ = await FollowupAsync(embed: new EmbedBuilder()
             .WithTitle("Quotes")
             .WithColor(QuotesService.Feature.Color)
-            .WithFields((await QuotesService.GetQuotes(Context.Guild.Id)).Select(x => new EmbedFieldBuilder()
+            .WithFields(quotes.Select(x => new EmbedFieldBuilder()
                 .WithName(x.Content)
                 .WithValue(x.Author + (x.Context is not null ? $", {x.Context}" : ""))))
             .Build(), ephemeral: true);
