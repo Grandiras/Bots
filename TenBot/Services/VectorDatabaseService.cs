@@ -10,7 +10,11 @@ public sealed class VectorDatabaseService(ILogger<VectorDatabaseService> Logger,
 {
     public async Task<VectorDatabaseInterface> RequestDatabase(string name)
     {
-        if (!(await DatabaseClient.ListDatabasesAsync()).Any(db => db == name)) await DatabaseClient.CreateDatabaseAsync(name);
+        if (!(await DatabaseClient.ListDatabasesAsync()).Any(db => db == name))
+        {
+            await DatabaseClient.CreateDatabaseAsync(name);
+            Logger.LogInformation("Created database {DatabaseName}.", name);
+        }
 
         return new VectorDatabaseInterface(name);
     }
@@ -35,6 +39,7 @@ public sealed class VectorDatabaseService(ILogger<VectorDatabaseService> Logger,
         await collection.CreateIndexAsync(fields.First(x => x.PropertyType == typeof(float[])).Name);
 
         await collection.LoadAsync();
+        Logger.LogInformation("Created collection {CollectionName}.", collectionName);
 
         return new(collectionName, collection);
     }

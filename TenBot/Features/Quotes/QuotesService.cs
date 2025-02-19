@@ -6,7 +6,7 @@ using TenBot.Models;
 using TenBot.Services;
 
 namespace TenBot.Features.Quotes;
-public sealed class QuotesService(FeatureService FeatureService, ServerService ServerService, ILogger<QuotesService> Logger, VectorDatabaseService VectorDatabaseService) : IFeature, IMustInitialize
+public sealed class QuotesService(FeatureService FeatureService, ServerService ServerService, VectorDatabaseService VectorDatabaseService) : IFeature, IMustInitialize
 {
     private VectorDatabaseCollection<Quote>? QuotesCollection;
 

@@ -1,7 +1,6 @@
 ﻿using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
-using Microsoft.Extensions.Logging;
 using System.Reflection;
 using TenBot.Helpers;
 using TenBot.ServerAbstractions;
@@ -39,13 +38,13 @@ public sealed class ServerInteractionHandler(DiscordSocketClient Client, Interac
         await ServerManager.AddServerAsync(server);
         _ = await Interactions.AddModulesToGuildAsync(server.Id, true, FeatureManager.GetFeatureModuleInfoForServer(ServerManager.GetServerById(server.Id).AsT0).ToArray());
 
-        Logger.LogInformation("Joined server: {}", server.Name);
+        Logger.LogInformation("Joined server: {ServerName}", server.Name);
     }
     private async Task GuildLeftAsync(SocketGuild server)
     {
         await ServerManager.RemoveServerAsync(server);
 
-        Logger.LogInformation("Left server: {}", server.Name);
+        Logger.LogInformation("Left server: {ServerName}", server.Name);
     }
 
     private async Task HandleInteractionAsync(SocketInteraction interaction)
