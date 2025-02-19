@@ -1,16 +1,13 @@
-﻿using AllMiniLmL6V2Sharp;
-using Discord;
+﻿using Discord;
 using OneOf;
 using OneOf.Types;
 using TenBot.Models;
 using TenBot.Services;
 
 namespace TenBot.Features.Quotes;
-public sealed class QuotesService(FeatureService FeatureService, ServerService ServerService, VectorDatabaseService VectorDatabaseService) : IFeature, IMustInitialize
+public sealed class QuotesService(FeatureService FeatureService, ServerService ServerService, VectorDatabaseService VectorDatabaseService, EmbeddingService EmbeddingService) : IFeature, IMustInitialize
 {
     private VectorDatabaseCollection<Quote>? QuotesCollection;
-
-    private readonly AllMiniLmL6V2Embedder Embedder = new();
 
     public ServerFeature Feature => new()
     {
@@ -51,13 +48,13 @@ public sealed class QuotesService(FeatureService FeatureService, ServerService S
     {
         if ((await QuotesCollection!.GetAllEntities(new(serverID.ToString())).ToListAsync()).Count is 0) return new None();
 
-        var embedding = Embedder.GenerateEmbedding(message);
-        return await QuotesCollection.GetMatchingEntity([.. embedding], new(serverID.ToString()));
+        var embedding = EmbeddingService.GenerateEmbedding(message);
+        return await QuotesCollection.GetMatchingEntity(embedding, new(serverID.ToString()));
     }
 
     public async Task AddQuote(Quote quote, ulong serverID)
     {
-        quote.EmbeddedContent = [.. Embedder.GenerateEmbedding(quote.Context)];
+        quote.EmbeddedContent = EmbeddingService.GenerateEmbedding(quote.Context);
         await QuotesCollection!.AddEntity(quote, new(serverID.ToString()));
     }
     public async Task RemoveQuote(Guid quoteID, ulong serverID) => await QuotesCollection!.RemoveEntity(quoteID, new(serverID.ToString()));
