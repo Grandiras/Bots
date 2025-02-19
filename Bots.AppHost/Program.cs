@@ -5,13 +5,15 @@ var betaToken = builder.AddParameter("BetaToken", builder.Configuration["BetaTok
 
 var quotes = builder.AddMilvus("quotes")
     .WithDataVolume()
+    .WithAttu()
     .WithLifetime(ContainerLifetime.Persistent);
 
-var quotesDB = quotes.AddDatabase("quotes-db");
+var quotesDB = quotes.AddDatabase("quotes-db", "quotes_db");
 
 #if DEBUG
 builder.AddProject<Projects.TenBot>("tenbot")
     .WithReference(quotesDB)
+    .WaitFor(quotesDB)
     .WithEnvironment("Bot__DataRootPath", "Data")
     .WithEnvironment("Bot__IsBeta", "true")
     .WithEnvironment("Token", botToken)

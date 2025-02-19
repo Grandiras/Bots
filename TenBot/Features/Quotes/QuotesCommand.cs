@@ -12,14 +12,7 @@ public sealed class QuotesCommand(QuotesService QuotesService) : InteractionModu
                                   [Summary("display", "Determines, whether this quote should be displayed after creation or not.")] bool display = true,
                                   [Summary("context", "Additional information for this quote.")] string? context = null)
     {
-        QuotesService.AddQuote(new(quote, author, context), Context.ServerID);
-
-
-        if (!display)
-        {
-            await RespondAsync("Quote has successfully been created.", ephemeral: true);
-            return;
-        }
+        _ = QuotesService.AddQuote(new(quote, author, context), Context.ServerID);
 
         await RespondAsync(embed: new EmbedBuilder()
             .WithTitle("New Quote")
@@ -29,26 +22,26 @@ public sealed class QuotesCommand(QuotesService QuotesService) : InteractionModu
                 new EmbedFieldBuilder()
                 .WithName("By")
                 .WithValue($"{author}{(context is not null ? $", {context}" : "")}"))
-            .Build());
+            .Build(), ephemeral: !display);
     }
 
     [SlashCommand("delete", "Deletes a quote.")]
     public async Task DeleteAsync([Summary("quote", "The quote to delete."), Autocomplete(typeof(QuotesAutoCompleteHandler))] string quote)
     {
-        if (quote is null || QuotesService.GetQuote(quote, Context.ServerID).IsT1)
+        if (quote is null || (await QuotesService.GetQuote(Guid.Parse(quote), Context.ServerID)).IsT1)
         {
             await RespondAsync("Quote not found.", ephemeral: true);
             return;
         }
 
-        QuotesService.RemoveQuote(quote, Context.ServerID);
+        await QuotesService.RemoveQuote(Guid.Parse(quote), Context.ServerID);
         await RespondAsync("Quote has successfully been deleted.", ephemeral: true);
     }
 
     [SlashCommand("display", "Prints a random quote.")]
-    public async Task DisplayAsync()
+    public async Task DisplayAsync([Summary("display", "Determines, whether this quote should be displayed to everyone or not.")] bool display = true)
     {
-        var quote = QuotesService.GetRandomQuote(Context.Guild.Id);
+        var quote = await QuotesService.GetRandomQuote(Context.Guild.Id);
 
         if (quote.IsT1)
         {
@@ -67,7 +60,7 @@ public sealed class QuotesCommand(QuotesService QuotesService) : InteractionModu
                 new EmbedFieldBuilder()
                 .WithName("Requested by")
                 .WithValue(Context.User.Mention))
-            .Build());
+            .Build(), ephemeral: !display);
     }
 
     [SlashCommand("list", "Lists all available quotes.")]
@@ -75,19 +68,19 @@ public sealed class QuotesCommand(QuotesService QuotesService) : InteractionModu
         => await RespondAsync(embed: new EmbedBuilder()
         .WithTitle("Quotes")
         .WithColor(QuotesService.Feature.Color)
-        .WithFields(QuotesService.GetQuotes(Context.Guild.Id).Select(x => new EmbedFieldBuilder()
+        .WithFields((await QuotesService.GetQuotes(Context.Guild.Id)).Select(x => new EmbedFieldBuilder()
             .WithName(x.Quote)
-            .WithValue(x.Author)))
-        .Build());
+            .WithValue(x.Author + (x.Context is not null ? $", {x.Context}" : ""))))
+        .Build(), ephemeral: true);
 
     [MessageCommand("Search for a quote")]
     public async Task SearchAsync([Summary("message", "The message to search for.")] IMessage message)
     {
-        var quote = QuotesService.GetQuote(message.Content, Context.Guild.Id);
+        var quote = await QuotesService.GetMatchingQuote(message.Content, Context.Guild.Id);
 
         if (quote.IsT1)
         {
-            await RespondAsync("No quotes found.", ephemeral: true);
+            await RespondAsync("No matching quote found!", ephemeral: true);
             return;
         }
 

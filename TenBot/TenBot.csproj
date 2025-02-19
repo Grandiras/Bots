@@ -17,6 +17,11 @@
     <ContainerRuntimeIdentifier>linux-x64</ContainerRuntimeIdentifier>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="model\model.onnx" />
+    <None Remove="model\vocab.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="AllMiniLmL6V2Sharp" Version="0.0.3" />
     <PackageReference Include="Aspire.Milvus.Client" Version="9.0.0-preview.5.24551.3" />
     <PackageReference Include="Discord.Net" Version="3.16.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.0" />
@@ -27,10 +32,17 @@
     <PackageReference Include="OneOf" Version="3.0.271" />
     <PackageReference Include="OneOf.SourceGenerator" Version="3.0.271" />
     <PackageReference Include="Scrutor" Version="5.0.2" />
-    <PackageReference Include="SimMetrics.Net" Version="1.0.5" />
 	<PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Bots.ServiceDefaults\Bots.ServiceDefaults.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="model\model.onnx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="model\vocab.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
 </Project>
