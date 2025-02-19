@@ -1,9 +1,7 @@
 ﻿# TODOs
 
 ## Quotes
-- randomizer for all results above a threshold
 - detection for key words
-- management
 
 ## Automation
 - version management
